@@ -1,0 +1,12 @@
+{
+  "name": "issues",
+  "description": "Issue tracking and code review tools - Jira issues and GitLab merge requests",
+  "version": "1.0.0",
+  "author": {
+    "name": "DevTools Team",
+    "email": "devtools@example.com"
+  },
+  "license": "MIT",
+  "keywords": ["jira", "issues", "tracking", "atlassian", "gitlab", "merge-request", "mr"],
+  "commands": "./commands/"
+}

@@ -1,0 +1,30 @@
+{
+  "name": "raptortech-plugins",
+  "owner": {
+    "name": "DevTools Team",
+    "email": "devtools@example.com"
+  },
+  "metadata": {
+    "description": "Claude Code plugins for Raptortech development"
+  },
+  "plugins": [
+    {
+      "name": "ruby",
+      "source": "./plugins/ruby",
+      "description": "Ruby development tools including rubocop linting",
+      "version": "1.0.0",
+      "author": {
+        "name": "DevTools Team"
+      }
+    },
+    {
+      "name": "issues",
+      "source": "./plugins/issues",
+      "description": "Jira issues and GitLab merge requests",
+      "version": "1.0.0",
+      "author": {
+        "name": "DevTools Team"
+      }
+    }
+  ]
+}
