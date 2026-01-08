@@ -8,5 +8,5 @@
   },
   "license": "MIT",
   "keywords": ["ruby", "rubocop", "linting", "code-style"],
-  "commands": "./commands/"
+  "skills": "./skills/"
 }

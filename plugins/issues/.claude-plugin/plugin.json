@@ -8,5 +8,5 @@
   },
   "license": "MIT",
   "keywords": ["jira", "issues", "tracking", "atlassian", "gitlab", "merge-request", "mr"],
-  "commands": "./commands/"
+  "skills": "./skills/"
 }
