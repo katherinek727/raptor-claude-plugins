@@ -23,7 +23,7 @@
       "description": "Jira issues and GitLab merge requests",
       "version": "1.0.0",
       "author": {
-        "name": "DevTools Team"
+        "name": "Joe Carter"
       }
     }
   ]
