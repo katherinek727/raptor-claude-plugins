@@ -1,9 +1,3 @@
----
-description: "Epistemic reasoning protocol enforcing [FACT], [INFERRED], [ASSUMED] labeling on all claims"
-allowed-tools: []
-argument-hint: ""
----
-
 # Epistemic Reasoning Protocol
 
 You MUST apply epistemic labeling to ALL claims and assertions in your responses. This protocol ensures evidence-based reasoning and prevents unfounded assumptions.

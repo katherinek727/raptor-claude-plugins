@@ -1,15 +1,15 @@
 {
-  "description": "Injects epistemic reasoning protocol at session start",
   "hooks": {
     "SessionStart": [
       {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/inject-protocol.sh",
-            "timeout": 5
-          }
-        ]
+        "type": "command",
+        "command": "cat ${CLAUDE_PLUGIN_ROOT}/epistemic-reasoning.md"
+      }
+    ],
+    "Stop": [
+      {
+        "type": "command",
+        "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/enforce-protocol.sh"
       }
     ]
   }

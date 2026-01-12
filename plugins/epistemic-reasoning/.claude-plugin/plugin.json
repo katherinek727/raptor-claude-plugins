@@ -7,6 +7,5 @@
     "email": "devtools@example.com"
   },
   "license": "MIT",
-  "keywords": ["reasoning", "epistemic", "verification", "claims"],
-  "skills": "./skills/"
+  "keywords": ["reasoning", "epistemic", "verification", "claims"]
 }
