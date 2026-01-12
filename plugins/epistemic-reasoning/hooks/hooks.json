@@ -3,7 +3,7 @@
     "SessionStart": [
       {
         "type": "command",
-        "command": "cat ${CLAUDE_PLUGIN_ROOT}/epistemic-reasoning.md"
+        "command": "jq -n --rawfile content ${CLAUDE_PLUGIN_ROOT}/epistemic-reasoning.md '{\"hookSpecificOutput\": {\"hookEventName\": \"SessionStart\", \"additionalContext\": $content}}'"
       }
     ],
     "Stop": [
