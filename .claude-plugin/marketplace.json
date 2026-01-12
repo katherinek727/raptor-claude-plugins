@@ -25,6 +25,15 @@
       "author": {
         "name": "Joe Carter"
       }
+    },
+    {
+      "name": "pair-programming",
+      "source": "./plugins/pair-programming",
+      "description": "Get second opinions from AI providers (Grok, ChatGPT, Gemini) on implementation plans, code, or architecture decisions",
+      "version": "1.0.0",
+      "author": {
+        "name": "Justin Wojciechowski"
+      }
     }
   ]
 }
