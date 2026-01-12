@@ -1,0 +1,8 @@
+{
+  "name": "ai-pair-programmer",
+  "description": "Get second opinions from AI providers (Grok, ChatGPT, Gemini) on implementation plans, code, or architecture decisions. Supports multiple providers simultaneously for comparative feedback.",
+  "version": "1.0.0",
+  "author": {
+    "name": "Justin Wojciechowski"
+  }
+}
