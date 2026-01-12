@@ -3,8 +3,8 @@
   "description": "Issue tracking and code review tools - Jira issues and GitLab merge requests",
   "version": "1.0.0",
   "author": {
-    "name": "DevTools Team",
-    "email": "devtools@example.com"
+    "name": "Joe Carter",
+    "email": "joe.carter@cpoms.co.uk"
   },
   "license": "MIT",
   "keywords": ["jira", "issues", "tracking", "atlassian", "gitlab", "merge-request", "mr"],
