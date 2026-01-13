@@ -1,0 +1,11 @@
+{
+  "name": "planning",
+  "description": "Project planning skills for Confluence initiatives and phased delivery plans",
+  "version": "1.0.0",
+  "author": {
+    "name": "DevTools Team"
+  },
+  "license": "MIT",
+  "keywords": ["planning", "confluence", "jira", "initiative", "roadmap", "delivery"],
+  "skills": "./skills/"
+}

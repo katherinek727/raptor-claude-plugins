@@ -43,6 +43,15 @@
       "author": {
         "name": "Michael Petrov"
       }
+    },
+    {
+      "name": "planning",
+      "source": "./plugins/planning",
+      "description": "Project planning skills for Confluence initiatives and phased delivery plans",
+      "version": "1.0.0",
+      "author": {
+        "name": "DevTools Team"
+      }
     }
   ]
 }
