@@ -1,0 +1,24 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "jq -n --rawfile content ${CLAUDE_PLUGIN_ROOT}/epistemic-reasoning.md '{\"hookSpecificOutput\": {\"hookEventName\": \"SessionStart\", \"additionalContext\": $content}}'"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "jq -Rsr 'if test(\"\\\\[(FACT|ASSUMED|INFERRED)\\\\]\") then empty else \"<protocol-reminder>\\nResponse Style Checklist:\\n- Did you cite [FACT] or [INFERRED] evidence for your approach?\\n- If uncertain: Label it [ASSUMED] and ASK before proceeding\\n</protocol-reminder>\" end'"
+          }
+        ]
+      }
+    ]
+  }
+}
