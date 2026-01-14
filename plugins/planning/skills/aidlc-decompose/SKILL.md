@@ -18,6 +18,23 @@ Break down an approved Intent into User Stories and Units (Sub-epics). Default a
 
 - Use `references/planning-shared.md` for templates, Bolt guidance, and Jira tool names.
 
+## Prerequisites
+
+Before starting, validate:
+
+1. **Required artifacts**
+   - Confluence Level 1 Intent document (ask for link)
+   - Jira Intent Epic (ask for key)
+   - Fetch both using Atlassian MCP to confirm they exist
+
+2. **Required status**
+   - Check the Workflow Status table in the Confluence doc
+   - Verify "Intent Epic" row shows "✅ Created"
+
+3. **If prerequisites incomplete**
+   - Offer to run `/aidlc-create-epic` first (or `/aidlc-plan` if Confluence doc missing)
+   - Or allow override with explicit confirmation (see Override Pattern in `references/planning-shared.md`)
+
 ## Workflow
 
 1. **Gather context**

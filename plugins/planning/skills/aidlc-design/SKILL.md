@@ -28,6 +28,24 @@ This skill follows the AI-DLC principle where AI initiates and directs the conve
 
 - Use `references/planning-shared.md` for DDD guidance, ADR templates, and tool names.
 
+## Prerequisites
+
+Before starting, validate:
+
+1. **Required artifacts**
+   - Confluence Level 1 Intent document (ask for link)
+   - Jira Intent Epic (ask for key)
+   - At least one Jira Unit (Sub-epic) with Stories (ask for key)
+   - Fetch all using Atlassian MCP to confirm they exist
+
+2. **Required status**
+   - Check the Workflow Status table in the Confluence doc
+   - Verify "Unit Decomposition" row shows "✅ Complete"
+
+3. **If prerequisites incomplete**
+   - Offer to run `/aidlc-decompose` first (or earlier skills if those are missing)
+   - Or allow override with explicit confirmation (see Override Pattern in `references/planning-shared.md`)
+
 ## Workflow
 
 1. **Gather context**

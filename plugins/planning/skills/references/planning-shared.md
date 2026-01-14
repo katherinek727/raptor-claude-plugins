@@ -66,6 +66,50 @@ Each skill updates both tracking mechanisms:
 - `/aidlc-decompose`: Update table + transition labels
 - `/aidlc-design`: Update table + transition labels
 
+## Prerequisite Validation
+
+Before proceeding with any skill (except `/aidlc-plan`), validate that prerequisites are met.
+
+### Validation Steps
+
+1. **Check for required artifacts**
+   - Ask for links/keys to prerequisite artifacts
+   - Validate they exist using Atlassian MCP (fetch page, get issue)
+
+2. **Check workflow status**
+   - Fetch the Confluence Level 1 doc
+   - Verify prior phases show "✅ Approved" or "✅ Complete"
+
+3. **Handle missing prerequisites**
+   - If artifacts don't exist: Offer to run the prior skill first
+   - If status shows incomplete: Warn and ask for explicit confirmation to proceed
+   - Allow override for recovery scenarios (e.g., resuming after interruption)
+
+### Prerequisite Matrix
+
+| Skill | Required Artifacts | Required Status |
+|-------|-------------------|-----------------|
+| `/aidlc-plan` | None (first step) | — |
+| `/aidlc-create-epic` | Confluence Level 1 doc | "Level 1 Intent: ✅ Approved" |
+| `/aidlc-decompose` | Intent Epic, Confluence doc | "Intent Epic: ✅ Created" |
+| `/aidlc-design` | Unit(s), Intent Epic, Confluence doc | "Unit Decomposition: ✅ Complete" |
+
+### Override Pattern
+
+When prerequisites are incomplete but user wants to proceed:
+
+```
+⚠️ Prerequisites incomplete:
+- [Missing artifact or status]
+
+This may indicate a skipped step. Options:
+1. Run [prior skill] first (recommended)
+2. Proceed anyway (I have the artifacts elsewhere)
+3. Cancel
+
+Select an option to continue.
+```
+
 ## Jira Intent Epic Template
 
 - Summary: "Intent: <Intent Name>"

@@ -18,6 +18,22 @@ Create the Intent Epic only after the Confluence Level 1 documentation is approv
 
 - Use `references/planning-shared.md` for templates, prompts, and Jira tool names.
 
+## Prerequisites
+
+Before starting, validate:
+
+1. **Required artifacts**
+   - Confluence Level 1 Intent document (ask for link)
+   - Fetch the page using Atlassian MCP to confirm it exists
+
+2. **Required status**
+   - Check the Workflow Status table in the Confluence doc
+   - Verify "Level 1 Intent" row shows "✅ Approved"
+
+3. **If prerequisites incomplete**
+   - Offer to run `/aidlc-plan` first
+   - Or allow override with explicit confirmation (see Override Pattern in `references/planning-shared.md`)
+
 ## Workflow
 
 1. **Verify approval**
