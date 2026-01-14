@@ -1,9 +1,9 @@
 {
   "name": "planning",
   "description": "Project planning skills for Confluence initiatives and phased delivery plans",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": {
-    "name": "DevTools Team"
+    "name": "Andy Kay"
   },
   "license": "MIT",
   "keywords": ["planning", "confluence", "jira", "initiative", "roadmap", "delivery"],
