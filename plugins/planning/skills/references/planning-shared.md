@@ -28,6 +28,43 @@ Use this reference for the AI-DLC Intent → Unit planning flow.
 - Testing Strategy (see Testing Strategy Guidance below)
 - Open Questions
 - Proposed Units (hypotheses only)
+- Workflow Status (see Workflow Status Tracking below)
+
+## Workflow Status Tracking
+
+Track progress through the AI-DLC workflow with a status table in the Confluence doc and labels on the Jira Intent Epic.
+
+### Confluence Status Table
+
+Include this table in the Level 1 Intent document:
+
+| Phase | Status | Date | Artifact |
+|-------|--------|------|----------|
+| Level 1 Intent | ⏳ Draft | - | - |
+| Intent Epic | ⏳ Pending | - | - |
+| Unit Decomposition | ⏳ Pending | - | - |
+| Domain Design | ⏳ Pending | - | - |
+
+**Status values:**
+- ⏳ Draft / Pending — Not started or in progress
+- ✅ Approved / Complete — Phase finished
+- 🔄 In Progress — Actively being worked
+- ❌ Blocked — Waiting on dependency or decision
+
+### Jira Epic Labels
+
+Add labels to the Intent Epic to track phase:
+- `aidlc:epic-created` — Epic exists, ready for decomposition
+- `aidlc:decomposing` → `aidlc:decomposed` — Unit/Story creation
+- `aidlc:designing` → `aidlc:designed` — Domain design phase
+
+### Skill Responsibilities
+
+Each skill updates both tracking mechanisms:
+- `/aidlc-plan`: Initialize status table with "Level 1 Intent: ✅ Approved"
+- `/aidlc-create-epic`: Update table + add `aidlc:epic-created` label
+- `/aidlc-decompose`: Update table + transition labels
+- `/aidlc-design`: Update table + transition labels
 
 ## Jira Intent Epic Template
 

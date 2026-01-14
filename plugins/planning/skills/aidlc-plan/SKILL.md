@@ -75,11 +75,16 @@ Include in Confluence doc as a collapsible section or separate child page. See P
 
 6. **Create or update the Confluence page**
    Use Atlassian MCP to create or update the page in the chosen space. If a parent page is needed, ask where to place it.
+   Include the Workflow Status table from `references/planning-shared.md`.
 
 7. **Approval gate**
    Explicitly ask whether the Level 1 documentation is approved.
 
-8. **Chain to Epic creation**
+8. **Update workflow status**
+   When approved, update the Confluence page status table:
+   - Set "Level 1 Intent" row to "✅ Approved" with today's date
+
+9. **Chain to Epic creation**
    If approved and the user wants to proceed to Jira, invoke `/aidlc-create-epic` with the Confluence page link. Pass along the Intent name and any context gathered.
 
 ## Workflow Chain

@@ -36,11 +36,16 @@ Create the Intent Epic only after the Confluence Level 1 documentation is approv
    - NFRs
    - Measurement criteria
    - Risks and assumptions
+   - Label: `aidlc:epic-created`
 
-5. **Report back**
+5. **Update workflow status**
+   Update the Confluence page status table:
+   - Set "Intent Epic" row to "✅ Created" with today's date and Epic key link
+
+6. **Report back**
    Provide the Epic key and confirm success.
 
-6. **Chain to Unit decomposition**
+7. **Chain to Unit decomposition**
    Ask whether to proceed with Unit decomposition. If yes, invoke `/aidlc-decompose` with the Epic key, Confluence link(s), and Jira project key.
 
 ## Workflow Chain

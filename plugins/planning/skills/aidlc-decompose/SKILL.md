@@ -67,11 +67,17 @@ Break down an approved Intent into User Stories and Units (Sub-epics). Default a
    - Create Stories/Chores under each Unit
    - Include acceptance criteria, test notes, and links
    - Use templates in `references/planning-shared.md`
+   - Update Intent Epic label: `aidlc:decomposing` → `aidlc:decomposed`
 
-7. **Report back**
+7. **Update workflow status**
+   Update the Confluence page status table:
+   - Set "Unit Decomposition" row to "✅ Complete" with today's date
+   - Add links to created Units in the Artifact column
+
+8. **Report back**
    Provide created keys and ask for any refinements.
 
-8. **Chain to Design**
+9. **Chain to Design**
    Ask whether to proceed with Domain Design for any Unit.
    If yes, invoke `/aidlc-design` with the Unit context.
 

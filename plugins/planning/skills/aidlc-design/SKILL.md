@@ -80,8 +80,14 @@ This skill follows the AI-DLC principle where AI initiates and directs the conve
    - ADRs: Confluence pages or repo `docs/adr/` folder
    - Link back to Unit in Jira
    - Update Unit description with design doc links
+   - Update Intent Epic label: `aidlc:designing` → `aidlc:designed`
 
-7. **Report back**
+7. **Update workflow status**
+   Update the Confluence page status table:
+   - Set "Domain Design" row to "✅ Complete" with today's date
+   - Add links to design docs in the Artifact column
+
+8. **Report back**
    Provide links to created artifacts and ask for any refinements.
 
 ## Brown-Field Considerations
