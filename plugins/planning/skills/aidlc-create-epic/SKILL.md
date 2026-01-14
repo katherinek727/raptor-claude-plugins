@@ -16,7 +16,7 @@ Create the Intent Epic only after the Confluence Level 1 documentation is approv
 
 ## References
 
-- Use `references/planning-shared.md` for templates, prompts, and Jira tool names.
+- Use `../references/planning-shared.md` for templates, prompts, and Jira tool names.
 
 ## Prerequisites
 
@@ -32,7 +32,7 @@ Before starting, validate:
 
 3. **If prerequisites incomplete**
    - Offer to run `/aidlc-plan` first
-   - Or allow override with explicit confirmation (see Override Pattern in `references/planning-shared.md`)
+   - Or allow override with explicit confirmation (see Override Pattern in `../references/planning-shared.md`)
 
 ## Workflow
 
@@ -46,7 +46,7 @@ Before starting, validate:
    Summarize the Epic content in 4-6 bullets and ask for approval before creation.
 
 4. **Create the Intent Epic**
-   Use the template in `references/planning-shared.md` and include:
+   Use the template in `../references/planning-shared.md` and include:
    - Intent summary
    - Confluence link(s)
    - NFRs

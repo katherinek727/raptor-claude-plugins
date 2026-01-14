@@ -1,4 +1,5 @@
 ---
+name: rubocop
 description: "Run rubocop on the specified file and fix violations, adding disable comments only when the rule is incorrect or dangerous"
 allowed-tools: [Bash, Read, Edit, MultiEdit]
 argument-hint: "<file_path>"
