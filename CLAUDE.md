@@ -78,14 +78,15 @@ Use `${CLAUDE_PLUGIN_ROOT}` to reference files relative to the plugin directory.
 
 ## Versioning
 
-**IMPORTANT**: Bump the plugin version in `plugin.json` for every plugin update.
+**IMPORTANT**: Bump the plugin version for every plugin update in **both** locations:
 
-- Use [Semantic Versioning](https://semver.org/): `MAJOR.MINOR.PATCH`
-  - **PATCH** (1.0.0 → 1.0.1): Bug fixes, typo corrections
-  - **MINOR** (1.0.1 → 1.1.0): New features, new skills, workflow changes
-  - **MAJOR** (1.1.0 → 2.0.0): Breaking changes, major restructuring
+1. `plugins/<plugin-name>/.claude-plugin/plugin.json`
+2. `.claude-plugin/marketplace.json` (root marketplace registry)
 
-Location: `plugins/<plugin-name>/.claude-plugin/plugin.json`
+Use [Semantic Versioning](https://semver.org/): `MAJOR.MINOR.PATCH`
+- **PATCH** (1.0.0 → 1.0.1): Bug fixes, typo corrections
+- **MINOR** (1.0.1 → 1.1.0): New features, new skills, workflow changes
+- **MAJOR** (1.1.0 → 2.0.0): Breaking changes, major restructuring
 
 ## Testing Changes
 
