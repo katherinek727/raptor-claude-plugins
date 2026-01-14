@@ -1,48 +1,189 @@
-# Planning Shared Guidance
+# AI-DLC Planning Shared Guidance
 
-Use this reference for both initiative briefs and phase plans.
+Use this reference for the AI-DLC Intent → Unit planning flow.
 
-## Iteration Loop
+## Human-in-the-loop Gates
 
-1. Ask targeted questions to fill gaps.
-2. Summarize understanding (5-8 bullets).
-3. Ask for confirmation or corrections.
-4. Draft the document.
-5. Share for review and revise.
+- Confirm understanding before drafting.
+- Get explicit approval before creating or editing Confluence pages.
+- Get explicit approval before creating Jira issues.
+- Do not create Bugs unless explicitly requested by a human.
 
-## Context Discovery (Questions + Suggestions)
+## Confluence Level 1 Intent Template
 
-Ask only what is missing and suggest common gaps:
+- Intent Summary
+- Problem / Opportunity
+- Target Users
+- Pathway Type (green-field | brown-field | modernization | defect fix)
+- Outcomes (Business + User)
+- Scope
+  - In scope
+  - Out of scope
+- Constraints
+- Non-Functional Requirements (NFRs)
+- Measurement Criteria (OKR/KPI/SLI)
+- Dependencies
+- Risks (use Organizational Risk Taxonomy below; prioritize Data & Privacy and Security Posture)
+- Assumptions
+- Testing Strategy (see Testing Strategy Guidance below)
+- Open Questions
+- Proposed Units (hypotheses only)
 
-- What problem are we solving and who are the users?
-- What repositories/services are in scope?
-- Are there existing docs or prior initiatives to reference?
-- Known constraints (timeline, compliance, security, infra)?
-- Dependencies on other teams or systems?
-- Preferred success metric format (OKR/KPI/SLI)?
-- Any technology choices already decided?
+## Jira Intent Epic Template
 
-When helpful, suggest likely additions (e.g., analytics, migration plan, rollout strategy, support readiness).
+- Summary: "Intent: <Intent Name>"
+- Description:
+  - Intent summary
+  - Confluence link(s)
+  - Outcomes
+  - NFRs
+  - Measurement criteria
+  - Risks and assumptions
 
-## Repo/Code Context Sources
+## Jira Unit (Sub-epic) Template
 
-Prefer local repos when available; otherwise use GitLab MCP or `glab`.
+- Summary: "Unit: <Unit Name>"
+- Description:
+  - Scope summary
+  - Acceptance criteria
+  - NFRs specific to the Unit
+  - Risks and dependencies
+  - Testing approach (which test types apply, test environment needs)
+  - Links to Intent Epic + Confluence
 
-**Local repo**:
-- Ask for the local path or confirm which repos are checked out.
-- Read README and any `docs/` or architecture notes.
+## Jira Work Item Template (Story/Chore)
 
-**GitLab MCP**:
-- Find project by path or name.
-- Fetch README and key docs (architecture, ADRs, onboarding).
+- Summary: "<Verb> <Outcome>"
+- Description:
+  - Context
+  - Acceptance criteria
+  - Dependencies
+  - Test notes (if needed)
 
-**glab CLI** (if available):
-- Use `glab repo view <group/project>` to confirm repo metadata.
-- Use `glab api` to fetch README or docs when MCP is unavailable.
+## Organizational Risk Taxonomy
+
+Surface risks aligned to these categories. Prioritize **Data & Privacy** and **Security Posture** — these are critical for our organization.
+
+### Data & Privacy (Critical)
+- **Sensitive data exposure** — unintended access to PII, PHI, credentials, or business-critical data
+- **Data residency violations** — data leaving approved regions or jurisdictions
+- **Retention policy violations** — keeping data longer than permitted
+- **PII/PHI in logs or errors** — sensitive data leaking into observability systems
+- **Non-prod data masking gaps** — production data in dev/test without adequate masking
+
+### Security Posture (Critical)
+- **3rd party library introduction** — new dependencies increase supply chain attack surface; require security review
+- **CVE exposure** — changes that introduce or fail to remediate known vulnerabilities
+- **RBAC/permission changes** — new permissions, roles, or access patterns require explicit review
+- **Secrets exposure** — API keys, credentials, tokens in code, config, or logs
+- **Auth bypass paths** — changes that could allow authentication or authorization circumvention
+- **Injection vectors** — SQL, command, XSS, SSRF, or other injection vulnerabilities
+- **Audit logging gaps** — missing audit trail for sensitive operations (compliance/forensics)
+
+### Compliance
+- **Regulatory control gaps** — SOC2, HIPAA, GDPR, or other framework control failures
+- **Consent mechanism changes** — modifications to user consent or opt-out flows
+- **Audit trail completeness** — changes affecting compliance evidence collection
+
+### Operational
+- **Rollback capability** — can the change be quickly reverted if issues arise?
+- **Observability blind spots** — can we detect and diagnose issues post-deployment?
+- **Availability/SLA impact** — risk of service degradation or downtime
+- **Backward compatibility** — breaking changes to APIs, schemas, or contracts
+- **Infrastructure cost** — unexpected cost increases from resource consumption
+
+### Delivery
+- **External dependency risk** — reliance on external services, vendors, or deprecated APIs
+- **Knowledge concentration** — single point of failure on team (bus factor)
+- **Integration complexity** — underestimated effort for cross-system changes
+- **Scope uncertainty** — unclear requirements leading to rework
+
+## Risk Surfacing Prompts
+
+Use these prompts to elicit risks during Intent and Unit planning:
+
+- Does this change introduce or modify access to sensitive data?
+- Are new 3rd party libraries or services being introduced?
+- Does this change RBAC, permissions, or authentication flows?
+- Are there known CVEs in dependencies this change touches?
+- What could cause unintended data exposure?
+- What could materially delay delivery?
+- What could cause rework or scope churn?
+- What operational risks apply (availability, cost, observability)?
+- What dependencies are least certain?
+- Can this change be rolled back quickly if needed?
+
+## NFR Checklist (prompt as needed)
+
+- Performance/latency targets
+- Availability/SLA
+- Security and privacy
+- Compliance (SOC2, HIPAA, GDPR, etc.)
+- Reliability/recovery objectives
+- Observability requirements
+- Cost constraints
+
+## Measurement Criteria Prompts
+
+- Primary business outcome metric
+- User impact metric
+- Baseline and target timeframe
+- Leading indicators
+
+## Testing Strategy Guidance
+
+Include a testing strategy appropriate to the pathway type and scope:
+
+- **Automated tests**: Unit, integration, and contract tests in CI/CD pipelines
+- **Manual/exploratory QA**: For user-facing flows and edge cases
+- **E2E tests**: Only when user-facing flows are in scope; prefer contract tests for service boundaries
+- **Performance/load tests**: When NFRs include latency or throughput targets
+- **Security testing**: When security or compliance NFRs apply
+
+For each Unit, specify:
+- Which test types apply
+- Acceptance criteria that are testable
+- Any test environment or data dependencies
+
+## Repo Context Gathering
+
+When the Intent involves code changes, gather repo context to inform the documentation:
+
+1. **Local repo available**: Read README, docs, and relevant source files to understand architecture
+2. **GitLab/GitHub MCP available**: Fetch README and docs from the remote repository
+3. **CLI fallback**: Use `glab` or `gh` to fetch repo information if MCP is unavailable
+
+Include in the Intent documentation:
+- Repositories/services in scope (with paths or URLs)
+- Key architectural patterns or constraints discovered
+- Existing testing infrastructure
+
+## Atlassian MCP Operational Guidance
+
+When using Atlassian MCP tools, follow this sequence:
+
+**For Confluence operations:**
+1. Get the Confluence cloud ID (may be implicit in some MCP configurations)
+2. Find the target space using `getConfluenceSpaces` or user-provided space key
+3. Locate the parent page using `searchConfluenceUsingCql` or `getPagesInConfluenceSpace`
+4. Create or update the page using `createConfluencePage` or `updateConfluencePage`
+5. If the page already exists, ask whether to update or create a new version
+
+**For Jira operations:**
+1. Confirm the Jira project key (never assume a default)
+2. Verify issue types using `getJiraProjectIssueTypesMetadata`
+3. Get field metadata using `getJiraIssueTypeMetaWithFields` if custom fields are needed
+4. Create issues using `createJiraIssue`
+5. Link issues to Confluence pages in the description field
+
+**Common issues:**
+- Space/project not found: Verify key spelling and permissions
+- Missing issue type: Check project configuration; Epic or Sub-epic may not be available
+- Permission denied: User may lack write access; suggest admin contact
 
 ## Atlassian MCP Tool Names (Rovo)
 
-Use these tool names from the Atlassian Rovo MCP Server. In Claude Code, tools are namespaced with the `mcp__plugin_atlassian_atlassian__` prefix.
+In Claude Code, tools are namespaced with the `mcp__plugin_atlassian_atlassian__` prefix.
 
 | Base Tool Name | Claude Code Namespaced Name |
 |----------------|----------------------------|
@@ -61,110 +202,3 @@ Use these tool names from the Atlassian Rovo MCP Server. In Claude Code, tools a
 | `editJiraIssue` | `mcp__plugin_atlassian_atlassian__editJiraIssue` |
 | `addCommentToJiraIssue` | `mcp__plugin_atlassian_atlassian__addCommentToJiraIssue` |
 | `lookupJiraAccountId` | `mcp__plugin_atlassian_atlassian__lookupJiraAccountId` |
-
-## GitLab MCP Tool Names
-
-If using GitLab MCP, common tools include (namespacing varies by client):
-
-| Tool | Purpose |
-|------|---------|
-| `getProject` | Get project metadata by path or ID |
-| `getProjectReadme` | Fetch the README file content |
-| `getRepositoryTree` | List files/directories in a repo |
-| `getFileContent` | Read a specific file from the repo |
-| `searchProjects` | Search for projects by name |
-
-**glab CLI fallback**: If GitLab MCP is unavailable, use the `glab` CLI:
-- `glab repo view <group/project>` - View repo metadata
-- `glab api projects/:id/repository/files/:path/raw` - Fetch file content
-
-## Confluence Initiative Brief Template
-
-- Overview
-- Problem / Opportunity
-- Objectives
-- Scope
-  - In scope
-  - Out of scope
-- Acceptance Criteria
-- Success Metrics
-- Testing Strategy
-- Dependencies
-- Risks
-- Assumptions
-- Open Questions
-
-## Example Initiative Brief (SaaS feature)
-
-### Overview
-Add usage-based alerts for enterprise tenants to reduce unexpected overages and improve account retention.
-
-### Problem / Opportunity
-Enterprise customers discover overages after the fact, creating billing disputes and churn risk.
-
-### Objectives
-- Reduce overage disputes by 40% within two quarters.
-- Give admins real-time visibility into usage thresholds.
-
-### Scope
-In scope:
-- Alert thresholds per workspace
-- Email + in-app notifications
-- Admin UI for managing thresholds
-
-Out of scope:
-- Billing plan changes
-- SMS notifications
-
-### Acceptance Criteria
-- Admins can set thresholds at 50/75/90% of monthly quota.
-- Alerts are delivered within 5 minutes of threshold crossing.
-- Audit log records threshold changes and alert sends.
-
-### Success Metrics
-- KPI: % of overage disputes per month
-- SLI: Alert delivery latency p95 < 5 minutes
-
-### Testing Strategy
-- Automated tests in CI/CD for rules and notification delivery
-- Manual QA for admin UI flows
-- E2E tests only for the admin UI surface
-
-### Dependencies
-- Usage aggregation service API
-- Notification service templates
-
-### Risks
-- Usage aggregation delays may cause late alerts.
-
-### Assumptions
-- Usage data is available within 2 minutes of event ingestion.
-
-### Open Questions
-- Should alerts be configurable per team or workspace only?
-
-## Phase Plan Template
-
-- Delivery Approach (summary)
-- Phases
-  - Phase N: Name
-    - Objective
-    - Scope
-    - Deliverables
-    - Parallel Workstreams
-    - Dependencies
-    - Technology Choices
-    - Testing Strategy
-    - Exit Criteria
-- Cross-Cutting Concerns
-  - Security / Compliance
-  - Observability / Metrics
-  - Documentation
-
-## Testing Guidance
-
-- Always include automated tests in CI/CD
-- Include manual QA for exploratory testing
-- Add E2E tests only for user-facing frontends
-- Avoid E2E for internal tooling unless explicitly requested
-- Call out integration/contract tests when services interact
