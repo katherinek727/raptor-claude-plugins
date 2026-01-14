@@ -1,22 +1,22 @@
 ---
 name: aidlc-decompose
-description: Decompose an approved Intent into Units and Jira work items (Sub-epic → Story/Chore), with human-in-the-loop validation, risk surfacing, and acceptance criteria. Use when asked to break down an Intent or create Units and stories in Jira. (Triggers: decompose intent, break down intent, create units, unit decomposition, create stories, break into units, split intent, aidlc decompose)
+description: Decompose an approved Intent into User Stories and Units, with human-in-the-loop validation, risk surfacing, and Bolt planning. Default approach elaborates Stories first, then groups into Units. Use when asked to break down an Intent or create Units and stories in Jira. (Triggers: decompose intent, break down intent, create units, unit decomposition, create stories, break into units, split intent, aidlc decompose)
 ---
 
-# AI-DLC Decompose Units
+# AI-DLC Decompose
 
-Break down an approved Intent into Units (Sub-epics) and work items (Story/Chore). Do not create Bugs unless explicitly requested by a human.
+Break down an approved Intent into User Stories and Units (Sub-epics). Default approach: elaborate Stories first, then group into cohesive Units. Do not create Bugs unless explicitly requested by a human.
 
 ## Example Invocations
 
-- "Break down the authentication intent into units"
-- "Decompose the billing epic into stories"
+- "Break down the authentication intent into stories and units"
+- "Decompose the billing epic"
 - "Create units and stories for the API migration intent"
-- "Split the approved intent into sub-epics and work items"
+- "Split the approved intent into work items"
 
 ## References
 
-- Use `references/planning-shared.md` for templates, prompts, and Jira tool names.
+- Use `references/planning-shared.md` for templates, Bolt guidance, and Jira tool names.
 
 ## Workflow
 
@@ -26,40 +26,70 @@ Break down an approved Intent into Units (Sub-epics) and work items (Story/Chore
    - Intent Epic key
    - Approved Confluence Level 1 doc link(s)
    - Any known constraints, dependencies, or sequencing needs
+   - **Decomposition approach preference**:
+     - Stories-first (default): Elaborate all Stories, then group into Units
+     - Units-first: Define Unit boundaries, then elaborate Stories per Unit
 
-2. **Propose Units**
-   Suggest loosely coupled, cohesive Units with clear value boundaries. Surface risks and dependencies per Unit.
+2. **Elaborate User Stories** (Stories-first, default)
+   From the Intent and Level 1 documentation:
+   - Propose User Stories with Acceptance Criteria
+   - Surface risks and dependencies per Story
+   - Identify cross-cutting concerns
+   - Ask for validation before grouping
 
-3. **Confirm understanding**
-   Summarize Units + rationale in 5-8 bullets and ask for approval before creating Jira items.
+   **OR Units-first** (if selected):
+   - Propose Units with clear boundaries first
+   - Then elaborate Stories for each Unit
 
-4. **Create Units (Sub-epics)**
-   Use the template in `references/planning-shared.md` and include:
-   - Scope summary
-   - Acceptance criteria
-   - NFRs relevant to the Unit
-   - Risks and dependencies
-   - Testing approach for this Unit (reference Testing Strategy Guidance in shared ref)
-   - Link to Intent Epic and Confluence docs
+3. **Group into Units**
+   Organize Stories into cohesive Units:
+   - Apply loose coupling, high cohesion principles
+   - Each Unit should deliver independent value
+   - Surface dependencies between Units
+   - Confirm grouping before creation
 
-5. **Create work items**
-   For each Unit, create Stories/Chores with acceptance criteria and test notes where applicable. Ask before creating any Bugs.
+4. **Plan Bolts**
+   For each Unit, suggest rapid iteration cycles:
+   - Bolt boundaries based on testable increments
+   - Estimated duration (hours/days)
+   - Sequencing considerations
+   - See Bolt Planning Guidance in `references/planning-shared.md`
 
-6. **Report back**
-   Provide created keys and ask for any refinements or sequencing changes.
+5. **Confirm understanding**
+   Summarize the full decomposition:
+   - Stories grouped by Unit
+   - Bolt plan per Unit
+   - Dependencies and risks
+   Ask for approval before creating Jira items.
+
+6. **Create Jira artifacts**
+   - Create Units as Sub-epics (or Epics if Sub-epic unavailable)
+   - Create Stories/Chores under each Unit
+   - Include acceptance criteria, test notes, and links
+   - Use templates in `references/planning-shared.md`
+
+7. **Report back**
+   Provide created keys and ask for any refinements.
+
+8. **Chain to Design**
+   Ask whether to proceed with Domain Design for any Unit.
+   If yes, invoke `/aidlc-design` with the Unit context.
 
 ## Workflow Chain
 
 - **Previous**: `/aidlc-create-epic` (Intent Epic creation)
-- **This is the final step** in the AI-DLC planning workflow
+- **Next**: `/aidlc-design` (Domain and Logical Design)
 
 ## Definition of Done
 
-- Units created as Sub-epics linked to the Intent Epic.
-- Stories/Chores created under each Unit with acceptance criteria.
-- Risks and dependencies are explicit.
+- User Stories elaborated with acceptance criteria
+- Stories grouped into cohesive Units (Sub-epics)
+- Units linked to Intent Epic
+- Bolt plan suggested per Unit
+- Risks and dependencies explicit
 
 ## Troubleshooting
 
-- **Sub-epic not supported**: Use Epic + issue links or parent field and ask for the preferred structure.
+- **Sub-epic not supported**: Use Epic + issue links or parent field; ask for preferred structure.
 - **Missing issue types**: Use `getJiraProjectIssueTypesMetadata` and confirm available types.
+- **Too many Stories**: Consider splitting into multiple Units or deferring lower-priority Stories.

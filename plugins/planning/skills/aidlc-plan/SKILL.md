@@ -7,6 +7,21 @@ description: Create and iteratively refine the AI-DLC Level 1 Intent documentati
 
 Produce the Level 1 Intent documentation in Confluence as the single source of truth for the project idea. Emphasize iteration, human approval, and risk visibility before any Jira artifacts are created.
 
+## AI-Drives-Conversation Pattern
+
+This skill follows the AI-DLC principle where AI initiates and directs the conversation:
+
+1. **AI proposes** — Present options, recommendations, and trade-offs
+2. **Human approves** — Validate, select, or adjust
+3. **AI elaborates** — Expand on approved direction
+4. **Human confirms** — Final approval before artifact creation
+
+At each step, AI should:
+- Ask clarifying questions proactively
+- Propose multiple options where applicable
+- Surface risks and trade-offs upfront
+- Request explicit approval before proceeding
+
 ## Example Invocations
 
 - "Create a Level 1 Intent doc for the new authentication system"
@@ -17,6 +32,15 @@ Produce the Level 1 Intent documentation in Confluence as the single source of t
 ## References
 
 - Use `references/planning-shared.md` for templates, prompts, and Jira/Confluence tool names.
+
+## Optional Artifacts
+
+### PRFAQ (Press Release / FAQ)
+If requested, generate a PRFAQ to communicate the Intent's value proposition:
+- **Press Release**: What is being built and why it matters
+- **FAQ**: Anticipated questions from stakeholders
+
+Include in Confluence doc as a collapsible section or separate child page. See PRFAQ Template in `references/planning-shared.md`.
 
 ## Workflow
 
@@ -35,6 +59,7 @@ Produce the Level 1 Intent documentation in Confluence as the single source of t
    - Confluence space (default `raptorepd` unless specified)
    - Whether to search Confluence for related docs
    - Repositories/services in scope (local paths or remote URLs)
+   - Whether to generate a PRFAQ (optional)
 
 2. **Gather repo context (if applicable)**
    When the Intent involves code changes, follow the Repo Context Gathering guidance in `references/planning-shared.md` to understand the technical landscape.
@@ -57,9 +82,10 @@ Produce the Level 1 Intent documentation in Confluence as the single source of t
 8. **Chain to Epic creation**
    If approved and the user wants to proceed to Jira, invoke `/aidlc-create-epic` with the Confluence page link. Pass along the Intent name and any context gathered.
 
-## Next Step
+## Workflow Chain
 
-After this skill completes with approval, the workflow continues with `/aidlc-create-epic` to create the Intent Epic in Jira.
+- **This is the first step** in the AI-DLC planning workflow
+- **Next**: `/aidlc-create-epic` (Intent Epic creation)
 
 ## Definition of Done
 

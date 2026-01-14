@@ -158,6 +158,138 @@ Include in the Intent documentation:
 - Key architectural patterns or constraints discovered
 - Existing testing infrastructure
 
+## PRFAQ Template (Optional)
+
+Generate a PRFAQ when requested to communicate the Intent's value proposition.
+
+### Press Release
+- **Headline**: One-line value proposition
+- **Subheadline**: Who benefits and how
+- **Problem**: What pain point is being addressed
+- **Solution**: How this Intent solves it
+- **Quote**: Stakeholder perspective on the value
+- **Call to Action**: What success looks like
+
+### FAQ
+- Q: Who is the target user?
+- Q: What are the key success metrics?
+- Q: What are the main risks?
+- Q: What is out of scope?
+- Q: What dependencies exist?
+
+## Bolt Planning Guidance
+
+Bolts are rapid iteration cycles (hours to days) for implementing Units.
+
+When planning Bolts:
+- Each Bolt should deliver a testable increment
+- Bolts within a Unit can run sequentially or in parallel
+- Suggest Bolt boundaries based on:
+  - Natural breakpoints in functionality
+  - Integration points requiring validation
+  - Risk areas needing early feedback
+
+Example Bolt structure for a Unit:
+- Bolt 1: Core domain logic + unit tests (4-8 hours)
+- Bolt 2: API/integration layer (4-8 hours)
+- Bolt 3: Security hardening + compliance checks (2-4 hours)
+
+## Mob Elaboration Guidance
+
+Mob Elaboration is a collaborative ritual for requirements elaboration.
+
+**Setup:**
+- Single room (physical or virtual) with shared screen
+- Participants: Product Owner, Developers, QA, relevant stakeholders
+- AI as central participant proposing and refining
+
+**Flow:**
+1. Present the Intent and gather clarifying questions
+2. AI proposes initial User Stories and Acceptance Criteria
+3. Mob reviews, challenges, and refines
+4. AI groups Stories into cohesive Units
+5. Mob validates Unit boundaries and dependencies
+6. Capture NFRs, Risks, and Measurement Criteria
+7. Approve final structure before Jira creation
+
+**Duration:** 2-4 hours for a typical Intent
+
+## Artifact Traceability
+
+Maintain bidirectional links between artifacts:
+
+```
+Confluence Level 1 Intent
+    ↓ linked in Epic description
+Jira Intent Epic
+    ↓ parent link
+Jira Unit (Sub-epic)
+    ↓ parent link
+Jira Story/Chore
+    ↓ referenced in design docs
+Domain Design / ADRs
+```
+
+Each artifact should reference:
+- **Forward**: What it decomposes into
+- **Backward**: What it derives from
+
+This enables:
+- Impact analysis when requirements change
+- Audit trail for compliance
+- Context retrieval for AI assistance
+
+## Domain-Driven Design Guidance
+
+When creating Domain Designs, apply these DDD principles:
+
+### Strategic Design
+- **Bounded Context**: Define clear boundaries for the Unit's domain
+- **Context Map**: Identify relationships with other Units (upstream/downstream)
+- **Ubiquitous Language**: Use consistent terminology from the Intent
+
+### Tactical Design
+- **Aggregate**: Cluster of entities with a root; transaction boundary
+- **Entity**: Object with identity that persists over time
+- **Value Object**: Immutable object defined by attributes, not identity
+- **Domain Event**: Something significant that happened in the domain
+- **Repository**: Abstraction for aggregate persistence
+- **Factory**: Encapsulates complex object creation
+
+### Anti-Corruption Layer
+For brown-field scenarios, design an ACL to:
+- Translate between legacy and new domain models
+- Isolate the new domain from legacy system quirks
+- Enable gradual migration
+
+## ADR Template
+
+Use this template for Architecture Decision Records.
+
+### ADR-NNN: <Decision Title>
+
+**Status:** Proposed | Accepted | Deprecated | Superseded
+
+**Context:**
+What is the issue or question that motivated this decision?
+
+**Decision:**
+What is the decision that was made?
+
+**Consequences:**
+What are the trade-offs and implications?
+- Positive:
+- Negative:
+- Risks:
+
+**Alternatives Considered:**
+What other options were evaluated?
+
+**Related:**
+- Intent: <link>
+- Unit: <link>
+- Related ADRs: <links>
+
 ## Atlassian MCP Operational Guidance
 
 When using Atlassian MCP tools, follow this sequence:
