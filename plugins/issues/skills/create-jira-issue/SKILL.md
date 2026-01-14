@@ -1,4 +1,5 @@
 ---
+name: create-jira-issue
 description: "Create a new Jira issue from the current context or description"
 allowed-tools: [mcp__atlassian__createJiraIssue, mcp__atlassian__getVisibleJiraProjects, mcp__atlassian__getJiraProjectIssueTypesMetadata, mcp__atlassian__getAccessibleAtlassianResources, mcp__atlassian__lookupJiraAccountId, AskUserQuestion]
 argument-hint: "<description or context>"

@@ -1,4 +1,5 @@
 ---
+name: create-mr
 description: "Create a GitLab merge request for the current branch"
 allowed-tools: [mcp__gitlab__create_merge_request, mcp__gitlab__get_merge_request, mcp__gitlab__list_commits, mcp__gitlab__get_branch_diffs, mcp__gitlab__get_project, Bash, AskUserQuestion]
 argument-hint: "[target_branch]"
