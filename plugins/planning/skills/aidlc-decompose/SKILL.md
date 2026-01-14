@@ -16,7 +16,7 @@ Break down an approved Intent into User Stories and Units (Sub-epics). Default a
 
 ## References
 
-- Use `references/planning-shared.md` for templates, Bolt guidance, and Jira tool names.
+- Use `../references/planning-shared.md` for templates, Bolt guidance, and Jira tool names.
 
 ## Prerequisites
 
@@ -33,7 +33,7 @@ Before starting, validate:
 
 3. **If prerequisites incomplete**
    - Offer to run `/aidlc-create-epic` first (or `/aidlc-plan` if Confluence doc missing)
-   - Or allow override with explicit confirmation (see Override Pattern in `references/planning-shared.md`)
+   - Or allow override with explicit confirmation (see Override Pattern in `../references/planning-shared.md`)
 
 ## Workflow
 
@@ -70,7 +70,7 @@ Before starting, validate:
    - Bolt boundaries based on testable increments
    - Estimated duration (hours/days)
    - Sequencing considerations
-   - See Bolt Planning Guidance in `references/planning-shared.md`
+   - See Bolt Planning Guidance in `../references/planning-shared.md`
 
 5. **Confirm understanding**
    Summarize the full decomposition:
@@ -83,7 +83,7 @@ Before starting, validate:
    - Create Units as Sub-epics (or Epics if Sub-epic unavailable)
    - Create Stories/Chores under each Unit
    - Include acceptance criteria, test notes, and links
-   - Use templates in `references/planning-shared.md`
+   - Use templates in `../references/planning-shared.md`
    - Update Intent Epic label: `aidlc:decomposing` → `aidlc:decomposed`
 
 7. **Update workflow status**
