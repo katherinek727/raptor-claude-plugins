@@ -76,6 +76,17 @@ Use `${CLAUDE_PLUGIN_ROOT}` to reference files relative to the plugin directory.
 - `{{SKILL_DIR}}` - Path to the skill's folder (use in SKILL.md for relative paths)
 - `${CLAUDE_PLUGIN_ROOT}` - Plugin root directory (use in hooks.json)
 
+## Versioning
+
+**IMPORTANT**: Bump the plugin version in `plugin.json` for every plugin update.
+
+- Use [Semantic Versioning](https://semver.org/): `MAJOR.MINOR.PATCH`
+  - **PATCH** (1.0.0 → 1.0.1): Bug fixes, typo corrections
+  - **MINOR** (1.0.1 → 1.1.0): New features, new skills, workflow changes
+  - **MAJOR** (1.1.0 → 2.0.0): Breaking changes, major restructuring
+
+Location: `plugins/<plugin-name>/.claude-plugin/plugin.json`
+
 ## Testing Changes
 
 After modifying plugins:
