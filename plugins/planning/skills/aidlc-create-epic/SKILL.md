@@ -31,7 +31,7 @@ Before starting, validate:
    - Verify "Level 1 Intent" row shows "✅ Approved"
 
 3. **If prerequisites incomplete**
-   - Offer to run `/aidlc-plan` first
+   - Offer to run `/planning:aidlc-plan` first
    - Or allow override with explicit confirmation (see Override Pattern in `../references/planning-shared.md`)
 
 ## Workflow
@@ -62,12 +62,12 @@ Before starting, validate:
    Provide the Epic key and confirm success.
 
 7. **Chain to Unit decomposition**
-   Ask whether to proceed with Unit decomposition. If yes, invoke `/aidlc-decompose` with the Epic key, Confluence link(s), and Jira project key.
+   Ask whether to proceed with Unit decomposition. If yes, invoke `/planning:aidlc-decompose` with the Epic key, Confluence link(s), and Jira project key.
 
 ## Workflow Chain
 
-- **Previous**: `/aidlc-plan` (Level 1 Intent documentation)
-- **Next**: `/aidlc-decompose` (Unit and Story creation)
+- **Previous**: `/planning:aidlc-plan` (Level 1 Intent documentation)
+- **Next**: `/planning:aidlc-decompose` (Unit and Story creation)
 
 ## Definition of Done
 

@@ -85,12 +85,12 @@ Include in Confluence doc as a collapsible section or separate child page. See P
    - Set "Level 1 Intent" row to "✅ Approved" with today's date
 
 9. **Chain to Epic creation**
-   If approved and the user wants to proceed to Jira, invoke `/aidlc-create-epic` with the Confluence page link. Pass along the Intent name and any context gathered.
+   If approved and the user wants to proceed to Jira, invoke `/planning:aidlc-create-epic` with the Confluence page link. Pass along the Intent name and any context gathered.
 
 ## Workflow Chain
 
 - **This is the first step** in the AI-DLC planning workflow
-- **Next**: `/aidlc-create-epic` (Intent Epic creation)
+- **Next**: `/planning:aidlc-create-epic` (Intent Epic creation)
 
 ## Definition of Done
 

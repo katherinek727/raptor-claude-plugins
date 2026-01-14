@@ -43,7 +43,7 @@ Before starting, validate:
    - Verify "Unit Decomposition" row shows "✅ Complete"
 
 3. **If prerequisites incomplete**
-   - Offer to run `/aidlc-decompose` first (or earlier skills if those are missing)
+   - Offer to run `/planning:aidlc-decompose` first (or earlier skills if those are missing)
    - Or allow override with explicit confirmation (see Override Pattern in `../references/planning-shared.md`)
 
 ## Workflow
@@ -123,7 +123,7 @@ For existing systems, add these steps before Domain Design:
 
 ## Workflow Chain
 
-- **Previous**: `/aidlc-decompose` (Unit and Story creation)
+- **Previous**: `/planning:aidlc-decompose` (Unit and Story creation)
 - **Next**: Implementation (Bolts, code generation)
 
 ## Definition of Done

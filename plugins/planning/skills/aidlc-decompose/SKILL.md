@@ -32,7 +32,7 @@ Before starting, validate:
    - Verify "Intent Epic" row shows "✅ Created"
 
 3. **If prerequisites incomplete**
-   - Offer to run `/aidlc-create-epic` first (or `/aidlc-plan` if Confluence doc missing)
+   - Offer to run `/planning:aidlc-create-epic` first (or `/planning:aidlc-plan` if Confluence doc missing)
    - Or allow override with explicit confirmation (see Override Pattern in `../references/planning-shared.md`)
 
 ## Workflow
@@ -96,12 +96,12 @@ Before starting, validate:
 
 9. **Chain to Design**
    Ask whether to proceed with Domain Design for any Unit.
-   If yes, invoke `/aidlc-design` with the Unit context.
+   If yes, invoke `/planning:aidlc-design` with the Unit context.
 
 ## Workflow Chain
 
-- **Previous**: `/aidlc-create-epic` (Intent Epic creation)
-- **Next**: `/aidlc-design` (Domain and Logical Design)
+- **Previous**: `/planning:aidlc-create-epic` (Intent Epic creation)
+- **Next**: `/planning:aidlc-design` (Domain and Logical Design)
 
 ## Definition of Done
 

@@ -61,14 +61,14 @@ Add labels to the Intent Epic to track phase:
 ### Skill Responsibilities
 
 Each skill updates both tracking mechanisms:
-- `/aidlc-plan`: Initialize status table with "Level 1 Intent: ✅ Approved"
-- `/aidlc-create-epic`: Update table + add `aidlc:epic-created` label
-- `/aidlc-decompose`: Update table + transition labels
-- `/aidlc-design`: Update table + transition labels
+- `/planning:aidlc-plan`: Initialize status table with "Level 1 Intent: ✅ Approved"
+- `/planning:aidlc-create-epic`: Update table + add `aidlc:epic-created` label
+- `/planning:aidlc-decompose`: Update table + transition labels
+- `/planning:aidlc-design`: Update table + transition labels
 
 ## Prerequisite Validation
 
-Before proceeding with any skill (except `/aidlc-plan`), validate that prerequisites are met.
+Before proceeding with any skill (except `/planning:aidlc-plan`), validate that prerequisites are met.
 
 ### Validation Steps
 
@@ -89,10 +89,10 @@ Before proceeding with any skill (except `/aidlc-plan`), validate that prerequis
 
 | Skill | Required Artifacts | Required Status |
 |-------|-------------------|-----------------|
-| `/aidlc-plan` | None (first step) | — |
-| `/aidlc-create-epic` | Confluence Level 1 doc | "Level 1 Intent: ✅ Approved" |
-| `/aidlc-decompose` | Intent Epic, Confluence doc | "Intent Epic: ✅ Created" |
-| `/aidlc-design` | Unit(s), Intent Epic, Confluence doc | "Unit Decomposition: ✅ Complete" |
+| `/planning:aidlc-plan` | None (first step) | — |
+| `/planning:aidlc-create-epic` | Confluence Level 1 doc | "Level 1 Intent: ✅ Approved" |
+| `/planning:aidlc-decompose` | Intent Epic, Confluence doc | "Intent Epic: ✅ Created" |
+| `/planning:aidlc-design` | Unit(s), Intent Epic, Confluence doc | "Unit Decomposition: ✅ Complete" |
 
 ### Override Pattern
 

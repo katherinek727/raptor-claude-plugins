@@ -25,16 +25,16 @@ Then install individual plugins:
 
 ## Available Plugins
 
-### Planning (`/aidlc-*`)
+### Planning (`/planning:aidlc-*`)
 
 AI-DLC (AI-Driven Development Lifecycle) workflow for structured project planning with human-in-the-loop validation.
 
 | Skill | Description |
 |-------|-------------|
-| `/aidlc-plan` | Create Level 1 Intent documentation in Confluence |
-| `/aidlc-create-epic` | Create Jira Intent Epic from approved Confluence doc |
-| `/aidlc-decompose` | Break down Intent into Units and User Stories |
-| `/aidlc-design` | Domain design, logical architecture, and ADRs |
+| `/planning:aidlc-plan` | Create Level 1 Intent documentation in Confluence |
+| `/planning:aidlc-create-epic` | Create Jira Intent Epic from approved Confluence doc |
+| `/planning:aidlc-decompose` | Break down Intent into Units and User Stories |
+| `/planning:aidlc-design` | Domain design, logical architecture, and ADRs |
 
 **Workflow:** Intent Doc → Epic → Units → Stories → Design → Implementation
 
@@ -42,15 +42,15 @@ AI-DLC (AI-Driven Development Lifecycle) workflow for structured project plannin
 
 ---
 
-### Issues (`/create-jira-issue`, `/create-mr`, `/release-notes`)
+### Issues (`/issues:create-jira-issue`, `/issues:create-mr`, `/issues:release-notes`)
 
 Issue tracking and code review integrations.
 
 | Skill | Description |
 |-------|-------------|
-| `/create-jira-issue` | Create a Jira issue from context or description |
-| `/create-mr` | Create a GitLab merge request for current branch |
-| `/release-notes` | Generate release notes from commits, MRs, and Jira tickets |
+| `/issues:create-jira-issue` | Create a Jira issue from context or description |
+| `/issues:create-mr` | Create a GitLab merge request for current branch |
+| `/issues:release-notes` | Generate release notes from commits, MRs, and Jira tickets |
 
 **Requires:** Atlassian MCP, GitLab MCP
 
