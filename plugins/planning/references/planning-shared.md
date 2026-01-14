@@ -141,6 +141,106 @@ Select an option to continue.
   - Dependencies
   - Test notes (if needed)
 
+## Story Markdown Template
+
+Use this template when creating story files during the decompose phase. Save as `<unit-slug>-<story-number>-<short-title>.md`.
+
+```markdown
+# Story: <Story Title>
+
+**Unit**: <Unit Name>
+**Jira Key**: _pending_ <!-- Updated after Jira creation -->
+**Status**: Draft | Approved | Created
+
+## Summary
+
+<Brief description of what this story delivers>
+
+## User Story
+
+As a <user type>,
+I want <goal/action>,
+So that <benefit/value>.
+
+## Acceptance Criteria
+
+- [ ] <Criterion 1>
+- [ ] <Criterion 2>
+- [ ] <Criterion 3>
+
+## Context
+
+<Additional context, background, or technical notes>
+
+## Dependencies
+
+- <Dependency 1>
+- <Dependency 2>
+
+## Risks
+
+- <Risk 1>
+- <Risk 2>
+
+## Test Notes
+
+<Guidance for testing this story>
+
+## Links
+
+- Intent Doc: <Confluence link>
+- Intent Epic: <Jira Epic key>
+- Related Stories: <links to related story files>
+```
+
+## Units Overview Template
+
+Use this template for the `_units-overview.md` file that summarizes story groupings.
+
+```markdown
+# Units Overview
+
+**Intent**: <Intent Name>
+**Intent Epic**: <Jira Epic key>
+**Date**: <Creation date>
+**Status**: Draft | Approved | Jira Created
+
+## Unit Summary
+
+| Unit | Stories | Bolts | Dependencies |
+|------|---------|-------|--------------|
+| <Unit 1 Name> | <count> | <count> | <list> |
+| <Unit 2 Name> | <count> | <count> | <list> |
+
+---
+
+## Unit: <Unit 1 Name>
+
+**Description**: <Brief scope summary>
+**Jira Key**: _pending_ <!-- Updated after Jira creation -->
+
+### Stories
+
+1. [<Story title>](./<unit-slug>-01-<short-title>.md)
+2. [<Story title>](./<unit-slug>-02-<short-title>.md)
+
+### Bolt Plan
+
+- **Bolt 1**: <Description> (estimated: X hours)
+- **Bolt 2**: <Description> (estimated: X hours)
+
+### Dependencies
+
+- Depends on: <other units or external>
+- Blocks: <units that depend on this>
+
+---
+
+## Unit: <Unit 2 Name>
+
+<!-- Repeat structure for each Unit -->
+```
+
 ## Organizational Risk Taxonomy
 
 Surface risks aligned to these categories. Prioritize **Data & Privacy** and **Security Posture** — these are critical for our organization.
