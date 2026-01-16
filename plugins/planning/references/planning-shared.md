@@ -513,11 +513,12 @@ What other options were evaluated?
 ## Atlassian MCP Operational Guidance
 
 **Atlassian Domain:** `raptortech1.atlassian.net`
+**Atlassian Cloud ID:** `7c795d89-53db-46c0-896a-d6333239676d`
 
 When using Atlassian MCP tools, follow this sequence:
 
 **For Confluence operations:**
-1. Get the Confluence cloud ID (may be implicit in some MCP configurations)
+1. Use the Cloud ID above for all Atlassian MCP tool calls
 2. Find the target space using `getConfluenceSpaces` or user-provided space key
 3. Locate the parent page using `searchConfluenceUsingCql` or `getPagesInConfluenceSpace`
 4. Create or update the page using `createConfluencePage` or `updateConfluencePage`

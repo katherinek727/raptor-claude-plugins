@@ -7,6 +7,15 @@ description: Decompose an approved Intent into User Stories and Units, with huma
 
 Break down an approved Intent into User Stories and Units (Sub-epics). Stories are created as markdown files first for review and collaboration, then converted to Jira issues after approval. Do not create Bugs unless explicitly requested by a human.
 
+> **CRITICAL: Markdown First, Jira Later**
+>
+> This skill has TWO distinct phases with a hard approval gate between them:
+> - **Phase 1**: Elaborate stories as local markdown files. **NO Jira creation.**
+> - **Phase 2**: After explicit user approval, create Jira artifacts.
+>
+> **DO NOT** create Sub-epics, Stories, or any Jira issues during Phase 1.
+> **DO NOT** proceed to Phase 2 without explicit user approval of the markdown files.
+
 ## Example Invocations
 
 - "Break down the authentication intent into stories and units"
@@ -39,15 +48,22 @@ Before starting, validate:
 
 ### Phase 1: Story Elaboration (Markdown Files)
 
+**In this phase, you will ONLY:**
+- Read from Confluence and Jira (to understand the Intent)
+- Create local markdown files for stories
+- Discuss and refine with the user
+
+**DO NOT in Phase 1:**
+- Create any Jira issues (Sub-epics, Stories, Tasks, etc.)
+- Update Jira labels or fields
+- Modify Confluence workflow status
+
 1. **Gather context**
    Ask only for what is missing:
    - Jira project key (no default)
    - Intent Epic key
    - Approved Confluence Level 1 doc link(s)
    - Any known constraints, dependencies, or sequencing needs
-   - **Decomposition approach preference**:
-     - Stories-first (default): Elaborate all Stories, then group into Units
-     - Units-first: Define Unit boundaries, then elaborate Stories per Unit
 
 2. **Ask for story output location**
    Prompt the user for where to save story markdown files:
@@ -55,18 +71,14 @@ Before starting, validate:
    - Explain these files can be committed to a repository for team visibility and review
    - Confirm the directory path before creating files
 
-3. **Elaborate User Stories** (Stories-first, default)
+3. **Elaborate User Stories**
    From the Intent and Level 1 documentation:
    - Create each Story as a markdown file using the Story Markdown Template in `../references/planning-shared.md`
-   - File naming convention: `<unit-slug>-<story-number>-<short-title>.md`
+   - File naming convention: `<story-number>-<short-title>.md` (unit slug added after grouping)
    - Surface risks and dependencies per Story
    - Identify cross-cutting concerns
 
-   **OR Units-first** (if selected):
-   - Propose Units with clear boundaries first
-   - Then elaborate Stories for each Unit as markdown files
-
-4. **Group into Units**
+4. **Group Stories into Units**
    Organize Stories into cohesive Units:
    - Apply loose coupling, high cohesion principles
    - Each Unit should deliver independent value
@@ -87,6 +99,19 @@ Before starting, validate:
    - Dependencies and risks
 
    **Ask explicitly**: "Please review the story files and confirm you're ready to create these in Jira."
+
+---
+
+### ⛔ STOP — Approval Gate
+
+**Phase 1 is complete.** Do not proceed until the user explicitly confirms:
+- They have reviewed the markdown story files
+- They approve the Unit groupings
+- They want to create Jira issues
+
+**Wait for explicit approval before continuing to Phase 2.**
+
+---
 
 ### Phase 2: Jira Creation (After Approval)
 
