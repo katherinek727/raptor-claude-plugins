@@ -14,18 +14,38 @@ Use this reference for the AI-DLC Intent → Unit planning flow.
 - Intent Summary
 - Problem / Opportunity
 - Target Users
-- Pathway Type (green-field | brown-field | modernization | defect fix)
+- Assigned Amigos
+  - Product Owner
+  - Tech Lead
+  - Design Lead
+- Initiative Profile
+  - Pathway (green-field | brown-field | modernization | defect fix)
+  - Scale (quick win | bounded delivery | strategic initiative)
+  - Constraints (timeboxed, budget-limited, MVP-only, etc.)
+  - Programme context (standalone | part of <programme name>)
 - Outcomes (Business + User)
 - Scope
   - In scope
   - Out of scope
-- Constraints
+- Technical Considerations
+  - Known technical constraints
+  - Key systems affected
+  - Integration points (high-level)
 - Non-Functional Requirements (NFRs)
 - Measurement Criteria (OKR/KPI/SLI)
 - Dependencies
 - Risks (use Organizational Risk Taxonomy below; prioritize Data & Privacy and Security Posture)
 - Assumptions
 - Testing Strategy (see Testing Strategy Guidance below)
+- Communication Plans
+  - Progress Reporting Plan (how progress is tracked/reported)
+  - Inter-team Comms Plan (shared channels, joint stand-ups, scrum of scrums)
+- Enablement Checklist
+  - [ ] Marketing materials needed?
+  - [ ] Sales enablement needed?
+  - [ ] Support flows / KBAs needed?
+  - [ ] Training materials needed?
+  - [ ] Customer comms needed?
 - Open Questions
 - Proposed Units (hypotheses only)
 - Workflow Status (see Workflow Status Tracking below)
