@@ -14,18 +14,41 @@ Use this reference for the AI-DLC Intent → Unit planning flow.
 - Intent Summary
 - Problem / Opportunity
 - Target Users
-- Pathway Type (green-field | brown-field | modernization | defect fix)
+- Assigned Amigos
+  - Product Owner
+  - Tech Lead
+  - Design Lead
+- Initiative Profile
+  - Pathway (green-field | brown-field | modernization | defect fix)
+  - Scale (quick win | bounded delivery | strategic initiative)
+  - Constraints (timeboxed, budget-limited, MVP-only, etc.)
+  - Programme context (standalone | part of <programme name>)
 - Outcomes (Business + User)
 - Scope
   - In scope
   - Out of scope
-- Constraints
+- Technical Considerations
+  - Known technical constraints
+  - Key systems affected
+  - Integration points (high-level)
+- Designs & Diagrams (if available)
+  - UI mockups / wireframes / prototypes
+  - Flow diagrams (system or process)
 - Non-Functional Requirements (NFRs)
 - Measurement Criteria (OKR/KPI/SLI)
 - Dependencies
 - Risks (use Organizational Risk Taxonomy below; prioritize Data & Privacy and Security Posture)
 - Assumptions
 - Testing Strategy (see Testing Strategy Guidance below)
+- Communication Plans
+  - Progress Reporting Plan (how progress is tracked/reported)
+  - Inter-team Comms Plan (shared channels, joint stand-ups, scrum of scrums)
+- Enablement Checklist
+  - [ ] Marketing materials needed?
+  - [ ] Sales enablement needed?
+  - [ ] Support flows / KBAs needed?
+  - [ ] Training materials needed?
+  - [ ] Customer comms needed?
 - Open Questions
 - Proposed Units (hypotheses only)
 - Workflow Status (see Workflow Status Tracking below)
@@ -296,13 +319,29 @@ Use these prompts to elicit risks during Intent and Unit planning:
 
 ## NFR Checklist (prompt as needed)
 
-- Performance/latency targets
+- Performance/latency targets (see Raptor Performance Standards below)
 - Availability/SLA
 - Security and privacy
 - Compliance (SOC2, HIPAA, GDPR, etc.)
 - Reliability/recovery objectives
 - Observability requirements
 - Cost constraints
+
+### Raptor Performance Standards
+
+Reference: [Performance Standards](https://raptortech1.atlassian.net/wiki/spaces/EN/pages/1086914569/Performance+Standards)
+
+When defining performance NFRs, apply these standards where applicable:
+
+| Category | Standard |
+|----------|----------|
+| Browser (Core Web Vitals) | LCP ≤2.5s, INP ≤200ms, CLS ≤0.1 (75th percentile) |
+| Mobile Apps | Screen Transition ≤100ms (good), Crash Rate ≤1% |
+| Traditional APIs | Response Time <100ms (75th percentile) |
+| Feature Specific | Team-defined (track in addition to standards) |
+| Background Jobs | Team-defined (queue depth, custom metrics) |
+
+Performance is monitored via New Relic Service Levels. Trend performance is measured over 7 days at 75th percentile.
 
 ## Measurement Criteria Prompts
 
@@ -473,6 +512,8 @@ What other options were evaluated?
 
 ## Atlassian MCP Operational Guidance
 
+**Atlassian Domain:** `raptortech1.atlassian.net`
+
 When using Atlassian MCP tools, follow this sequence:
 
 **For Confluence operations:**
@@ -481,6 +522,13 @@ When using Atlassian MCP tools, follow this sequence:
 3. Locate the parent page using `searchConfluenceUsingCql` or `getPagesInConfluenceSpace`
 4. Create or update the page using `createConfluencePage` or `updateConfluencePage`
 5. If the page already exists, ask whether to update or create a new version
+
+**When reviewing a Confluence page:**
+Before reading, prompt the user:
+> "Would you like me to include comments (inline and footer) and their replies, or just the page content?"
+
+- **Page content only**: Use `getConfluencePage`
+- **With comments**: Also fetch `getConfluencePageInlineComments` and `getConfluencePageFooterComments`
 
 **For Jira operations:**
 1. Confirm the Jira project key (never assume a default)
