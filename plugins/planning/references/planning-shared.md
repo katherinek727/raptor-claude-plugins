@@ -31,6 +31,9 @@ Use this reference for the AI-DLC Intent → Unit planning flow.
   - Known technical constraints
   - Key systems affected
   - Integration points (high-level)
+- Designs & Diagrams (if available)
+  - UI mockups / wireframes / prototypes
+  - Flow diagrams (system or process)
 - Non-Functional Requirements (NFRs)
 - Measurement Criteria (OKR/KPI/SLI)
 - Dependencies
