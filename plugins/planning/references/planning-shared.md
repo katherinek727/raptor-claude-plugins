@@ -564,3 +564,132 @@ In Claude Code, tools are namespaced with the `mcp__plugin_atlassian_atlassian__
 | `editJiraIssue` | `mcp__plugin_atlassian_atlassian__editJiraIssue` |
 | `addCommentToJiraIssue` | `mcp__plugin_atlassian_atlassian__addCommentToJiraIssue` |
 | `lookupJiraAccountId` | `mcp__plugin_atlassian_atlassian__lookupJiraAccountId` |
+
+## Story Elaboration Subagent
+
+The `/planning:aidlc-decompose` skill uses parallel subagents to elaborate stories by theme cluster. This section defines the prompt template and expected return format.
+
+### Theme Clustering Guidance
+
+When identifying theme clusters from an Intent:
+- Aim for 3-5 clusters (fewer for small intents, more for complex ones)
+- Group by functional area, capability, or technical domain
+- Each cluster should have low coupling to other clusters
+- Example themes: Authentication, API Layer, Data Migration, UI Components, Reporting
+
+### Subagent Prompt Template
+
+Use this template when spawning story elaboration subagents via the Task tool:
+
+```markdown
+You are elaborating User Stories for the "<THEME_NAME>" theme cluster.
+
+## Intent Context
+
+**Intent Summary:** <brief summary of the overall intent>
+
+**Target Users:** <user personas affected>
+
+**NFRs:** <relevant non-functional requirements>
+
+**Constraints:** <any constraints or limitations>
+
+## Stories to Elaborate
+
+Elaborate the following stories for this theme:
+<list of story titles/scopes>
+
+## Instructions
+
+For each story:
+1. Write the full story content using the Story Markdown Template format
+2. Identify risks specific to this story
+3. Identify dependencies:
+   - Within this theme cluster
+   - Cross-cluster dependencies (reference other themes by name)
+
+## Story Markdown Template
+
+Use this format for each story:
+
+# Story: <Story Title>
+
+**Unit**: _pending_ <!-- Assigned after grouping -->
+**Jira Key**: _pending_ <!-- Updated after Jira creation -->
+**Status**: Draft
+
+## Summary
+<Brief description of what this story delivers>
+
+## User Story
+As a <user type>,
+I want <goal/action>,
+So that <benefit/value>.
+
+## Acceptance Criteria
+- [ ] <Criterion 1>
+- [ ] <Criterion 2>
+
+## Context
+<Additional context, background, or technical notes>
+
+## Dependencies
+- <Dependency 1>
+
+## Risks
+- <Risk 1>
+
+## Test Notes
+<Guidance for testing this story>
+
+## Return Format
+
+Return your results as JSON in this exact structure:
+
+{
+  "theme": "<THEME_NAME>",
+  "stories": [
+    {
+      "title": "<story title>",
+      "content": "<full markdown content for the story>",
+      "risks": ["<risk 1>", "<risk 2>"],
+      "dependencies": {
+        "within_theme": ["<story title in same theme>"],
+        "cross_theme": ["<Theme Name>: <story or capability>"]
+      }
+    }
+  ],
+  "cross_cutting_concerns": [
+    "<concern that spans multiple themes or the entire intent>"
+  ]
+}
+```
+
+### Subagent Return Format
+
+Each subagent returns structured JSON with these fields:
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `theme` | string | The theme cluster name |
+| `stories` | array | Array of elaborated stories |
+| `stories[].title` | string | Story title |
+| `stories[].content` | string | Full markdown content for the story file |
+| `stories[].risks` | array | Risks specific to this story |
+| `stories[].dependencies.within_theme` | array | Dependencies on other stories in the same theme |
+| `stories[].dependencies.cross_theme` | array | Dependencies on other themes (format: "Theme: capability") |
+| `cross_cutting_concerns` | array | Concerns that span multiple themes |
+
+### Consolidation Logic
+
+After collecting results from all subagents, the parent agent:
+
+1. **Parse results**: Extract stories from each subagent's JSON response
+2. **Merge risks**: Combine all `cross_cutting_concerns` into a unified list
+3. **Build dependency graph**: Map `cross_theme` dependencies to actual stories
+4. **Identify conflicts**: Flag stories with conflicting assumptions or overlapping scope
+5. **Group into Units**:
+   - Start with theme boundaries
+   - Merge themes with tight coupling
+   - Split themes with clear sub-boundaries
+6. **Assign Unit slugs**: Add unit prefix to each story filename
