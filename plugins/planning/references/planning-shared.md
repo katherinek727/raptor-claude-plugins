@@ -493,6 +493,8 @@ What other options were evaluated?
 
 ## Atlassian MCP Operational Guidance
 
+**Atlassian Domain:** `raptortech1.atlassian.net`
+
 When using Atlassian MCP tools, follow this sequence:
 
 **For Confluence operations:**
