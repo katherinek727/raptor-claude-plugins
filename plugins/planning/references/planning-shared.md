@@ -520,6 +520,13 @@ When using Atlassian MCP tools, follow this sequence:
 4. Create or update the page using `createConfluencePage` or `updateConfluencePage`
 5. If the page already exists, ask whether to update or create a new version
 
+**When reviewing a Confluence page:**
+Before reading, prompt the user:
+> "Would you like me to include comments (inline and footer) and their replies, or just the page content?"
+
+- **Page content only**: Use `getConfluencePage`
+- **With comments**: Also fetch `getConfluencePageInlineComments` and `getConfluencePageFooterComments`
+
 **For Jira operations:**
 1. Confirm the Jira project key (never assume a default)
 2. Verify issue types using `getJiraProjectIssueTypesMetadata`
