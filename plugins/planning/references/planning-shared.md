@@ -316,13 +316,29 @@ Use these prompts to elicit risks during Intent and Unit planning:
 
 ## NFR Checklist (prompt as needed)
 
-- Performance/latency targets
+- Performance/latency targets (see Raptor Performance Standards below)
 - Availability/SLA
 - Security and privacy
 - Compliance (SOC2, HIPAA, GDPR, etc.)
 - Reliability/recovery objectives
 - Observability requirements
 - Cost constraints
+
+### Raptor Performance Standards
+
+Reference: [Performance Standards](https://raptortech1.atlassian.net/wiki/spaces/EN/pages/1086914569/Performance+Standards)
+
+When defining performance NFRs, apply these standards where applicable:
+
+| Category | Standard |
+|----------|----------|
+| Browser (Core Web Vitals) | LCP ≤2.5s, INP ≤200ms, CLS ≤0.1 (75th percentile) |
+| Mobile Apps | Screen Transition ≤100ms (good), Crash Rate ≤1% |
+| Traditional APIs | Response Time <100ms (75th percentile) |
+| Feature Specific | Team-defined (track in addition to standards) |
+| Background Jobs | Team-defined (queue depth, custom metrics) |
+
+Performance is monitored via New Relic Service Levels. Trend performance is measured over 7 days at 75th percentile.
 
 ## Measurement Criteria Prompts
 
