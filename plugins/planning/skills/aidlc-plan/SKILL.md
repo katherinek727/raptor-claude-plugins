@@ -1,6 +1,6 @@
 ---
 name: aidlc-plan
-description: Create and iteratively refine the AI-DLC Level 1 Intent documentation in Confluence, with human-in-the-loop validation, risk surfacing, NFRs, and measurement criteria. Use when asked to draft or update an Intent/Level 1 plan, initiative doc, or Confluence planning document before Jira work is created. (Triggers: create intent, level 1 doc, intent document, new initiative, draft intent, planning doc, intent brief, confluence intent, aidlc plan)
+description: Create and iteratively refine the AI-DLC Level 1 Intent documentation in Confluence, with human-in-the-loop validation, risk surfacing, NFRs, and measurement criteria. Use when asked to draft or update an Intent/Level 1 plan, initiative doc, or Confluence planning document before Jira work is created. (Triggers - create intent, level 1 doc, intent document, new initiative, draft intent, planning doc, intent brief, confluence intent, aidlc plan)
 ---
 
 # AI-DLC Plan Intent

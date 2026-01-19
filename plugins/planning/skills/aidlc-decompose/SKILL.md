@@ -1,20 +1,23 @@
 ---
 name: aidlc-decompose
-description: Decompose an approved Intent into User Stories and Units using parallel agents for story elaboration. Stories are clustered by theme, elaborated in parallel, then grouped into Units for human approval before Jira creation. (Triggers: decompose intent, break down intent, create units, unit decomposition, create stories, break into units, split intent, aidlc decompose)
+description: Decompose an approved Intent into User Stories and Units using parallel agents for story elaboration. Stories are created as Confluence pages for collaborative review, then transferred to Jira after approval. (Triggers - decompose intent, break down intent, create units, unit decomposition, create stories, break into units, split intent, aidlc decompose)
 ---
 
 # AI-DLC Decompose
 
-Break down an approved Intent into User Stories and Units (Sub-epics) using parallel agents for efficient story elaboration. Stories are created as markdown files first for review and collaboration, then converted to Jira issues after approval. Do not create Bugs unless explicitly requested by a human.
+Break down an approved Intent into User Stories and Units (Sub-epics) using parallel agents for efficient story elaboration. Stories are created as Confluence pages (child pages under the Level 1 Intent) for collaborative team review, then transferred to Jira after approval. Do not create Bugs unless explicitly requested by a human.
 
-> **CRITICAL: Markdown First, Jira Later**
+> **CRITICAL: Confluence First, Jira Later**
 >
-> This skill has TWO distinct phases with a hard approval gate between them:
-> - **Phase 1**: Elaborate stories as local markdown files using parallel agents. **NO Jira creation.**
-> - **Phase 2**: After explicit user approval, create Jira artifacts.
+> This skill has FIVE phases with approval gates between them:
+> - **Phase 1**: Elaborate stories and create Confluence pages (Overview → Units → Stories). **NO Jira creation.**
+> - **Phase 2**: Team reviews in Confluence, adding inline and footer comments. *(Human activity)*
+> - **Phase 3**: Comment resolution session - address feedback, update content, resolve comments.
+> - **Phase 4**: Reorganization - regroup stories into units based on delivery needs.
+> - **Phase 5**: Transfer to Jira - create sub-epics and stories, delete Confluence pages.
 >
-> **DO NOT** create Sub-epics, Stories, or any Jira issues during Phase 1.
-> **DO NOT** proceed to Phase 2 without explicit user approval of the markdown files.
+> **DO NOT** create Jira issues until Phase 5.
+> **DO NOT** skip phases without explicit user approval.
 
 ## Example Invocations
 
@@ -44,14 +47,31 @@ Before starting, validate:
    - Offer to run `/planning:aidlc-create-epic` first (or `/planning:aidlc-plan` if Confluence doc missing)
    - Or allow override with explicit confirmation (see Override Pattern in `../references/planning-shared.md`)
 
+## Confluence Page Hierarchy
+
+Stories are organized as a page hierarchy under the Level 1 Intent document:
+
+```
+Level 1 Intent Document (existing)
+└── Units Overview (child of Intent)
+    ├── Unit 1: [Name] (child of Overview)
+    │   ├── Story 1.1 (child of Unit)
+    │   ├── Story 1.2 (child of Unit)
+    │   └── ...
+    ├── Unit 2: [Name] (child of Overview)
+    │   ├── Story 2.1 (child of Unit)
+    │   └── ...
+    └── ...
+```
+
 ## Workflow
 
-### Phase 1: Story Elaboration (Parallel Agents)
+### Phase 1: Story Decomposition to Confluence
 
-**In this phase, you will ONLY:**
+**In this phase, you will:**
 - Read from Confluence and Jira (to understand the Intent)
 - Spawn subagents to elaborate stories in parallel
-- Create local markdown files for stories
+- Create Confluence pages for Units Overview, Units, and Stories
 - Discuss and refine with the user
 
 **DO NOT in Phase 1:**
@@ -64,17 +84,10 @@ Before starting, validate:
 Ask only for what is missing:
 - Jira project key (no default)
 - Intent Epic key
-- Approved Confluence Level 1 doc link(s)
+- Approved Confluence Level 1 doc link (this will be the parent for the Units Overview)
 - Any known constraints, dependencies, or sequencing needs
 
-#### Step 2: Ask for Story Output Location
-
-Prompt the user for where to save story markdown files:
-- Suggest a default path (e.g., `docs/stories/` or `.aidlc/stories/`)
-- Explain these files can be committed to a repository for team visibility and review
-- Confirm the directory path before creating files
-
-#### Step 3: Identify Theme Clusters
+#### Step 2: Identify Theme Clusters
 
 Analyze the Intent and identify 3-5 theme clusters for parallel elaboration:
 - Group related functionality/capabilities together
@@ -91,7 +104,7 @@ Based on the Intent, I've identified these theme clusters:
 I'll spawn 3 subagents to elaborate these in parallel.
 ```
 
-#### Step 4: Spawn Story Elaboration Subagents
+#### Step 3: Spawn Story Elaboration Subagents
 
 For each theme cluster, spawn a subagent using the Task tool:
 - Use `subagent_type: "general-purpose"`
@@ -104,7 +117,7 @@ Each subagent will:
 - Return structured JSON with story content, risks, and dependencies
 - Identify cross-cutting concerns that span themes
 
-#### Step 5: Consolidate Subagent Results
+#### Step 4: Consolidate Subagent Results
 
 After all subagents return:
 1. Parse the JSON results from each subagent
@@ -112,7 +125,7 @@ After all subagents return:
 3. Build a dependency graph across all stories
 4. Surface any conflicts or gaps between themes
 
-#### Step 6: Group Stories into Units
+#### Step 5: Group Stories into Units
 
 Organize the elaborated stories into cohesive Units:
 - Start with theme boundaries as initial groupings
@@ -121,78 +134,189 @@ Organize the elaborated stories into cohesive Units:
 - Each Unit should deliver independent value
 - Surface dependencies between Units
 
-#### Step 7: Plan Bolts
+#### Step 6: Plan Bolts
 
 For each Unit, suggest rapid iteration cycles:
 - Bolt boundaries based on testable increments
-- Estimated duration (hours/days)
 - Sequencing considerations
 - See Bolt Planning Guidance in `../references/planning-shared.md`
 
-#### Step 8: Write Markdown Files
+#### Step 7: Create Confluence Pages
 
-Write all story files to the confirmed output location:
-- Use the Story Markdown Template from `../references/planning-shared.md`
-- File naming convention: `<unit-slug>-<story-number>-<short-title>.md`
-- Create `_units-overview.md` summarizing:
-  - All Units with their stories
-  - Bolt plan per Unit
-  - Merged risks and dependencies
-  - Cross-cutting concerns
+Create the page hierarchy under the Level 1 Intent document:
 
-#### Step 9: Request Approval
+1. **Create Units Overview page** (child of Level 1 Intent)
+   - Use the Units Overview Template from `../references/planning-shared.md`
+   - Include: Intent name, Epic key, Unit summary table, dependency graph, technical decisions, acceptance criteria
+
+2. **Create Unit pages** (children of Units Overview)
+   - One page per Unit
+   - Include: Unit description, story list, bolt plan, dependencies
+
+3. **Create Story pages** (children of their respective Unit page)
+   - One page per Story
+   - Use the Story Page Template from `../references/planning-shared.md`
+   - Include: User story, acceptance criteria, context, dependencies, risks, test notes
+
+#### Step 8: Request Review
 
 Summarize the full decomposition:
-- Stories grouped by Unit (with links to markdown files)
+- Stories grouped by Unit (with links to Confluence pages)
 - Bolt plan per Unit
 - Dependencies and risks
 
-**Ask explicitly**: "Please review the story files and confirm you're ready to create these in Jira."
+**Ask explicitly**: "The stories are now in Confluence for team review. Please add inline and footer comments, then return for comment resolution."
 
 ---
 
-### ⛔ STOP — Approval Gate
+### ⛔ STOP — Review Gate
 
-**Phase 1 is complete.** Do not proceed until the user explicitly confirms:
-- They have reviewed the markdown story files
-- They approve the Unit groupings
-- They want to create Jira issues
+**Phase 1 is complete.** The team will now review the stories in Confluence.
 
-**Wait for explicit approval before continuing to Phase 2.**
+**This is a human activity that happens outside of Claude.**
+
+Team members should:
+- Review each story page
+- Add inline comments on specific text that needs clarification or changes
+- Add footer comments for general feedback
+- Reply to existing comments to discuss
+
+**Wait for the user to return and request comment resolution before continuing to Phase 2.**
 
 ---
 
-### Phase 2: Jira Creation (After Approval)
+### Phase 2: Team Review in Confluence
 
-#### Step 10: Prompt for Jira Creation
+*(Human activity - no Claude involvement)*
 
-After user approves the markdown stories:
-- Confirm the user wants to proceed with Jira creation
-- Remind them that Units will be created as Sub-epics and Stories as sub-tasks
+The team reviews stories in Confluence by:
+- Adding **inline comments** on specific text selections
+- Adding **footer comments** for general page feedback
+- Replying to comments for discussion
 
-#### Step 11: Create Jira Artifacts
+---
 
-- Create Units as Sub-epics (or Epics if Sub-epic unavailable) linked to the Intent Epic
-- Create Stories as sub-tasks under each Unit (Sub-epic)
-- Include acceptance criteria, test notes, and links from the markdown files
-- Use templates in `../references/planning-shared.md`
+### Phase 3: Comment Resolution
+
+**This phase is typically run in a NEW Claude session after the team has completed their review.**
+
+#### Step 9: Fetch All Comments
+
+For each page (Units Overview, Unit pages, Story pages):
+1. Fetch inline comments using `getConfluencePageInlineComments`
+2. Fetch footer comments using `getConfluencePageFooterComments`
+3. **Include replies** - comments have threaded replies that must be read
+
+Present a summary of all comments organized by page.
+
+#### Step 10: Address Feedback
+
+For each comment:
+1. Analyze the feedback and any reply thread
+2. Determine the appropriate action:
+   - Update story content if the feedback is valid
+   - Clarify if the feedback is based on a misunderstanding
+   - Escalate if the feedback requires a decision beyond scope
+
+#### Step 11: Update Content
+
+Update the Confluence pages to address feedback:
+- Use `updateConfluencePage` to modify story content
+- Ensure changes address the specific feedback
+
+#### Step 12: Reply to Comments
+
+Reply to each comment explaining how it was addressed:
+- Use `createConfluenceInlineComment` (with `parentCommentId`) for inline comment replies
+- Use `createConfluenceFooterComment` (with `parentCommentId`) for footer comment replies
+
+#### Step 13: Mark Comments Resolved
+
+After addressing feedback, comments should be marked as resolved.
+Note: Confluence inline comments have a resolution status; footer comments are resolved by the reply thread.
+
+---
+
+### ⛔ STOP — Reorganization Gate
+
+**Phase 3 is complete.** Before transferring to Jira, the team may need to reorganize stories into different Units.
+
+**Ask**: "Are you ready to proceed with the current Unit groupings, or do you need to reorganize stories first?"
+
+---
+
+### Phase 4: Reorganization (If Needed)
+
+#### Step 14: Re-assess Stories
+
+Review all stories considering:
+- How they will be delivered
+- Dependencies between stories
+- Number of engineers available (parallel streams capacity)
+- Feedback received during review
+
+#### Step 15: Regroup into Units
+
+If regrouping is needed:
+1. **Move story pages** between Unit pages (update parent page ID)
+2. **Rename/repurpose Unit pages** where possible (avoid creating new pages unnecessarily)
+3. **Create new Unit pages** only when necessary
+4. **Archive Unit pages** that are no longer needed
+
+#### Step 16: Update Units Overview
+
+Update the Units Overview page to reflect the new groupings:
+- Update the Unit summary table
+- Update the dependency graph
+- Update story counts
+
+---
+
+### Phase 5: Transfer to Jira
+
+#### Step 17: Confirm Jira Transfer
+
+Confirm the user is ready to transfer to Jira:
+- Remind them that Units will be created as Sub-epics and Stories under each Sub-epic
+- Confirm the Jira project key
+
+#### Step 18: Create Jira Artifacts
+
+For each Unit:
+1. **Create Sub-epic** (or Epic if Sub-epic unavailable) linked to the Intent Epic
+   - Summary: Unit page title
+   - Description: Unit page content
+
+2. **Create Stories** under each Sub-epic
+   - Summary: Story page title
+   - Description: Everything else from the story page (user story, acceptance criteria, context, dependencies, risks, test notes)
+
+Use templates in `../references/planning-shared.md`
+
+#### Step 19: Update Workflow Status
+
+Update the Confluence Level 1 Intent page status table:
+- Set "Unit Decomposition" row to "✅ Complete" with today's date
+- Add links to created Sub-epics in the Artifact column
 - Update Intent Epic label: `aidlc:decomposing` → `aidlc:decomposed`
 
-#### Step 12: Update Workflow Status
+#### Step 20: Delete Confluence Story Pages
 
-Update the Confluence page status table:
-- Set "Unit Decomposition" row to "✅ Complete" with today's date
-- Add links to created Units in the Artifact column
+After successful Jira creation, delete the Confluence pages to avoid confusion:
+- Delete all Story pages
+- Delete all Unit pages
+- Delete the Units Overview page
 
-#### Step 13: Update Markdown Files
+**Important**: Keep the Level 1 Intent document - only delete the decomposition pages.
 
-Add Jira keys to the corresponding markdown files for traceability.
+#### Step 21: Report Back
 
-#### Step 14: Report Back
+Provide:
+- Created Jira keys (Sub-epics and Stories)
+- Links to the Jira artifacts
+- Confirmation that Confluence pages have been cleaned up
 
-Provide created keys and ask for any refinements.
-
-#### Step 15: Chain to Design
+#### Step 22: Chain to Design
 
 Ask whether to proceed with Domain Design for any Unit.
 If yes, invoke `/planning:aidlc-design` with the Unit context.
@@ -204,27 +328,49 @@ If yes, invoke `/planning:aidlc-design` with the Unit context.
 
 ## Definition of Done
 
-### Phase 1 (Markdown Review)
+### Phase 1 (Confluence Pages Created)
 - Theme clusters identified and confirmed with user
 - Subagents spawned in parallel for story elaboration
 - All subagent results consolidated
-- User Stories elaborated as markdown files with acceptance criteria
-- Stories grouped into cohesive Units in `_units-overview.md`
+- Units Overview page created as child of Level 1 Intent
+- Unit pages created as children of Units Overview
+- Story pages created as children of their respective Units
+- All pages include acceptance criteria, dependencies, risks
 - Bolt plan suggested per Unit
-- Risks and dependencies explicit (including cross-cutting concerns)
-- User has reviewed and approved the story files
+- User notified to begin team review
 
-### Phase 2 (Jira Creation)
+### Phase 2 (Team Review)
+- Team has reviewed all story pages in Confluence
+- Inline and footer comments added
+- Comment threads include replies/discussion
+
+### Phase 3 (Comment Resolution)
+- All comments fetched (inline + footer + replies)
+- Story content updated to address feedback
+- Replies posted explaining how feedback was addressed
+- Comments marked as resolved
+
+### Phase 4 (Reorganization - if needed)
+- Stories regrouped based on delivery/dependencies/capacity
+- Story pages moved between Units as needed
+- Unit pages renamed/repurposed (not duplicated)
+- Units Overview updated with new groupings
+
+### Phase 5 (Jira Transfer)
 - Units created as Sub-epics linked to Intent Epic
-- Stories created as sub-tasks under their respective Units
-- Markdown files updated with Jira keys for traceability
-- Confluence status table updated
+- Stories created under their respective Sub-epics
+- Confluence decomposition pages deleted (Overview, Units, Stories)
+- Level 1 Intent page status table updated
+- Intent Epic label updated to `aidlc:decomposed`
 
 ## Troubleshooting
 
 - **Sub-epic not supported**: Use Epic + issue links or parent field; ask for preferred structure.
 - **Missing issue types**: Use `getJiraProjectIssueTypesMetadata` and confirm available types.
 - **Too many Stories**: Consider splitting into multiple Units or deferring lower-priority Stories.
-- **User wants to skip markdown phase**: Allow override but recommend markdown for team visibility.
+- **User wants to skip Confluence phase**: Allow override but recommend Confluence for team collaboration.
 - **Subagent failure**: Report which theme cluster failed and offer to retry or elaborate manually.
 - **Single theme identified**: Still spawn one subagent for consistency; workflow proceeds normally.
+- **Comment resolution in same session**: If user wants to resolve comments immediately (no new session), proceed with Phase 3 in the current session.
+- **Moving pages between Units**: Use `updateConfluencePage` with a new `parentId` to move story pages.
+- **Confluence page deletion fails**: Verify permissions; may need admin to delete pages.

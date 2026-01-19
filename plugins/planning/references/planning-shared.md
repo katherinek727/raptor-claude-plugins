@@ -164,16 +164,16 @@ Select an option to continue.
   - Dependencies
   - Test notes (if needed)
 
-## Story Markdown Template
+## Story Page Template (Confluence)
 
-Use this template when creating story files during the decompose phase. Save as `<unit-slug>-<story-number>-<short-title>.md`.
+Use this template when creating Story pages in Confluence. Each story is a child page under its Unit page.
+
+**Page Title**: `<Story Title>` (this becomes the Jira summary when transferred)
+
+**Page Content**:
 
 ```markdown
-# Story: <Story Title>
-
-**Unit**: <Unit Name>
-**Jira Key**: _pending_ <!-- Updated after Jira creation -->
-**Status**: Draft | Approved | Created
+**Status**: Draft | Approved | Transferred
 
 ## Summary
 
@@ -208,25 +208,23 @@ So that <benefit/value>.
 ## Test Notes
 
 <Guidance for testing this story>
-
-## Links
-
-- Intent Doc: <Confluence link>
-- Intent Epic: <Jira Epic key>
-- Related Stories: <links to related story files>
 ```
 
-## Units Overview Template
+**Note**: When transferred to Jira, the page title becomes the Jira summary and all content becomes the description.
 
-Use this template for the `_units-overview.md` file that summarizes story groupings.
+## Units Overview Page Template (Confluence)
+
+Use this template for the Units Overview page in Confluence. This page is a child of the Level 1 Intent document.
+
+**Page Title**: `Units Overview`
+
+**Page Content**:
 
 ```markdown
-# Units Overview
-
 **Intent**: <Intent Name>
 **Intent Epic**: <Jira Epic key>
 **Date**: <Creation date>
-**Status**: Draft | Approved | Jira Created
+**Status**: Draft | In Review | Approved | Transferred
 
 ## Unit Summary
 
@@ -235,33 +233,81 @@ Use this template for the `_units-overview.md` file that summarizes story groupi
 | <Unit 1 Name> | <count> | <count> | <list> |
 | <Unit 2 Name> | <count> | <count> | <list> |
 
+**Total Stories**: <count>
+
 ---
 
-## Unit: <Unit 1 Name>
+## Dependency Graph
 
+```
+Unit 1: <Name>
+    │
+    ├──► Unit 2: <Name>
+    │        │
+    │        └──► Unit 3: <Name>
+    │
+    └──► Unit 4: <Name>
+```
+
+---
+
+## Key Technical Decisions
+
+- <Decision 1>
+- <Decision 2>
+
+---
+
+## Cross-Cutting Acceptance Criteria
+
+- [ ] <Criterion that applies to all Units>
+- [ ] <Criterion that applies to all Units>
+
+---
+
+## Links
+
+- [Level 1 Intent](<Confluence link>)
+- [Intent Epic](<Jira link>)
+```
+
+## Unit Page Template (Confluence)
+
+Use this template for Unit pages in Confluence. Each Unit page is a child of the Units Overview page.
+
+**Page Title**: `Unit <N>: <Unit Name>`
+
+**Page Content**:
+
+```markdown
 **Description**: <Brief scope summary>
-**Jira Key**: _pending_ <!-- Updated after Jira creation -->
 
-### Stories
+**Status**: Draft | In Review | Approved | Transferred
 
-1. [<Story title>](./<unit-slug>-01-<short-title>.md)
-2. [<Story title>](./<unit-slug>-02-<short-title>.md)
+## Stories
 
-### Bolt Plan
+| # | Story | Status |
+|---|-------|--------|
+| 1 | <Story title> | Draft |
+| 2 | <Story title> | Draft |
 
-- **Bolt 1**: <Description> (estimated: X hours)
-- **Bolt 2**: <Description> (estimated: X hours)
+*(Stories are child pages of this Unit)*
 
-### Dependencies
+## Bolt Plan
 
-- Depends on: <other units or external>
-- Blocks: <units that depend on this>
+| Bolt | Scope | Stories | Estimate |
+|------|-------|---------|----------|
+| Bolt 1 | <Description> | 1, 2, 3 | X hours |
+| Bolt 2 | <Description> | 4, 5 | X hours |
 
----
+## Dependencies
 
-## Unit: <Unit 2 Name>
+- **Depends on**: <other units or external>
+- **Blocks**: <units that depend on this>
 
-<!-- Repeat structure for each Unit -->
+## Risks
+
+- <Risk specific to this Unit>
 ```
 
 ## Organizational Risk Taxonomy
@@ -542,6 +588,66 @@ Before reading, prompt the user:
 - Space/project not found: Verify key spelling and permissions
 - Missing issue type: Check project configuration; Epic or Sub-epic may not be available
 - Permission denied: User may lack write access; suggest admin contact
+
+## Comment Resolution Guidance
+
+When resolving comments during the decomposition review phase, follow this process:
+
+### Fetching Comments
+
+For each page in the decomposition hierarchy (Overview, Units, Stories):
+
+1. **Inline comments**: `getConfluencePageInlineComments`
+   - These are attached to specific text selections
+   - Check `resolutionStatus` field: `open`, `resolved`, `reopened`, `dangling`
+   - Dangling means the highlighted text was modified/deleted
+
+2. **Footer comments**: `getConfluencePageFooterComments`
+   - These are general page-level comments
+   - No resolution status - resolved by discussion in reply thread
+
+3. **Replies**: Both inline and footer comments can have threaded replies
+   - Always read the full thread to understand the discussion
+   - Later replies may supersede earlier feedback
+
+### Addressing Feedback
+
+For each comment thread:
+
+| Feedback Type | Action |
+|---------------|--------|
+| Valid correction | Update page content, reply confirming change |
+| Clarification needed | Reply with clarification, update content if needed |
+| Disagreement | Reply explaining rationale, may need escalation |
+| Question | Reply with answer, update content if answer reveals gap |
+| Out of scope | Reply acknowledging, note for future consideration |
+
+### Reply Templates
+
+**Feedback addressed:**
+> ✅ Updated. Changed [specific text] to [new text] based on this feedback.
+
+**Clarification provided:**
+> The intent here is [explanation]. I've updated the wording to make this clearer.
+
+**Escalation needed:**
+> This requires a decision from [role/person]. Flagging for discussion.
+
+**Out of scope:**
+> Good point, but this is out of scope for this Intent. Added to Open Questions for future consideration.
+
+### Marking Resolved
+
+- **Inline comments**: Confluence has a "Resolve" action - mention this to the user
+- **Footer comments**: Considered resolved when the reply thread indicates agreement
+
+### Best Practices
+
+- Address comments in order: Overview → Units → Stories (top-down)
+- Group related comments that can be addressed with a single content update
+- If multiple comments conflict, surface the conflict and ask for resolution
+- Keep replies concise but informative
+- Always update content before replying (so the reply can reference the change)
 
 ## Atlassian MCP Tool Names (Rovo)
 
