@@ -1,6 +1,6 @@
 ---
 name: aidlc-design
-description: Guide the Construction Phase with Domain Design, Logical Design, and Architecture Decision Records (ADRs). Use after Units and Stories are created to bridge planning to implementation. (Triggers: domain design, logical design, create ADR, architecture decision, aidlc design, construction phase, model domain)
+description: Guide the Construction Phase with Domain Design, Logical Design, and Architecture Decision Records (ADRs). Use after Units and Stories are created to bridge planning to implementation. (Triggers - domain design, logical design, create ADR, architecture decision, aidlc design, construction phase, model domain)
 ---
 
 # AI-DLC Design

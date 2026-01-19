@@ -1,6 +1,6 @@
 ---
 name: aidlc-create-epic
-description: Create the Jira Intent Epic after the Level 1 Confluence documentation is approved, linking to Confluence and capturing risks, NFRs, and measurement criteria. Use when asked to create an Intent Epic or move the approved Intent into Jira. (Triggers: create intent epic, jira epic, move intent to jira, create epic from intent, intent epic, aidlc epic)
+description: Create the Jira Intent Epic after the Level 1 Confluence documentation is approved, linking to Confluence and capturing risks, NFRs, and measurement criteria. Use when asked to create an Intent Epic or move the approved Intent into Jira. (Triggers - create intent epic, jira epic, move intent to jira, create epic from intent, intent epic, aidlc epic)
 ---
 
 # AI-DLC Create Epic

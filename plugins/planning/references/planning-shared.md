@@ -164,16 +164,16 @@ Select an option to continue.
   - Dependencies
   - Test notes (if needed)
 
-## Story Markdown Template
+## Story Page Template (Confluence)
 
-Use this template when creating story files during the decompose phase. Save as `<unit-slug>-<story-number>-<short-title>.md`.
+Use this template when creating Story pages in Confluence. Each story is a child page under its Unit page.
+
+**Page Title**: `<Story Title>` (this becomes the Jira summary when transferred)
+
+**Page Content**:
 
 ```markdown
-# Story: <Story Title>
-
-**Unit**: <Unit Name>
-**Jira Key**: _pending_ <!-- Updated after Jira creation -->
-**Status**: Draft | Approved | Created
+**Status**: Draft | Approved | Transferred
 
 ## Summary
 
@@ -208,25 +208,23 @@ So that <benefit/value>.
 ## Test Notes
 
 <Guidance for testing this story>
-
-## Links
-
-- Intent Doc: <Confluence link>
-- Intent Epic: <Jira Epic key>
-- Related Stories: <links to related story files>
 ```
 
-## Units Overview Template
+**Note**: When transferred to Jira, the page title becomes the Jira summary and all content becomes the description.
 
-Use this template for the `_units-overview.md` file that summarizes story groupings.
+## Units Overview Page Template (Confluence)
+
+Use this template for the Units Overview page in Confluence. This page is a child of the Level 1 Intent document.
+
+**Page Title**: `Units Overview`
+
+**Page Content**:
 
 ```markdown
-# Units Overview
-
 **Intent**: <Intent Name>
 **Intent Epic**: <Jira Epic key>
 **Date**: <Creation date>
-**Status**: Draft | Approved | Jira Created
+**Status**: Draft | In Review | Approved | Transferred
 
 ## Unit Summary
 
@@ -235,33 +233,81 @@ Use this template for the `_units-overview.md` file that summarizes story groupi
 | <Unit 1 Name> | <count> | <count> | <list> |
 | <Unit 2 Name> | <count> | <count> | <list> |
 
+**Total Stories**: <count>
+
 ---
 
-## Unit: <Unit 1 Name>
+## Dependency Graph
 
+```
+Unit 1: <Name>
+    │
+    ├──► Unit 2: <Name>
+    │        │
+    │        └──► Unit 3: <Name>
+    │
+    └──► Unit 4: <Name>
+```
+
+---
+
+## Key Technical Decisions
+
+- <Decision 1>
+- <Decision 2>
+
+---
+
+## Cross-Cutting Acceptance Criteria
+
+- [ ] <Criterion that applies to all Units>
+- [ ] <Criterion that applies to all Units>
+
+---
+
+## Links
+
+- [Level 1 Intent](<Confluence link>)
+- [Intent Epic](<Jira link>)
+```
+
+## Unit Page Template (Confluence)
+
+Use this template for Unit pages in Confluence. Each Unit page is a child of the Units Overview page.
+
+**Page Title**: `Unit <N>: <Unit Name>`
+
+**Page Content**:
+
+```markdown
 **Description**: <Brief scope summary>
-**Jira Key**: _pending_ <!-- Updated after Jira creation -->
 
-### Stories
+**Status**: Draft | In Review | Approved | Transferred
 
-1. [<Story title>](./<unit-slug>-01-<short-title>.md)
-2. [<Story title>](./<unit-slug>-02-<short-title>.md)
+## Stories
 
-### Bolt Plan
+| # | Story | Status |
+|---|-------|--------|
+| 1 | <Story title> | Draft |
+| 2 | <Story title> | Draft |
 
-- **Bolt 1**: <Description> (estimated: X hours)
-- **Bolt 2**: <Description> (estimated: X hours)
+*(Stories are child pages of this Unit)*
 
-### Dependencies
+## Bolt Plan
 
-- Depends on: <other units or external>
-- Blocks: <units that depend on this>
+| Bolt | Scope | Stories | Estimate |
+|------|-------|---------|----------|
+| Bolt 1 | <Description> | 1, 2, 3 | X hours |
+| Bolt 2 | <Description> | 4, 5 | X hours |
 
----
+## Dependencies
 
-## Unit: <Unit 2 Name>
+- **Depends on**: <other units or external>
+- **Blocks**: <units that depend on this>
 
-<!-- Repeat structure for each Unit -->
+## Risks
+
+- <Risk specific to this Unit>
 ```
 
 ## Organizational Risk Taxonomy
@@ -513,11 +559,12 @@ What other options were evaluated?
 ## Atlassian MCP Operational Guidance
 
 **Atlassian Domain:** `raptortech1.atlassian.net`
+**Atlassian Cloud ID:** `7c795d89-53db-46c0-896a-d6333239676d`
 
 When using Atlassian MCP tools, follow this sequence:
 
 **For Confluence operations:**
-1. Get the Confluence cloud ID (may be implicit in some MCP configurations)
+1. Use the Cloud ID above for all Atlassian MCP tool calls
 2. Find the target space using `getConfluenceSpaces` or user-provided space key
 3. Locate the parent page using `searchConfluenceUsingCql` or `getPagesInConfluenceSpace`
 4. Create or update the page using `createConfluencePage` or `updateConfluencePage`
@@ -542,6 +589,66 @@ Before reading, prompt the user:
 - Missing issue type: Check project configuration; Epic or Sub-epic may not be available
 - Permission denied: User may lack write access; suggest admin contact
 
+## Comment Resolution Guidance
+
+When resolving comments during the decomposition review phase, follow this process:
+
+### Fetching Comments
+
+For each page in the decomposition hierarchy (Overview, Units, Stories):
+
+1. **Inline comments**: `getConfluencePageInlineComments`
+   - These are attached to specific text selections
+   - Check `resolutionStatus` field: `open`, `resolved`, `reopened`, `dangling`
+   - Dangling means the highlighted text was modified/deleted
+
+2. **Footer comments**: `getConfluencePageFooterComments`
+   - These are general page-level comments
+   - No resolution status - resolved by discussion in reply thread
+
+3. **Replies**: Both inline and footer comments can have threaded replies
+   - Always read the full thread to understand the discussion
+   - Later replies may supersede earlier feedback
+
+### Addressing Feedback
+
+For each comment thread:
+
+| Feedback Type | Action |
+|---------------|--------|
+| Valid correction | Update page content, reply confirming change |
+| Clarification needed | Reply with clarification, update content if needed |
+| Disagreement | Reply explaining rationale, may need escalation |
+| Question | Reply with answer, update content if answer reveals gap |
+| Out of scope | Reply acknowledging, note for future consideration |
+
+### Reply Templates
+
+**Feedback addressed:**
+> ✅ Updated. Changed [specific text] to [new text] based on this feedback.
+
+**Clarification provided:**
+> The intent here is [explanation]. I've updated the wording to make this clearer.
+
+**Escalation needed:**
+> This requires a decision from [role/person]. Flagging for discussion.
+
+**Out of scope:**
+> Good point, but this is out of scope for this Intent. Added to Open Questions for future consideration.
+
+### Marking Resolved
+
+- **Inline comments**: Confluence has a "Resolve" action - mention this to the user
+- **Footer comments**: Considered resolved when the reply thread indicates agreement
+
+### Best Practices
+
+- Address comments in order: Overview → Units → Stories (top-down)
+- Group related comments that can be addressed with a single content update
+- If multiple comments conflict, surface the conflict and ask for resolution
+- Keep replies concise but informative
+- Always update content before replying (so the reply can reference the change)
+
 ## Atlassian MCP Tool Names (Rovo)
 
 In Claude Code, tools are namespaced with the `mcp__plugin_atlassian_atlassian__` prefix.
@@ -563,3 +670,132 @@ In Claude Code, tools are namespaced with the `mcp__plugin_atlassian_atlassian__
 | `editJiraIssue` | `mcp__plugin_atlassian_atlassian__editJiraIssue` |
 | `addCommentToJiraIssue` | `mcp__plugin_atlassian_atlassian__addCommentToJiraIssue` |
 | `lookupJiraAccountId` | `mcp__plugin_atlassian_atlassian__lookupJiraAccountId` |
+
+## Story Elaboration Subagent
+
+The `/planning:aidlc-decompose` skill uses parallel subagents to elaborate stories by theme cluster. This section defines the prompt template and expected return format.
+
+### Theme Clustering Guidance
+
+When identifying theme clusters from an Intent:
+- Aim for 3-5 clusters (fewer for small intents, more for complex ones)
+- Group by functional area, capability, or technical domain
+- Each cluster should have low coupling to other clusters
+- Example themes: Authentication, API Layer, Data Migration, UI Components, Reporting
+
+### Subagent Prompt Template
+
+Use this template when spawning story elaboration subagents via the Task tool:
+
+```markdown
+You are elaborating User Stories for the "<THEME_NAME>" theme cluster.
+
+## Intent Context
+
+**Intent Summary:** <brief summary of the overall intent>
+
+**Target Users:** <user personas affected>
+
+**NFRs:** <relevant non-functional requirements>
+
+**Constraints:** <any constraints or limitations>
+
+## Stories to Elaborate
+
+Elaborate the following stories for this theme:
+<list of story titles/scopes>
+
+## Instructions
+
+For each story:
+1. Write the full story content using the Story Markdown Template format
+2. Identify risks specific to this story
+3. Identify dependencies:
+   - Within this theme cluster
+   - Cross-cluster dependencies (reference other themes by name)
+
+## Story Markdown Template
+
+Use this format for each story:
+
+# Story: <Story Title>
+
+**Unit**: _pending_ <!-- Assigned after grouping -->
+**Jira Key**: _pending_ <!-- Updated after Jira creation -->
+**Status**: Draft
+
+## Summary
+<Brief description of what this story delivers>
+
+## User Story
+As a <user type>,
+I want <goal/action>,
+So that <benefit/value>.
+
+## Acceptance Criteria
+- [ ] <Criterion 1>
+- [ ] <Criterion 2>
+
+## Context
+<Additional context, background, or technical notes>
+
+## Dependencies
+- <Dependency 1>
+
+## Risks
+- <Risk 1>
+
+## Test Notes
+<Guidance for testing this story>
+
+## Return Format
+
+Return your results as JSON in this exact structure:
+
+{
+  "theme": "<THEME_NAME>",
+  "stories": [
+    {
+      "title": "<story title>",
+      "content": "<full markdown content for the story>",
+      "risks": ["<risk 1>", "<risk 2>"],
+      "dependencies": {
+        "within_theme": ["<story title in same theme>"],
+        "cross_theme": ["<Theme Name>: <story or capability>"]
+      }
+    }
+  ],
+  "cross_cutting_concerns": [
+    "<concern that spans multiple themes or the entire intent>"
+  ]
+}
+```
+
+### Subagent Return Format
+
+Each subagent returns structured JSON with these fields:
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `theme` | string | The theme cluster name |
+| `stories` | array | Array of elaborated stories |
+| `stories[].title` | string | Story title |
+| `stories[].content` | string | Full markdown content for the story file |
+| `stories[].risks` | array | Risks specific to this story |
+| `stories[].dependencies.within_theme` | array | Dependencies on other stories in the same theme |
+| `stories[].dependencies.cross_theme` | array | Dependencies on other themes (format: "Theme: capability") |
+| `cross_cutting_concerns` | array | Concerns that span multiple themes |
+
+### Consolidation Logic
+
+After collecting results from all subagents, the parent agent:
+
+1. **Parse results**: Extract stories from each subagent's JSON response
+2. **Merge risks**: Combine all `cross_cutting_concerns` into a unified list
+3. **Build dependency graph**: Map `cross_theme` dependencies to actual stories
+4. **Identify conflicts**: Flag stories with conflicting assumptions or overlapping scope
+5. **Group into Units**:
+   - Start with theme boundaries
+   - Merge themes with tight coupling
+   - Split themes with clear sub-boundaries
+6. **Assign Unit slugs**: Add unit prefix to each story filename
