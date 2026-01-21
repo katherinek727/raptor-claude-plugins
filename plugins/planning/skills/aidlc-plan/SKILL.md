@@ -7,6 +7,14 @@ description: Create and iteratively refine the AI-DLC Level 1 Intent documentati
 
 Produce the Level 1 Intent documentation in Confluence as the single source of truth for the project idea. Emphasize iteration, human approval, and risk visibility before any Jira artifacts are created.
 
+> **IMPORTANT: Keep Intent Docs Lightweight**
+>
+> Intent documents capture WHAT needs to be achieved, not HOW to break it down.
+> - Do NOT include detailed unit decomposition or story breakdowns
+> - Do NOT create Jira artifacts at this stage
+> - Unit breakdown happens later in `/planning:aidlc-decompose` (Mob Elaboration)
+> - You may include "Proposed Units (hypotheses only)" as rough scope indicators
+
 ## AI-Drives-Conversation Pattern
 
 This skill follows the AI-DLC principle where AI initiates and directs the conversation:
@@ -84,13 +92,13 @@ Include in Confluence doc as a collapsible section or separate child page. See P
    When approved, update the Confluence page status table:
    - Set "Level 1 Intent" row to "✅ Approved" with today's date
 
-9. **Chain to Epic creation**
-   If approved and the user wants to proceed to Jira, invoke `/planning:aidlc-create-epic` with the Confluence page link. Pass along the Intent name and any context gathered.
+9. **Chain to Decompose**
+   If approved and the user wants to proceed, invoke `/planning:aidlc-decompose` with the Confluence page link. Pass along the Intent name and any context gathered. Note: Jira artifacts are created later, after Mob Elaboration and Unit Re-assessment.
 
 ## Workflow Chain
 
 - **This is the first step** in the AI-DLC planning workflow
-- **Next**: `/planning:aidlc-create-epic` (Intent Epic creation)
+- **Next**: `/planning:aidlc-decompose` (Mob Elaboration - Unit and Story decomposition)
 
 ## Definition of Done
 

@@ -1,11 +1,21 @@
 ---
 name: aidlc-decompose
-description: Decompose an approved Intent into User Stories and Units using parallel agents for story elaboration. Stories are created as Confluence pages for collaborative review, then transferred to Jira after approval. (Triggers - decompose intent, break down intent, create units, unit decomposition, create stories, break into units, split intent, aidlc decompose)
+description: Decompose an approved Intent into User Stories and Units using Mob Elaboration. Stories are created as Confluence pages for collaborative review, re-assessed using domain knowledge and loose coupling/high cohesion principles, then transferred to Jira after approval. (Triggers - decompose intent, break down intent, create units, unit decomposition, create stories, break into units, split intent, aidlc decompose, mob elaboration)
 ---
 
-# AI-DLC Decompose
+# AI-DLC Decompose (Mob Elaboration)
 
-Break down an approved Intent into User Stories and Units (Sub-epics) using parallel agents for efficient story elaboration. Stories are created as Confluence pages (child pages under the Level 1 Intent) for collaborative team review, then transferred to Jira after approval. Do not create Bugs unless explicitly requested by a human.
+Break down an approved Intent into User Stories and Units using the AI-DLC Mob Elaboration ritual. This skill uses parallel agents for efficient story elaboration. Stories are created as Confluence pages (child pages under the Level 1 Intent) for collaborative team review, then transferred to Jira only after Unit Re-assessment is complete. Do not create Bugs unless explicitly requested by a human.
+
+> **AI-DLC Mob Elaboration**
+>
+> Per AI-DLC methodology: "AI plays a central role in proposing an initial breakdown
+> of the Intent into User Stories, Acceptance Criteria and Units, leveraging domain
+> knowledge, and the principles of loose coupling and high cohesion for rapid
+> parallel execution downstream."
+>
+> Units are cohesive, self-contained work elements (analogous to Subdomains in DDD).
+> They are NOT Jira Epics - Jira artifacts are created only in Phase 5 after re-assessment.
 
 > **CRITICAL: Confluence First, Jira Later**
 >
@@ -36,15 +46,14 @@ Before starting, validate:
 
 1. **Required artifacts**
    - Confluence Level 1 Intent document (ask for link)
-   - Jira Intent Epic (ask for key)
-   - Fetch both using Atlassian MCP to confirm they exist
+   - Fetch using Atlassian MCP to confirm it exists
 
 2. **Required status**
    - Check the Workflow Status table in the Confluence doc
-   - Verify "Intent Epic" row shows "✅ Created"
+   - Verify "Level 1 Intent" row shows "✅ Approved"
 
 3. **If prerequisites incomplete**
-   - Offer to run `/planning:aidlc-create-epic` first (or `/planning:aidlc-plan` if Confluence doc missing)
+   - Offer to run `/planning:aidlc-plan` first if Confluence doc is missing or not approved
    - Or allow override with explicit confirmation (see Override Pattern in `../references/planning-shared.md`)
 
 ## Confluence Page Hierarchy
@@ -82,9 +91,8 @@ Level 1 Intent Document (existing)
 #### Step 1: Gather Context
 
 Ask only for what is missing:
-- Jira project key (no default)
-- Intent Epic key
 - Approved Confluence Level 1 doc link (this will be the parent for the Units Overview)
+- Jira project key (for later transfer in Phase 5 - no default)
 - Any known constraints, dependencies, or sequencing needs
 
 #### Step 2: Identify Theme Clusters
@@ -141,22 +149,34 @@ For each Unit, suggest rapid iteration cycles:
 - Sequencing considerations
 - See Bolt Planning Guidance in `../references/planning-shared.md`
 
-#### Step 7: Create Confluence Pages
+#### Step 7: Create Confluence Pages (Parallel)
 
-Create the page hierarchy under the Level 1 Intent document:
+Create the page hierarchy under the Level 1 Intent document using parallel sub-agents for efficiency.
+
+**Phase A: Create Units Overview (sequential)**
 
 1. **Create Units Overview page** (child of Level 1 Intent)
    - Use the Units Overview Template from `../references/planning-shared.md`
-   - Include: Intent name, Epic key, Unit summary table, dependency graph, technical decisions, acceptance criteria
+   - Include: Intent name, Unit summary table, dependency graph, technical decisions, acceptance criteria
+   - **This must complete first** to provide the parent page ID for Units
 
-2. **Create Unit pages** (children of Units Overview)
-   - One page per Unit
-   - Include: Unit description, story list, bolt plan, dependencies
+**Phase B: Create Unit + Stories (parallel, one agent per Unit)**
 
-3. **Create Story pages** (children of their respective Unit page)
-   - One page per Story
-   - Use the Story Page Template from `../references/planning-shared.md`
-   - Include: User story, acceptance criteria, context, dependencies, risks, test notes
+2. **Spawn one sub-agent per Unit** using the Task tool:
+   - Use `subagent_type: "general-purpose"`
+   - Pass the Units Overview page ID as the parent
+   - Use the Confluence Page Creation Subagent Prompt Template from `../references/planning-shared.md`
+   - **Spawn all sub-agents in a single message** (parallel execution)
+
+   Each sub-agent creates:
+   - The Unit page (child of Units Overview)
+   - All Story pages for that Unit (children of Unit page)
+   - Uses Unit Page Template and Story Page Template from `../references/planning-shared.md`
+
+3. **Consolidate sub-agent results**:
+   - Collect all Unit page IDs and Story page IDs
+   - Verify all pages were created successfully
+   - Report any failures and offer to retry
 
 #### Step 8: Request Review
 
@@ -245,23 +265,35 @@ Note: Confluence inline comments have a resolution status; footer comments are r
 
 ---
 
-### Phase 4: Reorganization (If Needed)
+### Phase 4: Unit Re-assessment and Reorganization
 
-#### Step 14: Re-assess Stories
+This phase applies domain knowledge and architectural principles to validate and refine Unit boundaries before Jira transfer.
 
-Review all stories considering:
-- How they will be delivered
-- Dependencies between stories
-- Number of engineers available (parallel streams capacity)
-- Feedback received during review
+#### Step 14: Apply Unit Re-assessment Criteria
+
+Evaluate each Unit against these AI-DLC principles:
+
+| Criterion | Question | Action if Failed |
+|-----------|----------|------------------|
+| **Domain Alignment** | Does each Unit map to a coherent subdomain? | Split or merge Units to align with domain boundaries |
+| **Loose Coupling** | Are cross-Unit dependencies minimized? | Regroup stories to reduce dependencies |
+| **High Cohesion** | Are related stories grouped together? | Move stories between Units |
+| **Independent Value** | Can each Unit deliver value independently? | Ensure each Unit has a clear deliverable |
+| **Parallel Execution** | Can Units be built in parallel by different teams? | Resolve blocking dependencies |
+
+Present the re-assessment findings to the user:
+- Which Units pass all criteria
+- Which Units need adjustment and why
+- Proposed regrouping (if any)
 
 #### Step 15: Regroup into Units
 
-If regrouping is needed:
+If regrouping is needed based on re-assessment:
 1. **Move story pages** between Unit pages (update parent page ID)
 2. **Rename/repurpose Unit pages** where possible (avoid creating new pages unnecessarily)
 3. **Create new Unit pages** only when necessary
 4. **Archive Unit pages** that are no longer needed
+5. **Document the rationale** for Unit boundaries in the Units Overview
 
 #### Step 16: Update Units Overview
 
@@ -269,6 +301,7 @@ Update the Units Overview page to reflect the new groupings:
 - Update the Unit summary table
 - Update the dependency graph
 - Update story counts
+- Add "Unit Boundary Rationale" section documenting why Units are grouped this way
 
 ---
 
@@ -283,9 +316,10 @@ Confirm the user is ready to transfer to Jira:
 #### Step 18: Create Jira Artifacts
 
 For each Unit:
-1. **Create Sub-epic** (or Epic if Sub-epic unavailable) linked to the Intent Epic
+1. **Create Sub-epic** (or Epic if Sub-epic unavailable)
    - Summary: Unit page title
-   - Description: Unit page content
+   - Description: Unit page content + link to Level 1 Intent Confluence doc
+   - Label: `aidlc:unit`
 
 2. **Create Stories** under each Sub-epic
    - Summary: Story page title
@@ -298,7 +332,6 @@ Use templates in `../references/planning-shared.md`
 Update the Confluence Level 1 Intent page status table:
 - Set "Unit Decomposition" row to "✅ Complete" with today's date
 - Add links to created Sub-epics in the Artifact column
-- Update Intent Epic label: `aidlc:decomposing` → `aidlc:decomposed`
 
 #### Step 20: Delete Confluence Story Pages
 
@@ -323,7 +356,7 @@ If yes, invoke `/planning:aidlc-design` with the Unit context.
 
 ## Workflow Chain
 
-- **Previous**: `/planning:aidlc-create-epic` (Intent Epic creation)
+- **Previous**: `/planning:aidlc-plan` (Level 1 Intent documentation)
 - **Next**: `/planning:aidlc-design` (Domain and Logical Design)
 
 ## Definition of Done
@@ -350,18 +383,18 @@ If yes, invoke `/planning:aidlc-design` with the Unit context.
 - Replies posted explaining how feedback was addressed
 - Comments marked as resolved
 
-### Phase 4 (Reorganization - if needed)
-- Stories regrouped based on delivery/dependencies/capacity
+### Phase 4 (Unit Re-assessment and Reorganization)
+- All Units evaluated against re-assessment criteria (domain alignment, loose coupling, high cohesion, independent value, parallel execution)
+- Stories regrouped based on domain knowledge and architectural principles
 - Story pages moved between Units as needed
 - Unit pages renamed/repurposed (not duplicated)
-- Units Overview updated with new groupings
+- Units Overview updated with new groupings and boundary rationale
 
 ### Phase 5 (Jira Transfer)
-- Units created as Sub-epics linked to Intent Epic
+- Units created as Sub-epics with `aidlc:unit` label
 - Stories created under their respective Sub-epics
 - Confluence decomposition pages deleted (Overview, Units, Stories)
 - Level 1 Intent page status table updated
-- Intent Epic label updated to `aidlc:decomposed`
 
 ## Troubleshooting
 

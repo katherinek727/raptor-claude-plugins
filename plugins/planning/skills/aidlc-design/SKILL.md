@@ -34,7 +34,6 @@ Before starting, validate:
 
 1. **Required artifacts**
    - Confluence Level 1 Intent document (ask for link)
-   - Jira Intent Epic (ask for key)
    - At least one Jira Unit (Sub-epic) with Stories (ask for key)
    - Fetch all using Atlassian MCP to confirm they exist
 
@@ -43,14 +42,14 @@ Before starting, validate:
    - Verify "Unit Decomposition" row shows "✅ Complete"
 
 3. **If prerequisites incomplete**
-   - Offer to run `/planning:aidlc-decompose` first (or earlier skills if those are missing)
+   - Offer to run `/planning:aidlc-decompose` first (or `/planning:aidlc-plan` if Confluence doc missing)
    - Or allow override with explicit confirmation (see Override Pattern in `../references/planning-shared.md`)
 
 ## Workflow
 
 1. **Gather context**
    Ask only for what is missing:
-   - Unit key and linked Intent Epic
+   - Unit key (Sub-epic in Jira)
    - User Stories within the Unit
    - Relevant NFRs (performance, security, scalability, etc.)
    - Existing codebase context (for brown-field)
@@ -98,7 +97,7 @@ Before starting, validate:
    - ADRs: Confluence pages or repo `docs/adr/` folder
    - Link back to Unit in Jira
    - Update Unit description with design doc links
-   - Update Intent Epic label: `aidlc:designing` → `aidlc:designed`
+   - Add label to Unit: `aidlc:designed`
 
 7. **Update workflow status**
    Update the Confluence page status table:

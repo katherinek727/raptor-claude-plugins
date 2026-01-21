@@ -55,7 +55,7 @@ Use this reference for the AI-DLC Intent → Unit planning flow.
 
 ## Workflow Status Tracking
 
-Track progress through the AI-DLC workflow with a status table in the Confluence doc and labels on the Jira Intent Epic.
+Track progress through the AI-DLC workflow with a status table in the Confluence doc and labels on Jira Units.
 
 ### Confluence Status Table
 
@@ -64,7 +64,6 @@ Include this table in the Level 1 Intent document:
 | Phase | Status | Date | Artifact |
 |-------|--------|------|----------|
 | Level 1 Intent | ⏳ Draft | - | - |
-| Intent Epic | ⏳ Pending | - | - |
 | Unit Decomposition | ⏳ Pending | - | - |
 | Domain Design | ⏳ Pending | - | - |
 
@@ -74,20 +73,18 @@ Include this table in the Level 1 Intent document:
 - 🔄 In Progress — Actively being worked
 - ❌ Blocked — Waiting on dependency or decision
 
-### Jira Epic Labels
+### Jira Unit Labels
 
-Add labels to the Intent Epic to track phase:
-- `aidlc:epic-created` — Epic exists, ready for decomposition
-- `aidlc:decomposing` → `aidlc:decomposed` — Unit/Story creation
-- `aidlc:designing` → `aidlc:designed` — Domain design phase
+Add labels to Units (Sub-epics) to track phase:
+- `aidlc:unit` — Unit created from decomposition
+- `aidlc:designed` — Domain design complete for this Unit
 
 ### Skill Responsibilities
 
-Each skill updates both tracking mechanisms:
-- `/planning:aidlc-plan`: Initialize status table with "Level 1 Intent: ✅ Approved"
-- `/planning:aidlc-create-epic`: Update table + add `aidlc:epic-created` label
-- `/planning:aidlc-decompose`: Update table + transition labels
-- `/planning:aidlc-design`: Update table + transition labels
+Each skill updates the Confluence status table:
+- `/planning:aidlc-plan`: Set "Level 1 Intent: ✅ Approved"
+- `/planning:aidlc-decompose`: Set "Unit Decomposition: ✅ Complete", create Sub-epics with `aidlc:unit` label
+- `/planning:aidlc-design`: Set "Domain Design: ✅ Complete", add `aidlc:designed` label to Unit
 
 ## Prerequisite Validation
 
@@ -113,9 +110,8 @@ Before proceeding with any skill (except `/planning:aidlc-plan`), validate that 
 | Skill | Required Artifacts | Required Status |
 |-------|-------------------|-----------------|
 | `/planning:aidlc-plan` | None (first step) | — |
-| `/planning:aidlc-create-epic` | Confluence Level 1 doc | "Level 1 Intent: ✅ Approved" |
-| `/planning:aidlc-decompose` | Intent Epic, Confluence doc | "Intent Epic: ✅ Created" |
-| `/planning:aidlc-design` | Unit(s), Intent Epic, Confluence doc | "Unit Decomposition: ✅ Complete" |
+| `/planning:aidlc-decompose` | Confluence Level 1 doc | "Level 1 Intent: ✅ Approved" |
+| `/planning:aidlc-design` | Unit(s) in Jira, Confluence doc | "Unit Decomposition: ✅ Complete" |
 
 ### Override Pattern
 
@@ -133,36 +129,31 @@ This may indicate a skipped step. Options:
 Select an option to continue.
 ```
 
-## Jira Intent Epic Template
-
-- Summary: "Intent: <Intent Name>"
-- Description:
-  - Intent summary
-  - Confluence link(s)
-  - Outcomes
-  - NFRs
-  - Measurement criteria
-  - Risks and assumptions
-
 ## Jira Unit (Sub-epic) Template
 
 - Summary: "Unit: <Unit Name>"
 - Description:
   - Scope summary
-  - Acceptance criteria
-  - NFRs specific to the Unit
-  - Risks and dependencies
+  - Acceptance criteria (use checkbox format: `- [ ] Criterion`)
+  - NFRs specific to the Unit (use table: Category | Requirement | Target)
+  - Risks (use table: Risk | Impact | Likelihood | Mitigation)
+  - Dependencies (use bulleted list with references)
   - Testing approach (which test types apply, test environment needs)
-  - Links to Intent Epic + Confluence
+  - Link to Level 1 Intent Confluence doc
+- Label: `aidlc:unit`
+
+See **Template Standardization** section for format details.
 
 ## Jira Work Item Template (Story/Chore)
 
 - Summary: "<Verb> <Outcome>"
 - Description:
   - Context
-  - Acceptance criteria
-  - Dependencies
-  - Test notes (if needed)
+  - Acceptance criteria (use checkbox format: `- [ ] Criterion`)
+  - Dependencies (use bulleted list with references)
+  - Test notes (bulleted list of test scenarios)
+
+See **Template Standardization** section for format details.
 
 ## Story Page Template (Confluence)
 
@@ -197,17 +188,20 @@ So that <benefit/value>.
 
 ## Dependencies
 
-- <Dependency 1>
-- <Dependency 2>
+- [PROJ-123] <Dependency 1 with reference>
+- [Unit: <Name>] <Dependency 2 with unit reference>
 
 ## Risks
 
-- <Risk 1>
-- <Risk 2>
+| Risk | Impact | Likelihood | Mitigation |
+|------|--------|------------|------------|
+| <Risk 1> | High/Medium/Low | High/Medium/Low | <Mitigation> |
+| <Risk 2> | High/Medium/Low | High/Medium/Low | <Mitigation> |
 
 ## Test Notes
 
-<Guidance for testing this story>
+- <Test scenario 1>
+- <Test scenario 2>
 ```
 
 **Note**: When transferred to Jira, the page title becomes the Jira summary and all content becomes the description.
@@ -222,7 +216,6 @@ Use this template for the Units Overview page in Confluence. This page is a chil
 
 ```markdown
 **Intent**: <Intent Name>
-**Intent Epic**: <Jira Epic key>
 **Date**: <Creation date>
 **Status**: Draft | In Review | Approved | Transferred
 
@@ -268,7 +261,6 @@ Unit 1: <Name>
 ## Links
 
 - [Level 1 Intent](<Confluence link>)
-- [Intent Epic](<Jira link>)
 ```
 
 ## Unit Page Template (Confluence)
@@ -302,12 +294,15 @@ Use this template for Unit pages in Confluence. Each Unit page is a child of the
 
 ## Dependencies
 
-- **Depends on**: <other units or external>
-- **Blocks**: <units that depend on this>
+- **Depends on:** [Unit: <Name>] <description>
+- **Blocks:** [Unit: <Name>] <description>
+- **External:** <External dependency>
 
 ## Risks
 
-- <Risk specific to this Unit>
+| Risk | Impact | Likelihood | Mitigation |
+|------|--------|------------|------------|
+| <Risk specific to this Unit> | High/Medium/Low | High/Medium/Low | <Mitigation> |
 ```
 
 ## Organizational Risk Taxonomy
@@ -486,9 +481,7 @@ Maintain bidirectional links between artifacts:
 
 ```
 Confluence Level 1 Intent
-    ↓ linked in Epic description
-Jira Intent Epic
-    ↓ parent link
+    ↓ linked in Unit description
 Jira Unit (Sub-epic)
     ↓ parent link
 Jira Story/Chore
@@ -799,3 +792,160 @@ After collecting results from all subagents, the parent agent:
    - Merge themes with tight coupling
    - Split themes with clear sub-boundaries
 6. **Assign Unit slugs**: Add unit prefix to each story filename
+
+## Confluence Page Creation Subagent
+
+The `/planning:aidlc-decompose` skill uses parallel subagents to create Confluence pages efficiently. After the Units Overview page is created, one subagent is spawned per Unit to create that Unit's page and all its Story pages in parallel.
+
+### Subagent Prompt Template
+
+Use this template when spawning Confluence page creation subagents via the Task tool:
+
+```markdown
+You are creating a Unit page and its Story pages in Confluence.
+
+## Context
+
+**Cloud ID:** <cloudId>
+**Parent Page ID:** <unitsOverviewPageId> (Units Overview page)
+
+## Unit Data
+
+**Unit Name:** <unitName>
+**Unit Description:** <description>
+**Status:** Draft
+
+### Bolt Plan
+
+| Bolt | Scope | Stories | Estimate |
+|------|-------|---------|----------|
+<bolt plan rows>
+
+### Dependencies
+
+- **Depends on:** <other units or external>
+- **Blocks:** <units that depend on this>
+
+### Risks
+
+| Risk | Impact | Likelihood | Mitigation |
+|------|--------|------------|------------|
+<risk rows>
+
+## Stories to Create
+
+<JSON array of stories with full content>
+
+## Instructions
+
+1. Create the Unit page as child of Units Overview using the Unit Page Template
+2. For each story, create a Story page as child of the Unit page using the Story Page Template
+3. Return the Unit page ID and all Story page IDs
+
+## Templates
+
+Use the templates from planning-shared.md:
+- Unit Page Template (for the Unit)
+- Story Page Template (for each Story)
+
+## Return Format
+
+Return your results as JSON in this exact structure:
+
+{
+  "unit": {
+    "name": "<unit name>",
+    "pageId": "<unit page ID>",
+    "pageUrl": "<unit page URL>"
+  },
+  "stories": [
+    { "title": "<story title>", "pageId": "<story page ID>", "pageUrl": "<story page URL>" }
+  ]
+}
+```
+
+### Subagent Return Format
+
+Each subagent returns structured JSON with these fields:
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `unit.name` | string | The Unit name |
+| `unit.pageId` | string | Confluence page ID for the Unit |
+| `unit.pageUrl` | string | URL to the Unit page |
+| `stories` | array | Array of created story pages |
+| `stories[].title` | string | Story title |
+| `stories[].pageId` | string | Confluence page ID for the story |
+| `stories[].pageUrl` | string | URL to the story page |
+
+### Consolidation After Page Creation
+
+After collecting results from all page creation subagents:
+
+1. **Verify all pages created**: Check that each subagent returned valid page IDs
+2. **Handle failures**: If any subagent failed, report which Unit/Stories failed and offer to retry
+3. **Compile page links**: Build a summary of all created pages for the user
+4. **Update Units Overview**: Add links to Unit pages in the summary table
+
+## Template Standardization
+
+All templates must use consistent formatting for common sections.
+
+### Section Format Reference
+
+| Section | Required Format | Example |
+|---------|-----------------|---------|
+| **Acceptance Criteria** | Checkbox list (`- [ ]`) | `- [ ] User can log in with SSO` |
+| **Risks** | Table with columns: Risk, Impact, Likelihood, Mitigation | See Risks Table Format |
+| **Dependencies** | Bulleted list with link/reference | `- [AUTH-123] SSO provider setup` |
+| **Status** | Bold label + current value | `**Status:** Draft` |
+| **User Story** | "As a... I want... So that..." format | Standard user story |
+| **NFRs** | Table with columns: Category, Requirement, Target | See NFRs Table Format |
+| **Test Notes** | Bulleted list of test scenarios | `- Verify login with valid credentials` |
+| **Context** | Prose paragraph(s) | Free-form text |
+
+### Risks Table Format
+
+Always use this table format for risks:
+
+```markdown
+| Risk | Impact | Likelihood | Mitigation |
+|------|--------|------------|------------|
+| <Risk description> | High/Medium/Low | High/Medium/Low | <Mitigation strategy> |
+```
+
+### NFRs Table Format
+
+Always use this table format for non-functional requirements:
+
+```markdown
+| Category | Requirement | Target |
+|----------|-------------|--------|
+| Performance | Response time | < 200ms |
+| Security | Authentication | OAuth 2.0 |
+| Availability | Uptime | 99.9% |
+```
+
+### Acceptance Criteria Format
+
+Always use checkbox format for acceptance criteria:
+
+```markdown
+## Acceptance Criteria
+
+- [ ] Criterion 1: Specific, testable requirement
+- [ ] Criterion 2: Another testable requirement
+- [ ] Criterion 3: Edge case handling
+```
+
+### Dependencies Format
+
+Always use bulleted list with references:
+
+```markdown
+## Dependencies
+
+- [PROJ-123] Prerequisite work item
+- [Unit: Authentication] Must complete first
+- External: Third-party API availability
+```
