@@ -55,7 +55,7 @@ Use this reference for the AI-DLC Intent → Unit planning flow.
 
 ## Workflow Status Tracking
 
-Track progress through the AI-DLC workflow with a status table in the Confluence doc and labels on the Jira Intent Epic.
+Track progress through the AI-DLC workflow with a status table in the Confluence doc and labels on Jira Units.
 
 ### Confluence Status Table
 
@@ -64,7 +64,6 @@ Include this table in the Level 1 Intent document:
 | Phase | Status | Date | Artifact |
 |-------|--------|------|----------|
 | Level 1 Intent | ⏳ Draft | - | - |
-| Intent Epic | ⏳ Pending | - | - |
 | Unit Decomposition | ⏳ Pending | - | - |
 | Domain Design | ⏳ Pending | - | - |
 
@@ -74,20 +73,18 @@ Include this table in the Level 1 Intent document:
 - 🔄 In Progress — Actively being worked
 - ❌ Blocked — Waiting on dependency or decision
 
-### Jira Epic Labels
+### Jira Unit Labels
 
-Add labels to the Intent Epic to track phase:
-- `aidlc:epic-created` — Epic exists, ready for decomposition
-- `aidlc:decomposing` → `aidlc:decomposed` — Unit/Story creation
-- `aidlc:designing` → `aidlc:designed` — Domain design phase
+Add labels to Units (Sub-epics) to track phase:
+- `aidlc:unit` — Unit created from decomposition
+- `aidlc:designed` — Domain design complete for this Unit
 
 ### Skill Responsibilities
 
-Each skill updates both tracking mechanisms:
-- `/planning:aidlc-plan`: Initialize status table with "Level 1 Intent: ✅ Approved"
-- `/planning:aidlc-create-epic`: Update table + add `aidlc:epic-created` label
-- `/planning:aidlc-decompose`: Update table + transition labels
-- `/planning:aidlc-design`: Update table + transition labels
+Each skill updates the Confluence status table:
+- `/planning:aidlc-plan`: Set "Level 1 Intent: ✅ Approved"
+- `/planning:aidlc-decompose`: Set "Unit Decomposition: ✅ Complete", create Sub-epics with `aidlc:unit` label
+- `/planning:aidlc-design`: Set "Domain Design: ✅ Complete", add `aidlc:designed` label to Unit
 
 ## Prerequisite Validation
 
@@ -113,9 +110,8 @@ Before proceeding with any skill (except `/planning:aidlc-plan`), validate that 
 | Skill | Required Artifacts | Required Status |
 |-------|-------------------|-----------------|
 | `/planning:aidlc-plan` | None (first step) | — |
-| `/planning:aidlc-create-epic` | Confluence Level 1 doc | "Level 1 Intent: ✅ Approved" |
-| `/planning:aidlc-decompose` | Intent Epic, Confluence doc | "Intent Epic: ✅ Created" |
-| `/planning:aidlc-design` | Unit(s), Intent Epic, Confluence doc | "Unit Decomposition: ✅ Complete" |
+| `/planning:aidlc-decompose` | Confluence Level 1 doc | "Level 1 Intent: ✅ Approved" |
+| `/planning:aidlc-design` | Unit(s) in Jira, Confluence doc | "Unit Decomposition: ✅ Complete" |
 
 ### Override Pattern
 
@@ -133,17 +129,6 @@ This may indicate a skipped step. Options:
 Select an option to continue.
 ```
 
-## Jira Intent Epic Template
-
-- Summary: "Intent: <Intent Name>"
-- Description:
-  - Intent summary
-  - Confluence link(s)
-  - Outcomes
-  - NFRs
-  - Measurement criteria
-  - Risks and assumptions
-
 ## Jira Unit (Sub-epic) Template
 
 - Summary: "Unit: <Unit Name>"
@@ -153,7 +138,8 @@ Select an option to continue.
   - NFRs specific to the Unit
   - Risks and dependencies
   - Testing approach (which test types apply, test environment needs)
-  - Links to Intent Epic + Confluence
+  - Link to Level 1 Intent Confluence doc
+- Label: `aidlc:unit`
 
 ## Jira Work Item Template (Story/Chore)
 
@@ -222,7 +208,6 @@ Use this template for the Units Overview page in Confluence. This page is a chil
 
 ```markdown
 **Intent**: <Intent Name>
-**Intent Epic**: <Jira Epic key>
 **Date**: <Creation date>
 **Status**: Draft | In Review | Approved | Transferred
 
@@ -268,7 +253,6 @@ Unit 1: <Name>
 ## Links
 
 - [Level 1 Intent](<Confluence link>)
-- [Intent Epic](<Jira link>)
 ```
 
 ## Unit Page Template (Confluence)
@@ -486,9 +470,7 @@ Maintain bidirectional links between artifacts:
 
 ```
 Confluence Level 1 Intent
-    ↓ linked in Epic description
-Jira Intent Epic
-    ↓ parent link
+    ↓ linked in Unit description
 Jira Unit (Sub-epic)
     ↓ parent link
 Jira Story/Chore
