@@ -25,7 +25,7 @@ This skill follows the AI-DLC principle where AI initiates and directs the conve
 
 ## References
 
-- Use `../references/planning-shared.md` for templates, Jira tool names, and operational guidance.
+- Use @${CLAUDE_PLUGIN_ROOT}/references/planning-shared.md for templates, Jira tool names, and operational guidance.
 
 ## Prerequisites
 
@@ -45,7 +45,7 @@ Before starting, validate:
 3. **If prerequisites incomplete**
    - Offer to run `/planning:aidlc-design` first if design is missing
    - Offer to run `/planning:aidlc-decompose` if Units are missing
-   - Or allow override with explicit confirmation (see Override Pattern in `../references/planning-shared.md`)
+   - Or allow override with explicit confirmation (see Override Pattern in @${CLAUDE_PLUGIN_ROOT}/references/planning-shared.md)
 
 ## Confidence Assessment Framework
 
@@ -284,7 +284,7 @@ For each Unit:
    - Summary: Story page title
    - Description: Everything else from the story page (user story, acceptance criteria, context, dependencies, risks, test notes)
 
-Use templates in `../references/planning-shared.md`
+Use templates in @${CLAUDE_PLUGIN_ROOT}/references/planning-shared.md
 
 #### Step 3: Update Workflow Status
 

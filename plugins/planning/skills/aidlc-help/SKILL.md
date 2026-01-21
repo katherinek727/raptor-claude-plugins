@@ -9,8 +9,8 @@ Explain the AI-DLC methodology and guide users through the planning plugin.
 
 ## References
 
-- Use `../references/aidlc-methodology.md` for detailed methodology documentation
-- Use `../references/planning-shared.md` for templates and operational guidance
+- Use @${CLAUDE_PLUGIN_ROOT}/references/aidlc-methodology.md for detailed methodology documentation
+- Use @${CLAUDE_PLUGIN_ROOT}/references/planning-shared.md for templates and operational guidance
 
 ## What is AI-DLC?
 

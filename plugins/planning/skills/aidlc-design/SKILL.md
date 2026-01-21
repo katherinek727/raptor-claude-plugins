@@ -26,7 +26,7 @@ This skill follows the AI-DLC principle where AI initiates and directs the conve
 
 ## References
 
-- Use `../references/planning-shared.md` for DDD guidance, ADR templates, and tool names.
+- Use @${CLAUDE_PLUGIN_ROOT}/references/planning-shared.md for DDD guidance, ADR templates, and tool names.
 
 ## Prerequisites
 
@@ -43,7 +43,7 @@ Before starting, validate:
 
 3. **If prerequisites incomplete**
    - Offer to run `/planning:aidlc-decompose` first (or `/planning:aidlc-plan` if Confluence doc missing)
-   - Or allow override with explicit confirmation (see Override Pattern in `../references/planning-shared.md`)
+   - Or allow override with explicit confirmation (see Override Pattern in @${CLAUDE_PLUGIN_ROOT}/references/planning-shared.md)
 
 ## Workflow
 
@@ -119,7 +119,7 @@ Before starting, validate:
    - Consequences: Trade-offs and implications
    - Alternatives considered
 
-   Use the ADR Template in `../references/planning-shared.md`.
+   Use the ADR Template in @${CLAUDE_PLUGIN_ROOT}/references/planning-shared.md.
 
 6. **Confirm understanding**
    Summarize:
