@@ -38,7 +38,7 @@ Break down an approved Intent into User Stories and Units using the AI-DLC Mob E
 
 ## References
 
-- Use `../references/planning-shared.md` for templates, Bolt guidance, subagent prompts, and Jira tool names.
+- Use @${CLAUDE_PLUGIN_ROOT}/references/planning-shared.md for templates, Bolt guidance, subagent prompts, and Jira tool names.
 
 ## Prerequisites
 
@@ -54,7 +54,7 @@ Before starting, validate:
 
 3. **If prerequisites incomplete**
    - Offer to run `/planning:aidlc-plan` first if Confluence doc is missing or not approved
-   - Or allow override with explicit confirmation (see Override Pattern in `../references/planning-shared.md`)
+   - Or allow override with explicit confirmation (see Override Pattern in @${CLAUDE_PLUGIN_ROOT}/references/planning-shared.md)
 
 ## Confluence Page Hierarchy
 
@@ -117,7 +117,7 @@ I'll spawn 3 subagents to elaborate these in parallel.
 For each theme cluster, spawn a subagent using the Task tool:
 - Use `subagent_type: "general-purpose"`
 - Pass the condensed Intent context (not full documents)
-- Use the Story Elaboration Subagent Prompt Template from `../references/planning-shared.md`
+- Use the Story Elaboration Subagent Prompt Template from @${CLAUDE_PLUGIN_ROOT}/references/planning-shared.md
 - **Spawn all subagents in a single message** (parallel execution)
 
 Each subagent will:
@@ -147,7 +147,7 @@ Organize the elaborated stories into cohesive Units:
 For each Unit, suggest rapid iteration cycles:
 - Bolt boundaries based on testable increments
 - Sequencing considerations
-- See Bolt Planning Guidance in `../references/planning-shared.md`
+- See Bolt Planning Guidance in @${CLAUDE_PLUGIN_ROOT}/references/planning-shared.md
 
 #### Step 7: Create Confluence Pages (Parallel)
 
@@ -156,7 +156,7 @@ Create the page hierarchy under the Level 1 Intent document using parallel sub-a
 **Phase A: Create Units Overview (sequential)**
 
 1. **Create Units Overview page** (child of Level 1 Intent)
-   - Use the Units Overview Template from `../references/planning-shared.md`
+   - Use the Units Overview Template from @${CLAUDE_PLUGIN_ROOT}/references/planning-shared.md
    - Include: Intent name, Unit summary table, dependency graph, technical decisions, acceptance criteria
    - **This must complete first** to provide the parent page ID for Units
 
@@ -165,13 +165,13 @@ Create the page hierarchy under the Level 1 Intent document using parallel sub-a
 2. **Spawn one sub-agent per Unit** using the Task tool:
    - Use `subagent_type: "general-purpose"`
    - Pass the Units Overview page ID as the parent
-   - Use the Confluence Page Creation Subagent Prompt Template from `../references/planning-shared.md`
+   - Use the Confluence Page Creation Subagent Prompt Template from @${CLAUDE_PLUGIN_ROOT}/references/planning-shared.md
    - **Spawn all sub-agents in a single message** (parallel execution)
 
    Each sub-agent creates:
    - The Unit page (child of Units Overview)
    - All Story pages for that Unit (children of Unit page)
-   - Uses Unit Page Template and Story Page Template from `../references/planning-shared.md`
+   - Uses Unit Page Template and Story Page Template from @${CLAUDE_PLUGIN_ROOT}/references/planning-shared.md
 
 3. **Consolidate sub-agent results**:
    - Collect all Unit page IDs and Story page IDs

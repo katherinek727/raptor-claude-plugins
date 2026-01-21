@@ -39,7 +39,7 @@ At each step, AI should:
 
 ## References
 
-- Use `../references/planning-shared.md` for templates, prompts, and Jira/Confluence tool names.
+- Use @${CLAUDE_PLUGIN_ROOT}/references/planning-shared.md for templates, prompts, and Jira/Confluence tool names.
 
 ## Optional Artifacts
 
@@ -48,7 +48,7 @@ If requested, generate a PRFAQ to communicate the Intent's value proposition:
 - **Press Release**: What is being built and why it matters
 - **FAQ**: Anticipated questions from stakeholders
 
-Include in Confluence doc as a collapsible section or separate child page. See PRFAQ Template in `../references/planning-shared.md`.
+Include in Confluence doc as a collapsible section or separate child page. See PRFAQ Template in @${CLAUDE_PLUGIN_ROOT}/references/planning-shared.md.
 
 ## Workflow
 
@@ -70,20 +70,20 @@ Include in Confluence doc as a collapsible section or separate child page. See P
    - Whether to generate a PRFAQ (optional)
 
 2. **Gather repo context (if applicable)**
-   When the Intent involves code changes, follow the Repo Context Gathering guidance in `../references/planning-shared.md` to understand the technical landscape.
+   When the Intent involves code changes, follow the Repo Context Gathering guidance in @${CLAUDE_PLUGIN_ROOT}/references/planning-shared.md to understand the technical landscape.
 
 3. **Confirm understanding**
    Summarize in 5-8 bullets and ask for corrections before drafting.
 
 4. **Draft Level 1 documentation**
-   Use the template in `../references/planning-shared.md`. Keep it concise and scannable.
+   Use the template in @${CLAUDE_PLUGIN_ROOT}/references/planning-shared.md. Keep it concise and scannable.
 
 5. **Review and iterate**
    Share the draft and ask for approval. Revise until approved.
 
 6. **Create or update the Confluence page**
    Use Atlassian MCP to create or update the page in the chosen space. If a parent page is needed, ask where to place it.
-   Include the Workflow Status table from `../references/planning-shared.md`.
+   Include the Workflow Status table from @${CLAUDE_PLUGIN_ROOT}/references/planning-shared.md.
 
 7. **Approval gate**
    Explicitly ask whether the Level 1 documentation is approved.
