@@ -259,7 +259,7 @@ Note: Confluence inline comments have a resolution status; footer comments are r
 
 ### ⛔ STOP — Reorganization Gate
 
-**Phase 3 is complete.** Before transferring to Jira, the team may need to reorganize stories into different Units.
+**Phase 3 is complete.** Before proceeding to design, the team may need to reorganize stories into different Units.
 
 **Ask**: "Are you ready to proceed with the current Unit groupings, or do you need to reorganize stories first?"
 
@@ -267,7 +267,7 @@ Note: Confluence inline comments have a resolution status; footer comments are r
 
 ### Phase 4: Unit Re-assessment and Reorganization
 
-This phase applies domain knowledge and architectural principles to validate and refine Unit boundaries before Jira transfer.
+This phase applies domain knowledge and architectural principles to validate and refine Unit boundaries before proceeding to design.
 
 #### Step 14: Apply Unit Re-assessment Criteria
 
@@ -303,56 +303,23 @@ Update the Units Overview page to reflect the new groupings:
 - Update story counts
 - Add "Unit Boundary Rationale" section documenting why Units are grouped this way
 
----
-
-### Phase 5: Transfer to Jira
-
-#### Step 17: Confirm Jira Transfer
-
-Confirm the user is ready to transfer to Jira:
-- Remind them that Units will be created as Sub-epics and Stories under each Sub-epic
-- Confirm the Jira project key
-
-#### Step 18: Create Jira Artifacts
-
-For each Unit:
-1. **Create Sub-epic** (or Epic if Sub-epic unavailable)
-   - Summary: Unit page title
-   - Description: Unit page content + link to Level 1 Intent Confluence doc
-   - Label: `aidlc:unit`
-
-2. **Create Stories** under each Sub-epic
-   - Summary: Story page title
-   - Description: Everything else from the story page (user story, acceptance criteria, context, dependencies, risks, test notes)
-
-Use templates in `../references/planning-shared.md`
-
-#### Step 19: Update Workflow Status
+#### Step 17: Update Workflow Status
 
 Update the Confluence Level 1 Intent page status table:
 - Set "Unit Decomposition" row to "✅ Complete" with today's date
-- Add links to created Sub-epics in the Artifact column
+- Add note that Units are ready for design phase
 
-#### Step 20: Delete Confluence Story Pages
+#### Step 18: Chain to Design
 
-After successful Jira creation, delete the Confluence pages to avoid confusion:
-- Delete all Story pages
-- Delete all Unit pages
-- Delete the Units Overview page
-
-**Important**: Keep the Level 1 Intent document - only delete the decomposition pages.
-
-#### Step 21: Report Back
-
-Provide:
-- Created Jira keys (Sub-epics and Stories)
-- Links to the Jira artifacts
-- Confirmation that Confluence pages have been cleaned up
-
-#### Step 22: Chain to Design
+Report back with:
+- Summary of Units and their Stories (with Confluence links)
+- Boundary rationale for each Unit
+- Any cross-cutting concerns or dependencies
 
 Ask whether to proceed with Domain Design for any Unit.
 If yes, invoke `/planning:aidlc-design` with the Unit context.
+
+> **Note**: Jira transfer happens later in `/planning:aidlc-verify` after design is complete and documentation has been verified.
 
 ## Workflow Chain
 
@@ -389,21 +356,16 @@ If yes, invoke `/planning:aidlc-design` with the Unit context.
 - Story pages moved between Units as needed
 - Unit pages renamed/repurposed (not duplicated)
 - Units Overview updated with new groupings and boundary rationale
+- Workflow status table updated in Confluence
+- User informed that next step is `/planning:aidlc-design`
 
-### Phase 5 (Jira Transfer)
-- Units created as Sub-epics with `aidlc:unit` label
-- Stories created under their respective Sub-epics
-- Confluence decomposition pages deleted (Overview, Units, Stories)
-- Level 1 Intent page status table updated
+> **Note**: Jira transfer (Sub-epics and Stories) happens later in `/planning:aidlc-verify` after design and verification are complete.
 
 ## Troubleshooting
 
-- **Sub-epic not supported**: Use Epic + issue links or parent field; ask for preferred structure.
-- **Missing issue types**: Use `getJiraProjectIssueTypesMetadata` and confirm available types.
 - **Too many Stories**: Consider splitting into multiple Units or deferring lower-priority Stories.
 - **User wants to skip Confluence phase**: Allow override but recommend Confluence for team collaboration.
 - **Subagent failure**: Report which theme cluster failed and offer to retry or elaborate manually.
 - **Single theme identified**: Still spawn one subagent for consistency; workflow proceeds normally.
 - **Comment resolution in same session**: If user wants to resolve comments immediately (no new session), proceed with Phase 3 in the current session.
 - **Moving pages between Units**: Use `updateConfluencePage` with a new `parentId` to move story pages.
-- **Confluence page deletion fails**: Verify permissions; may need admin to delete pages.

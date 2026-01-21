@@ -52,9 +52,9 @@ This reversal allows developers to focus on high-value decision-making while AI 
 | Skill | Purpose | When to Use |
 |-------|---------|-------------|
 | `/planning:aidlc-plan` | Create Level 1 Intent docs in Confluence | Starting a new initiative |
-| `/planning:aidlc-decompose` | Break Intent into Stories & Units | After Intent is approved |
-| `/planning:aidlc-design` | Domain Design & ADRs | Before implementation |
-| `/planning:aidlc-create-epic` | Create Jira Intent Epic | After Intent approval, before decomposition |
+| `/planning:aidlc-decompose` | Break Intent into Stories & Units in Confluence | After Intent is approved |
+| `/planning:aidlc-design` | Domain Design & ADRs with confidence assessment | After Units are created |
+| `/planning:aidlc-verify` | Verify docs & transfer to Jira | After design, before implementation |
 | `/planning:aidlc-help` | This help guide | When you need guidance |
 
 ## Workflow Order
@@ -63,15 +63,15 @@ This reversal allows developers to focus on high-value decision-making while AI 
 1. /planning:aidlc-plan
    |
    v (Intent approved in Confluence)
-2. /planning:aidlc-create-epic (optional)
+2. /planning:aidlc-decompose
    |
-   v (Intent Epic created in Jira)
-3. /planning:aidlc-decompose
+   v (Stories & Units created in Confluence, reviewed, reorganized)
+3. /planning:aidlc-design
    |
-   v (Stories reviewed, Units created in Jira)
-4. /planning:aidlc-design
+   v (Domain model & ADRs documented, confidence assessed)
+4. /planning:aidlc-verify
    |
-   v (Domain model & ADRs documented)
+   v (Documentation verified, transferred to Jira)
 5. Implementation
 ```
 
@@ -97,18 +97,30 @@ Breaks the Intent into actionable work using Mob Elaboration:
 4. Confluence pages created for review
 5. Team reviews and comments
 6. Comments resolved, stories refined
-7. Transfer to Jira as Sub-epics and Stories
+7. Units reorganized based on domain principles
 
-**Output:** Jira artifacts linked to Confluence Intent
+**Output:** Confluence pages for Units and Stories (Jira transfer happens later in verify phase)
 
 ### Phase 3: Design (`/planning:aidlc-design`)
 
-Creates design artifacts for implementation:
-- Domain models (aggregates, entities, value objects)
-- Logical design (patterns, NFR solutions)
-- Architecture Decision Records (ADRs)
+Creates design artifacts for implementation with confidence assessment:
+1. Assess context sufficiency (confidence check)
+2. Domain models (aggregates, entities, value objects)
+3. Logical design (patterns, NFR solutions)
+4. Architecture Decision Records (ADRs)
 
-**Output:** Design documentation enabling code generation
+**Output:** Design documentation linked to Units in Confluence
+
+### Phase 4: Verification (`/planning:aidlc-verify`)
+
+Verifies documentation completeness and transfers to Jira:
+1. Spawn parallel sub-agents to assess each Unit
+2. Calculate confidence score across all documentation
+3. Identify gaps and provide remediation suggestions
+4. If confidence ≥80%, transfer to Jira as Sub-epics and Stories
+5. Clean up Confluence decomposition pages
+
+**Output:** Jira artifacts (Sub-epics and Stories) linked to Intent
 
 ## Quick Start Guide
 
@@ -132,7 +144,9 @@ This will:
 2. Identify theme clusters
 3. Spawn parallel agents to elaborate stories
 4. Create Confluence pages for Stories and Units
-5. Guide you through review and Jira transfer
+5. Guide you through review and reorganization
+
+> **Note:** Jira transfer happens later in `/planning:aidlc-verify` after design is complete.
 
 ### Ready to Design?
 
@@ -140,10 +154,23 @@ This will:
 > Use `/planning:aidlc-design`
 
 This will:
-1. Validate Units exist in Jira
-2. Create domain models using DDD principles
-3. Document logical design decisions
-4. Create ADRs for architectural choices
+1. Validate Units exist in Confluence
+2. Assess context sufficiency (confidence check)
+3. Create domain models using DDD principles
+4. Document logical design decisions
+5. Create ADRs for architectural choices
+
+### Ready to Transfer to Jira?
+
+> "Verify documentation and transfer to Jira"
+> Use `/planning:aidlc-verify`
+
+This will:
+1. Spawn sub-agents to assess each Unit's documentation
+2. Calculate confidence score (needs ≥80% to proceed)
+3. Identify gaps and suggest fixes
+4. Transfer Units as Sub-epics and Stories to Jira
+5. Clean up Confluence decomposition pages
 
 ## Key Concepts Explained
 
@@ -229,7 +256,8 @@ While possible with explicit override, Confluence-first is recommended for:
 
 Check that prior phases are complete:
 - For `/planning:aidlc-decompose`: Need approved Level 1 Intent in Confluence
-- For `/planning:aidlc-design`: Need Units created in Jira
+- For `/planning:aidlc-design`: Need Units created in Confluence (from decompose phase)
+- For `/planning:aidlc-verify`: Need design documentation complete
 
 ## Further Reading
 

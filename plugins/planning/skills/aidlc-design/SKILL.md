@@ -34,7 +34,7 @@ Before starting, validate:
 
 1. **Required artifacts**
    - Confluence Level 1 Intent document (ask for link)
-   - At least one Jira Unit (Sub-epic) with Stories (ask for key)
+   - Units Overview page with Unit and Story child pages in Confluence
    - Fetch all using Atlassian MCP to confirm they exist
 
 2. **Required status**
@@ -49,13 +49,49 @@ Before starting, validate:
 
 1. **Gather context**
    Ask only for what is missing:
-   - Unit key (Sub-epic in Jira)
-   - User Stories within the Unit
+   - Unit to design (from Confluence Units Overview page)
+   - User Stories within the Unit (from Confluence child pages)
    - Relevant NFRs (performance, security, scalability, etc.)
    - Existing codebase context (for brown-field)
    - Any architectural constraints or preferences
 
-2. **Domain Design** (DDD)
+2. **Assess confidence**
+   Before proceeding to Domain Design, assess whether you have sufficient context.
+
+   ### Required Context Checklist
+
+   For the Unit being designed, verify:
+   - [ ] Unit scope is bounded (no "and more", "etc.", open-ended language)
+   - [ ] At least 2 user stories exist with acceptance criteria
+   - [ ] NFRs have measurable targets (not just "fast" or "secure")
+   - [ ] Integration points are identified (APIs, services, databases)
+   - [ ] For brownfield: existing code patterns are understood
+
+   ### Confidence Scoring
+
+   Rate each factor 0-20 points:
+
+   | Factor | Score | Notes |
+   |--------|-------|-------|
+   | Unit scope clarity | /20 | Clear boundaries, defined outcomes |
+   | Story quality | /20 | Testable acceptance criteria |
+   | NFR specificity | /20 | Measurable targets with baselines |
+   | Technical context | /20 | Integration points, dependencies known |
+   | Architectural constraints | /20 | Patterns, limitations documented |
+   | **Total** | /100 | |
+
+   ### Confidence Thresholds
+
+   - **≥60%**: Proceed with design, noting any gaps in the design documentation
+   - **<60%**: STOP - ask targeted questions before continuing
+
+   If confidence is low, ask specific questions like:
+   - "What is the expected response time for this API?"
+   - "Which existing services will this Unit integrate with?"
+   - "Are there security requirements beyond standard authentication?"
+   - "What data storage approach is preferred (SQL, NoSQL, etc.)?"
+
+3. **Domain Design** (DDD)
    AI proposes domain model using DDD principles:
    - Identify Bounded Context boundaries
    - Define Aggregates and Aggregate Roots
@@ -66,7 +102,7 @@ Before starting, validate:
 
    Present the model and ask for validation before proceeding.
 
-3. **Logical Design**
+4. **Logical Design**
    Extend domain model for NFRs:
    - Recommend architectural patterns (CQRS, Event Sourcing, Saga, etc.)
    - Propose integration patterns (API Gateway, Circuit Breaker, etc.)
@@ -76,7 +112,7 @@ Before starting, validate:
 
    Present trade-offs and ask for decisions.
 
-4. **Create ADRs**
+5. **Create ADRs**
    For each significant decision, create an ADR:
    - Context: What prompted this decision?
    - Decision: What was decided?
@@ -85,27 +121,27 @@ Before starting, validate:
 
    Use the ADR Template in `../references/planning-shared.md`.
 
-5. **Confirm understanding**
+6. **Confirm understanding**
    Summarize:
    - Domain model components
    - Architectural patterns selected
    - Key ADRs
    Ask for approval before storing artifacts.
 
-6. **Store artifacts**
+7. **Store artifacts**
    - Domain model: Markdown or diagram in Confluence (child of Intent doc)
    - ADRs: Confluence pages or repo `docs/adr/` folder
-   - Link back to Unit in Jira
-   - Update Unit description with design doc links
-   - Add label to Unit: `aidlc:designed`
+   - Link back to Unit page in Confluence
+   - Update Unit page with design doc links
 
-7. **Update workflow status**
+8. **Update workflow status**
    Update the Confluence page status table:
    - Set "Domain Design" row to "✅ Complete" with today's date
    - Add links to design docs in the Artifact column
 
-8. **Report back**
+9. **Report back and chain to verify**
    Provide links to created artifacts and ask for any refinements.
+   When design is complete, offer to run `/planning:aidlc-verify` to assess readiness for Jira transfer.
 
 ## Brown-Field Considerations
 
@@ -122,16 +158,18 @@ For existing systems, add these steps before Domain Design:
 
 ## Workflow Chain
 
-- **Previous**: `/planning:aidlc-decompose` (Unit and Story creation)
-- **Next**: Implementation (Bolts, code generation)
+- **Previous**: `/planning:aidlc-decompose` (Unit and Story creation in Confluence)
+- **Next**: `/planning:aidlc-verify` (Verification and Jira transfer)
 
 ## Definition of Done
 
+- Confidence assessment completed (≥60% to proceed)
 - Domain model documented and approved
 - Logical design with architectural patterns documented
 - ADRs created for key decisions
-- Artifacts linked to Unit and Intent
+- Artifacts linked to Unit page in Confluence and Intent doc
 - Brown-field ACL designed (if applicable)
+- Workflow status table updated in Confluence
 
 ## Troubleshooting
 
