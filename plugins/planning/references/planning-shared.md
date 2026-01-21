@@ -66,6 +66,7 @@ Include this table in the Level 1 Intent document:
 | Level 1 Intent | ⏳ Draft | - | - |
 | Unit Decomposition | ⏳ Pending | - | - |
 | Domain Design | ⏳ Pending | - | - |
+| Verification | ⏳ Pending | - | - |
 
 **Status values:**
 - ⏳ Draft / Pending — Not started or in progress
@@ -83,8 +84,9 @@ Add labels to Units (Sub-epics) to track phase:
 
 Each skill updates the Confluence status table:
 - `/planning:aidlc-plan`: Set "Level 1 Intent: ✅ Approved"
-- `/planning:aidlc-decompose`: Set "Unit Decomposition: ✅ Complete", create Sub-epics with `aidlc:unit` label
-- `/planning:aidlc-design`: Set "Domain Design: ✅ Complete", add `aidlc:designed` label to Unit
+- `/planning:aidlc-decompose`: Set "Unit Decomposition: ✅ Complete" (Units remain in Confluence)
+- `/planning:aidlc-design`: Set "Domain Design: ✅ Complete"
+- `/planning:aidlc-verify`: Set "Verification: ✅ Complete", create Sub-epics with `aidlc:unit` and `aidlc:designed` labels
 
 ## Prerequisite Validation
 
@@ -111,7 +113,8 @@ Before proceeding with any skill (except `/planning:aidlc-plan`), validate that 
 |-------|-------------------|-----------------|
 | `/planning:aidlc-plan` | None (first step) | — |
 | `/planning:aidlc-decompose` | Confluence Level 1 doc | "Level 1 Intent: ✅ Approved" |
-| `/planning:aidlc-design` | Unit(s) in Jira, Confluence doc | "Unit Decomposition: ✅ Complete" |
+| `/planning:aidlc-design` | Units Overview page with Unit/Story pages in Confluence | "Unit Decomposition: ✅ Complete" |
+| `/planning:aidlc-verify` | Units with design documentation | "Domain Design: ✅ Complete" (recommended) |
 
 ### Override Pattern
 
