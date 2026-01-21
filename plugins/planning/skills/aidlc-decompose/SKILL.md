@@ -149,22 +149,34 @@ For each Unit, suggest rapid iteration cycles:
 - Sequencing considerations
 - See Bolt Planning Guidance in `../references/planning-shared.md`
 
-#### Step 7: Create Confluence Pages
+#### Step 7: Create Confluence Pages (Parallel)
 
-Create the page hierarchy under the Level 1 Intent document:
+Create the page hierarchy under the Level 1 Intent document using parallel sub-agents for efficiency.
+
+**Phase A: Create Units Overview (sequential)**
 
 1. **Create Units Overview page** (child of Level 1 Intent)
    - Use the Units Overview Template from `../references/planning-shared.md`
    - Include: Intent name, Unit summary table, dependency graph, technical decisions, acceptance criteria
+   - **This must complete first** to provide the parent page ID for Units
 
-2. **Create Unit pages** (children of Units Overview)
-   - One page per Unit
-   - Include: Unit description, story list, bolt plan, dependencies
+**Phase B: Create Unit + Stories (parallel, one agent per Unit)**
 
-3. **Create Story pages** (children of their respective Unit page)
-   - One page per Story
-   - Use the Story Page Template from `../references/planning-shared.md`
-   - Include: User story, acceptance criteria, context, dependencies, risks, test notes
+2. **Spawn one sub-agent per Unit** using the Task tool:
+   - Use `subagent_type: "general-purpose"`
+   - Pass the Units Overview page ID as the parent
+   - Use the Confluence Page Creation Subagent Prompt Template from `../references/planning-shared.md`
+   - **Spawn all sub-agents in a single message** (parallel execution)
+
+   Each sub-agent creates:
+   - The Unit page (child of Units Overview)
+   - All Story pages for that Unit (children of Unit page)
+   - Uses Unit Page Template and Story Page Template from `../references/planning-shared.md`
+
+3. **Consolidate sub-agent results**:
+   - Collect all Unit page IDs and Story page IDs
+   - Verify all pages were created successfully
+   - Report any failures and offer to retry
 
 #### Step 8: Request Review
 
