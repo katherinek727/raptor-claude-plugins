@@ -6,125 +6,97 @@ This file contains templates and guides used by the `/context-init` skill.
 
 ## CLAUDE.md Template
 
-Use this template when generating the project CLAUDE.md file. Replace placeholders with actual values.
+Generate the project CLAUDE.md by following this structure. Include or exclude sections based on what was configured during setup.
 
 ```markdown
 # CLAUDE.md
 
-This file configures Claude Code for the **{{PROJECT_NAME}}** project.
+This file configures Claude Code for the **[PROJECT_NAME]** project.
 
 ## Project Overview
 
-{{PROJECT_DESCRIPTION}}
+[PROJECT_DESCRIPTION - 2-3 sentences describing the project]
 
 ### Key Stakeholders
 
-{{STAKEHOLDERS}}
+[STAKEHOLDERS - list of key team members/stakeholders]
 
 ---
 
 ## Repositories
 
-{{#if REPOSITORIES}}
+[Include this section if repositories were cloned]
+
 | Repository | Description | Path |
 |------------|-------------|------|
-{{#each REPOSITORIES}}
-| {{name}} | {{description}} | `./{{folder}}` |
-{{/each}}
-{{else}}
-No repositories cloned. Clone repos with `git clone <url>`.
-{{/if}}
+| [repo-name] | [description] | `./[folder]` |
+
+[If no repositories: "No repositories cloned. Clone repos with `glab repo clone <path>`."]
 
 ---
 
 ## Confluence Integration
 
-{{#if CONFLUENCE_CONFIGURED}}
-### Space: {{CONFLUENCE_SPACE_KEY}}
+[Include this section if Confluence was configured]
+
+### Space: [SPACE_KEY]
+
+**Cloud ID:** `[CLOUD_ID]`
 
 Access project documentation using the Atlassian MCP tools.
 
 **Key Pages:**
-{{#each CONFLUENCE_PAGES}}
-- **{{title}}** (ID: {{id}})
-{{/each}}
+- **[Page Title]** (ID: [page-id])
 
-### Example Queries
+### How to Use
 
 Search for content:
-```
-Use mcp__plugin_atlassian_atlassian__search with query: "{{PROJECT_NAME}} requirements"
-```
+- Ask Claude: "Search Confluence for [topic]"
+- Claude will use `mcp__plugin_atlassian_atlassian__search`
 
 Get a specific page:
-```
-Use mcp__plugin_atlassian_atlassian__getConfluencePage with:
-- cloudId: (from getAccessibleAtlassianResources)
-- pageId: "<page-id>"
-```
+- Ask Claude: "Get the [Page Title] page from Confluence"
+- Claude will use `mcp__plugin_atlassian_atlassian__getConfluencePage` with pageId: [page-id]
 
-List pages in space:
-```
-Use mcp__plugin_atlassian_atlassian__getPagesInConfluenceSpace with:
-- cloudId: (from getAccessibleAtlassianResources)
-- spaceId: "<space-id>"
-```
-{{else}}
+List all pages in space:
+- Ask Claude: "List pages in the [SPACE_KEY] space"
+
+[If Confluence not configured:]
 Confluence integration not configured. To set up:
 1. Ensure Atlassian MCP is configured in Claude Code settings
 2. Run `/context-init` to add Confluence space
-{{/if}}
 
 ---
 
 ## Jira Integration
 
-{{#if JIRA_CONFIGURED}}
-### Project: {{JIRA_PROJECT_KEY}}
+[Include this section if Jira was configured]
+
+### Project: [PROJECT_KEY]
+
+**Cloud ID:** `[CLOUD_ID]`
 
 Track and manage work using the Atlassian MCP tools.
 
-**Useful JQL Queries:**
+**Useful Queries:**
 
-| Query | JQL |
-|-------|-----|
-| All open issues | `project = {{JIRA_PROJECT_KEY}} AND status != Done` |
-| My assigned issues | `project = {{JIRA_PROJECT_KEY}} AND assignee = currentUser()` |
-| Recent updates | `project = {{JIRA_PROJECT_KEY}} AND updated >= -7d` |
-{{#if JIRA_EPICS}}
-| Epic: {{EPIC_NAME}} | `"Epic Link" = {{EPIC_KEY}}` |
-{{/if}}
+| What | How to Ask Claude |
+|------|-------------------|
+| All open issues | "Show open issues in [PROJECT_KEY]" |
+| My assigned issues | "Show my assigned issues in [PROJECT_KEY]" |
+| Recent updates | "Show issues updated this week in [PROJECT_KEY]" |
+| Specific epic | "Show issues in epic [EPIC_KEY]" |
 
-### Example Queries
+### How to Use
 
-Search issues:
-```
-Use mcp__plugin_atlassian_atlassian__searchJiraIssuesUsingJql with:
-- cloudId: (from getAccessibleAtlassianResources)
-- jql: "project = {{JIRA_PROJECT_KEY}} AND status != Done"
-```
+- Ask Claude: "Create a story in [PROJECT_KEY] for [description]"
+- Ask Claude: "What's the status of [PROJECT_KEY]-123?"
+- Ask Claude: "Add a comment to [PROJECT_KEY]-456"
 
-Get issue details:
-```
-Use mcp__plugin_atlassian_atlassian__getJiraIssue with:
-- cloudId: (from getAccessibleAtlassianResources)
-- issueIdOrKey: "{{JIRA_PROJECT_KEY}}-123"
-```
-
-Create an issue:
-```
-Use mcp__plugin_atlassian_atlassian__createJiraIssue with:
-- cloudId: (from getAccessibleAtlassianResources)
-- projectKey: "{{JIRA_PROJECT_KEY}}"
-- issueTypeName: "Story"
-- summary: "Issue title"
-- description: "Issue description"
-```
-{{else}}
+[If Jira not configured:]
 Jira integration not configured. To set up:
 1. Ensure Atlassian MCP is configured in Claude Code settings
 2. Run `/context-init` to add Jira project
-{{/if}}
 
 ---
 
@@ -154,9 +126,9 @@ Use these skills to plan and document your initiative:
 ### Context Loading
 
 When starting a new conversation, Claude will automatically read this file. You can also:
-- Share specific files: "Look at the README in repo-name"
+- Share specific files: "Look at the README in [repo-name]"
 - Reference Confluence: "Search Confluence for the requirements doc"
-- Query Jira: "Show me open stories in {{JIRA_PROJECT_KEY}}"
+- Query Jira: "Show me open stories in [PROJECT_KEY]"
 
 ### Best Practices
 
@@ -164,13 +136,13 @@ When starting a new conversation, Claude will automatically read this file. You 
 2. **Provide context**: Reference relevant docs or decisions
 3. **Review before committing**: Always review generated content before creating Jira issues or Confluence pages
 
-{{#if ADDITIONAL_CONTEXT}}
 ---
 
 ## Additional Context
 
-{{ADDITIONAL_CONTEXT}}
-{{/if}}
+[Include this section if additional context was provided]
+
+[ADDITIONAL_CONTEXT - any extra information the user provided]
 ```
 
 ---
@@ -308,91 +280,36 @@ If it works, you'll see your spaces/projects listed.
 
 This marker file tracks the context initialization state for future updates.
 
-```json
-{
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "type": "object",
-  "properties": {
-    "version": {
-      "type": "string",
-      "description": "Schema version (e.g., '1.0.0')"
-    },
-    "created": {
-      "type": "string",
-      "format": "date-time",
-      "description": "ISO timestamp when context was first created"
-    },
-    "updated": {
-      "type": "string",
-      "format": "date-time",
-      "description": "ISO timestamp of last update"
-    },
-    "projectName": {
-      "type": "string",
-      "description": "Human-readable project name"
-    },
-    "workspacePath": {
-      "type": "string",
-      "description": "Absolute path to workspace directory"
-    },
-    "repositories": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "name": { "type": "string" },
-          "url": { "type": "string" },
-          "description": { "type": "string" },
-          "defaultBranch": { "type": "string" }
-        },
-        "required": ["name", "url"]
-      },
-      "description": "List of cloned repositories"
-    },
-    "confluence": {
-      "type": "object",
-      "properties": {
-        "spaceKey": { "type": "string" },
-        "spaceId": { "type": "string" },
-        "keyPages": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "properties": {
-              "id": { "type": "string" },
-              "title": { "type": "string" }
-            }
-          }
-        }
-      },
-      "description": "Confluence configuration"
-    },
-    "jira": {
-      "type": "object",
-      "properties": {
-        "projectKey": { "type": "string" },
-        "projectId": { "type": "string" },
-        "epics": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "properties": {
-              "key": { "type": "string" },
-              "name": { "type": "string" }
-            }
-          }
-        }
-      },
-      "description": "Jira configuration"
-    },
-    "additionalContext": {
-      "type": "string",
-      "description": "Any additional context provided by user"
-    }
-  },
-  "required": ["version", "created", "projectName"]
-}
-```
+**Schema:**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `version` | string | Yes | Schema version (e.g., "1.0.0") |
+| `created` | string | Yes | ISO timestamp when first created |
+| `updated` | string | Yes | ISO timestamp of last update |
+| `projectName` | string | Yes | Human-readable project name |
+| `workspacePath` | string | Yes | Absolute path to workspace directory |
+| `atlassianCloudId` | string | No | Atlassian Cloud ID for API calls |
+| `repositories` | array | No | List of cloned repositories |
+| `confluence` | object | No | Confluence configuration |
+| `jira` | object | No | Jira configuration |
+| `additionalContext` | string | No | Any extra context provided |
+
+**Repository object:**
+- `name` (string): Repository name
+- `url` (string): Clone URL
+- `description` (string): Repository description
+- `defaultBranch` (string): Default branch name
+
+**Confluence object:**
+- `spaceKey` (string): Space key (e.g., "PROJ")
+- `spaceId` (string): Numeric space ID
+- `keyPages` (array): List of `{id, title}` objects
+
+**Jira object:**
+- `projectKey` (string): Project key (e.g., "PROJ")
+- `projectId` (string): Numeric project ID
+- `epics` (array): List of `{key, name}` objects
 
 **Example:**
 ```json
@@ -402,6 +319,7 @@ This marker file tracks the context initialization state for future updates.
   "updated": "2024-01-15T10:30:00Z",
   "projectName": "Customer Portal Redesign",
   "workspacePath": "/Users/jane/Projects/customer-portal",
+  "atlassianCloudId": "a]1b2c3d4-e5f6-7890-abcd-ef1234567890",
   "repositories": [
     {
       "name": "portal-frontend",
@@ -433,3 +351,5 @@ This marker file tracks the context initialization state for future updates.
   }
 }
 ```
+
+**Note:** Consider adding `.context-init.json` to `.gitignore` as it contains user-specific paths.
