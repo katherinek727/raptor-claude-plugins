@@ -52,6 +52,15 @@
       "author": {
         "name": "Andy Kay"
       }
+    },
+    {
+      "name": "context-init",
+      "source": "./plugins/context-init",
+      "description": "Set up project context environments for non-developers with GitLab repos, Confluence, and Jira integration",
+      "version": "1.0.0",
+      "author": {
+        "name": "Andy Kay"
+      }
     }
   ]
 }
