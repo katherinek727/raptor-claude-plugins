@@ -25,29 +25,30 @@ Then install individual plugins:
 
 ## Available Plugins
 
-### Planning (`/planning:aidlc-*`)
+### Planning (`/planning:*`)
 
 AI-DLC (AI-Driven Development Lifecycle) workflow for structured project planning with human-in-the-loop validation.
 
-| Skill | Description |
-|-------|-------------|
-| `/planning:aidlc-plan` | Create Level 1 Intent documentation in Confluence |
-| `/planning:aidlc-create-epic` | Create Jira Intent Epic from approved Confluence doc |
-| `/planning:aidlc-decompose` | Break down Intent into Units and User Stories |
-| `/planning:aidlc-design` | Domain design, logical architecture, and ADRs |
+| Command | Triggers | Description |
+|---------|----------|-------------|
+| `/planning:aidlc-plan` | `create intent`, `level 1 doc`, `new initiative`, `draft intent`, `aidlc plan` | Create Level 1 Intent documentation in Confluence |
+| `/planning:aidlc-decompose` | `decompose intent`, `break down intent`, `create units`, `create stories`, `mob elaboration` | Break Intent into Units and Stories via Mob Elaboration |
+| `/planning:aidlc-design` | `domain design`, `logical design`, `create ADR`, `architecture decision`, `aidlc design` | Domain/Logical Design and Architecture Decision Records |
+| `/planning:aidlc-verify` | `verify docs`, `check readiness`, `transfer to jira`, `confidence check` | Verify doc completeness and AI-confidence before Jira transfer |
+| `/planning:aidlc-help` | `aidlc help`, `what is aidlc`, `explain aidlc`, `planning help` | Explain AI-DLC methodology and available skills |
 
-**Workflow:** Intent Doc → Epic → Units → Stories → Design → Implementation
+**Workflow:** Intent Doc → Units → Stories → Design → Verify → Implementation
 
 **Requires:** Atlassian MCP (Confluence + Jira)
 
 ---
 
-### Issues (`/issues:create-jira-issue`, `/issues:create-mr`, `/issues:release-notes`)
+### Issues (`/issues:*`)
 
 Issue tracking and code review integrations.
 
-| Skill | Description |
-|-------|-------------|
+| Command | Description |
+|---------|-------------|
 | `/issues:create-jira-issue` | Create a Jira issue from context or description |
 | `/issues:create-mr` | Create a GitLab merge request for current branch |
 | `/issues:release-notes` | Generate release notes from commits, MRs, and Jira tickets |
@@ -56,9 +57,13 @@ Issue tracking and code review integrations.
 
 ---
 
-### Pair Programming (`/ai-pair-programmer`)
+### Pair Programming (`/pair-programming:*`)
 
 Get second opinions from multiple AI providers on your code, plans, or architecture decisions.
+
+| Command | Triggers |
+|---------|----------|
+| `/pair-programming:ai-pair-programmer` | `review with grok`, `review with gemini`, `review with chatgpt`, `pair program`, `second opinion`, `ai review` |
 
 ```
 "Review this implementation with Grok"
@@ -72,12 +77,16 @@ Get second opinions from multiple AI providers on your code, plans, or architect
 
 ---
 
-### Ruby (`/rubocop`)
+### Ruby (`/ruby:*`)
 
 Run Rubocop on files with intelligent auto-fixing.
 
+| Command | Description |
+|---------|-------------|
+| `/ruby:rubocop` | Run Rubocop on specified file and fix violations |
+
 ```
-/rubocop app/models/user.rb
+/ruby:rubocop app/models/user.rb
 ```
 
 Automatically fixes violations where possible, adds disable comments only when the rule would be incorrect or dangerous.
@@ -86,9 +95,21 @@ Automatically fixes violations where possible, adds disable comments only when t
 
 ---
 
-### Epistemic Reasoning
+### Context Init (`/context-init:*`)
 
-Enforces evidence-based reasoning by requiring `[FACT]`, `[INFERRED]`, and `[ASSUMED]` labels on all claims. Automatically enabled via session hooks.
+Set up project context environments for non-developers (product owners, managers) with GitLab repos, CLAUDE.md generation, and Confluence/Jira integration.
+
+| Command | Triggers |
+|---------|----------|
+| `/context-init:context-init` | `context init`, `project setup`, `workspace setup`, `initialize project`, `context setup` |
+
+**Requires:** GitLab MCP, Atlassian MCP (optional)
+
+---
+
+### Epistemic Reasoning (hook-based)
+
+Enforces evidence-based reasoning by requiring `[FACT]`, `[INFERRED]`, and `[ASSUMED]` labels on all claims. Automatically enabled via `SessionStart` hook—no slash commands needed.
 
 - `[FACT]` — Directly verified from code, files, or user statements
 - `[INFERRED]` — Logical conclusion with reasoning shown
@@ -123,6 +144,7 @@ claude plugin marketplace add git@gitlab.com:raptortech1/aidevops/claude-plugins
 /plugin install pair-programming
 /plugin install ruby
 /plugin install epistemic-reasoning
+/plugin install context-init
 
 # Reload after changes
 /plugin
