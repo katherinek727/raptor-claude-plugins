@@ -38,6 +38,7 @@ plugins/<plugin-name>/
 | `epistemic-reasoning` | Enforces [FACT]/[INFERRED]/[ASSUMED] labeling |
 | `ruby` | Rubocop linting with auto-fix |
 | `context-init` | Project setup for non-developers with repo cloning and MCP config |
+| `jira-improve` | Find and improve poorly written Jira issues using quality rubric |
 
 ### Plugin Skills Reference
 
@@ -76,6 +77,12 @@ plugins/<plugin-name>/
 | Command | Triggers | Description |
 |---------|----------|-------------|
 | `/context-init:context-init` | `context init`, `project setup`, `workspace setup`, `initialize project` | Set up project context for non-developers |
+
+#### Jira Improve (`/jira-improve:*`)
+
+| Command | Triggers | Description |
+|---------|----------|-------------|
+| `/jira-improve:jira-improve` | `jira improve`, `fix jira`, `improve issues`, `jira quality`, `backlog cleanup`, `improve epic` | Find and improve poorly written Jira issues using quality rubric |
 
 #### Epistemic Reasoning (hook-based)
 

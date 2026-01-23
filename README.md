@@ -107,6 +107,24 @@ Set up project context environments for non-developers (product owners, managers
 
 ---
 
+### Jira Improve (`/jira-improve:*`)
+
+Find and improve poorly written Jira issues using a quality rubric. Analyze a whole project, a single issue, or an Epic with all its children.
+
+| Command | Triggers |
+|---------|----------|
+| `/jira-improve:jira-improve` | `jira improve`, `fix jira`, `improve issues`, `jira quality`, `backlog cleanup`, `improve epic` |
+
+Features:
+- Score issues against quality rubric (completeness, clarity, structure, context, testability)
+- Gather context from codebase or user interviews
+- Generate improved issue descriptions with previews
+- Batch improve multiple issues
+
+**Requires:** Atlassian MCP (or `acli` CLI tool)
+
+---
+
 ### Epistemic Reasoning (hook-based)
 
 Enforces evidence-based reasoning by requiring `[FACT]`, `[INFERRED]`, and `[ASSUMED]` labels on all claims. Automatically enabled via `SessionStart` hook—no slash commands needed.
@@ -145,6 +163,7 @@ claude plugin marketplace add git@gitlab.com:raptortech1/aidevops/claude-plugins
 /plugin install ruby
 /plugin install epistemic-reasoning
 /plugin install context-init
+/plugin install jira-improve
 
 # Reload after changes
 /plugin
