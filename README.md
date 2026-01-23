@@ -1,6 +1,45 @@
 # Raptortech Claude Code Plugins
 
-A curated marketplace of Claude Code plugins for development workflows, project planning, and AI-assisted coding.
+A collection of plugins that extend [Claude Code](https://docs.anthropic.com/en/docs/claude-code/overview)'s capabilities for development workflows, project planning, and AI-assisted coding. Claude Code is Anthropic's agentic coding tool that helps developers write, understand, and improve code through AI assistance. These plugins add specialized capabilities for structured planning, issue tracking, code quality, and more.
+
+## Why Use These Plugins?
+
+- **Structured Planning** — Create detailed project plans with AI-DLC methodology, from Intent documents through to Jira tickets
+- **Issue Management** — Streamline Jira issue creation, GitLab MRs, and release notes generation
+- **Code Quality** — Run Rubocop with intelligent auto-fixing and violation handling
+- **Backlog Health** — Find and improve poorly written Jira issues using quality rubrics
+- **Second Opinions** — Get feedback from multiple AI providers (Grok, ChatGPT, Gemini) on your code
+- **Evidence-Based Reasoning** — Enforce `[FACT]`/`[INFERRED]`/`[ASSUMED]` labeling for rigorous analysis
+
+## Usage Examples
+
+**Start a new project initiative:**
+```
+/planning:aidlc-plan
+Create an intent for adding user authentication with OAuth2 support
+```
+
+**Improve Jira backlog quality:**
+```
+/jira-improve:jira-improve PROJ
+```
+Analyzes issues in the PROJ project, scores them against a quality rubric, and helps rewrite poorly written tickets.
+
+**Get a second opinion on your code:**
+```
+Review this authentication implementation with Grok and Gemini
+```
+The pair-programming skill auto-triggers and queries multiple AI providers.
+
+**Create a GitLab MR for your current branch:**
+```
+/issues:create-mr
+```
+
+**Run Rubocop with intelligent fixes:**
+```
+/ruby:rubocop app/models/user.rb
+```
 
 ## Quick Start
 
@@ -25,29 +64,30 @@ Then install individual plugins:
 
 ## Available Plugins
 
-### Planning (`/planning:aidlc-*`)
+### Planning (`/planning:*`)
 
 AI-DLC (AI-Driven Development Lifecycle) workflow for structured project planning with human-in-the-loop validation.
 
-| Skill | Description |
-|-------|-------------|
-| `/planning:aidlc-plan` | Create Level 1 Intent documentation in Confluence |
-| `/planning:aidlc-create-epic` | Create Jira Intent Epic from approved Confluence doc |
-| `/planning:aidlc-decompose` | Break down Intent into Units and User Stories |
-| `/planning:aidlc-design` | Domain design, logical architecture, and ADRs |
+| Command | Triggers | Description |
+|---------|----------|-------------|
+| `/planning:aidlc-plan` | `create intent`, `level 1 doc`, `new initiative`, `draft intent`, `aidlc plan` | Create Level 1 Intent documentation in Confluence |
+| `/planning:aidlc-decompose` | `decompose intent`, `break down intent`, `create units`, `create stories`, `mob elaboration` | Break Intent into Units and Stories via Mob Elaboration |
+| `/planning:aidlc-design` | `domain design`, `logical design`, `create ADR`, `architecture decision`, `aidlc design` | Domain/Logical Design and Architecture Decision Records |
+| `/planning:aidlc-verify` | `verify docs`, `check readiness`, `transfer to jira`, `confidence check` | Verify doc completeness and AI-confidence before Jira transfer |
+| `/planning:aidlc-help` | `aidlc help`, `what is aidlc`, `explain aidlc`, `planning help` | Explain AI-DLC methodology and available skills |
 
-**Workflow:** Intent Doc → Epic → Units → Stories → Design → Implementation
+**Workflow:** Intent Doc → Units → Stories → Design → Verify → Implementation
 
 **Requires:** Atlassian MCP (Confluence + Jira)
 
 ---
 
-### Issues (`/issues:create-jira-issue`, `/issues:create-mr`, `/issues:release-notes`)
+### Issues (`/issues:*`)
 
 Issue tracking and code review integrations.
 
-| Skill | Description |
-|-------|-------------|
+| Command | Description |
+|---------|-------------|
 | `/issues:create-jira-issue` | Create a Jira issue from context or description |
 | `/issues:create-mr` | Create a GitLab merge request for current branch |
 | `/issues:release-notes` | Generate release notes from commits, MRs, and Jira tickets |
@@ -56,9 +96,13 @@ Issue tracking and code review integrations.
 
 ---
 
-### Pair Programming (`/ai-pair-programmer`)
+### Pair Programming (`/pair-programming:*`)
 
 Get second opinions from multiple AI providers on your code, plans, or architecture decisions.
+
+| Command | Triggers |
+|---------|----------|
+| `/pair-programming:ai-pair-programmer` | `review with grok`, `review with gemini`, `review with chatgpt`, `pair program`, `second opinion`, `ai review` |
 
 ```
 "Review this implementation with Grok"
@@ -72,12 +116,16 @@ Get second opinions from multiple AI providers on your code, plans, or architect
 
 ---
 
-### Ruby (`/rubocop`)
+### Ruby (`/ruby:*`)
 
 Run Rubocop on files with intelligent auto-fixing.
 
+| Command | Description |
+|---------|-------------|
+| `/ruby:rubocop` | Run Rubocop on specified file and fix violations |
+
 ```
-/rubocop app/models/user.rb
+/ruby:rubocop app/models/user.rb
 ```
 
 Automatically fixes violations where possible, adds disable comments only when the rule would be incorrect or dangerous.
@@ -86,9 +134,39 @@ Automatically fixes violations where possible, adds disable comments only when t
 
 ---
 
-### Epistemic Reasoning
+### Context Init (`/context-init:*`)
 
-Enforces evidence-based reasoning by requiring `[FACT]`, `[INFERRED]`, and `[ASSUMED]` labels on all claims. Automatically enabled via session hooks.
+Set up project context environments for non-developers (product owners, managers) with GitLab repos, CLAUDE.md generation, and Confluence/Jira integration.
+
+| Command | Triggers |
+|---------|----------|
+| `/context-init:context-init` | `context init`, `project setup`, `workspace setup`, `initialize project`, `context setup` |
+
+**Requires:** GitLab MCP, Atlassian MCP (optional)
+
+---
+
+### Jira Improve (`/jira-improve:*`)
+
+Find and improve poorly written Jira issues using a quality rubric. Analyze a whole project, a single issue, or an Epic with all its children.
+
+| Command | Triggers |
+|---------|----------|
+| `/jira-improve:jira-improve` | `jira improve`, `fix jira`, `improve issues`, `jira quality`, `backlog cleanup`, `improve epic` |
+
+Features:
+- Score issues against quality rubric (completeness, clarity, structure, context, testability)
+- Gather context from codebase or user interviews
+- Generate improved issue descriptions with previews
+- Batch improve multiple issues
+
+**Requires:** Atlassian MCP (or `acli` CLI tool)
+
+---
+
+### Epistemic Reasoning (hook-based)
+
+Enforces evidence-based reasoning by requiring `[FACT]`, `[INFERRED]`, and `[ASSUMED]` labels on all claims. Automatically enabled via `SessionStart` hook—no slash commands needed.
 
 - `[FACT]` — Directly verified from code, files, or user statements
 - `[INFERRED]` — Logical conclusion with reasoning shown
@@ -123,6 +201,8 @@ claude plugin marketplace add git@gitlab.com:raptortech1/aidevops/claude-plugins
 /plugin install pair-programming
 /plugin install ruby
 /plugin install epistemic-reasoning
+/plugin install context-init
+/plugin install jira-improve
 
 # Reload after changes
 /plugin

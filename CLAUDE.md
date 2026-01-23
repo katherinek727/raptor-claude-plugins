@@ -37,6 +37,56 @@ plugins/<plugin-name>/
 | `pair-programming` | Get second opinions from Grok/ChatGPT/Gemini |
 | `epistemic-reasoning` | Enforces [FACT]/[INFERRED]/[ASSUMED] labeling |
 | `ruby` | Rubocop linting with auto-fix |
+| `context-init` | Project setup for non-developers with repo cloning and MCP config |
+| `jira-improve` | Find and improve poorly written Jira issues using quality rubric |
+
+### Plugin Skills Reference
+
+#### Planning (`/planning:*`)
+
+| Command | Triggers | Description |
+|---------|----------|-------------|
+| `/planning:aidlc-plan` | `create intent`, `level 1 doc`, `intent document`, `new initiative`, `draft intent`, `aidlc plan` | Create Level 1 Intent documentation in Confluence |
+| `/planning:aidlc-decompose` | `decompose intent`, `break down intent`, `create units`, `create stories`, `mob elaboration` | Break Intent into Units and Stories via Mob Elaboration |
+| `/planning:aidlc-design` | `domain design`, `logical design`, `create ADR`, `architecture decision`, `aidlc design` | Domain/Logical Design and Architecture Decision Records |
+| `/planning:aidlc-verify` | `verify docs`, `check readiness`, `transfer to jira`, `aidlc verify`, `confidence check` | Verify doc completeness before Jira transfer |
+| `/planning:aidlc-help` | `aidlc help`, `what is aidlc`, `explain aidlc`, `planning help`, `how to plan` | Explain AI-DLC methodology and available skills |
+
+#### Issues (`/issues:*`)
+
+| Command | Description |
+|---------|-------------|
+| `/issues:create-jira-issue` | Create a Jira issue from current context or description |
+| `/issues:create-mr` | Create a GitLab merge request for the current branch |
+| `/issues:release-notes` | Generate release notes from commits, MRs, and Jira tickets |
+
+#### Pair Programming (`/pair-programming:*`)
+
+| Command | Triggers | Description |
+|---------|----------|-------------|
+| `/pair-programming:ai-pair-programmer` | `review with grok`, `review with gemini`, `review with chatgpt`, `pair program`, `second opinion`, `ai review` | Get second opinions from AI providers on code or architecture |
+
+#### Ruby (`/ruby:*`)
+
+| Command | Description |
+|---------|-------------|
+| `/ruby:rubocop` | Run Rubocop on specified file and fix violations |
+
+#### Context Init (`/context-init:*`)
+
+| Command | Triggers | Description |
+|---------|----------|-------------|
+| `/context-init:context-init` | `context init`, `project setup`, `workspace setup`, `initialize project` | Set up project context for non-developers |
+
+#### Jira Improve (`/jira-improve:*`)
+
+| Command | Triggers | Description |
+|---------|----------|-------------|
+| `/jira-improve:jira-improve` | `jira improve`, `fix jira`, `improve issues`, `jira quality`, `backlog cleanup`, `improve epic` | Find and improve poorly written Jira issues using quality rubric |
+
+#### Epistemic Reasoning (hook-based)
+
+No slash commands. Automatically activates via `SessionStart` hook to enforce `[FACT]`, `[INFERRED]`, `[ASSUMED]` labeling.
 
 ## Skill File Format (SKILL.md)
 
