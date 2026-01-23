@@ -169,7 +169,7 @@ Ask user for search configuration:
 ```
 ## Search Configuration for {PROJECT_KEY}
 
-How many issues should I analyze?
+How many worst-scoring issues should I surface for detailed analysis?
 (1) 5 issues
 (2) 10 issues (Recommended)
 (3) 20 issues
@@ -198,7 +198,7 @@ Date filter (optional):
 
 #### 2.3.3 Construct JQL
 
-Build the JQL query based on selections:
+Build the JQL query based on selections (no issue count limit - we scan all matching issues):
 
 ```jql
 project = {PROJECT_KEY}
@@ -207,6 +207,31 @@ AND status IN ({STATUSES})
 [AND created > {DATE_FILTER}]
 ORDER BY created DESC
 ```
+
+#### 2.3.4 Large Result Set Warning
+
+After executing a count query for the JQL:
+
+**If more than 100 issues match:**
+
+```
+Found {N} issues matching your filters.
+
+Scanning all {N} issues will involve quick-scoring each one before selecting the {X} worst for detailed analysis.
+
+Options:
+(1) Proceed with full scan (recommended if <200 issues)
+(2) Refine filters to reduce scope
+(3) Limit scan to first {X} issues (original behavior)
+```
+
+**If user selects "Refine filters":**
+- Return to search parameter configuration (2.3.2)
+
+**If user selects "Limit scan":**
+- Add `maxResults` limit to JQL query
+- Skip Phase 3 (lightweight scan)
+- Proceed directly to Phase 4 (detailed analysis) with the limited result set
 
 ---
 
@@ -235,30 +260,129 @@ Which fields should I include in quality scoring?
 
 ---
 
-## Phase 3: Fetch Issues and Parallel Analysis
+## Phase 3: Lightweight Scan (All Matching Issues)
 
-### 3.1 Fetch Issues
+This phase scans ALL issues matching the filters to identify the worst-scoring ones. Skip this phase if user chose "Limit scan" in Phase 2.3.4.
 
-**If project search (Branch B):**
-Use `searchJiraIssuesUsingJql` (or `acli jira issue search --jql "..."`) with:
-- The constructed JQL from Phase 2.3.3
-- `maxResults` set to user-specified limit
-- Request fields: summary, description, issuetype, status, created, plus any custom fields selected
+### 3.1 Fetch All Issues
+
+Execute the JQL query with pagination to fetch all matching issues:
+
+**Pagination approach:**
+- Fetch 100 issues per page
+- Continue until all issues retrieved
+- Collect only: issue key, summary, description, and selected custom fields
+
+**Progress indicator:**
+```
+Fetching issues... [page 1 of {N}]
+Fetching issues... [page 2 of {N}]
+...
+Found {TOTAL} issues to scan.
+```
+
+### 3.2 Parallel Quick-Score
+
+Launch sub-agents in parallel batches to quick-score all issues:
+
+**Batching configuration:**
+- Batch size: 20 issues per sub-agent
+- Max concurrent agents: 5
+- Each agent returns lightweight scores
+
+**Sub-agent prompt template:**
+
+```
+Quick-score these Jira issues against the Quality Rubric at {{SKILL_DIR}}/../../references/rubric.md
+
+For each issue, return ONLY a JSON array:
+
+[
+  {
+    "issueKey": "{ISSUE_KEY}",
+    "quickScore": <0-100>,
+    "flags": ["<quality issue 1>", "<quality issue 2>"]
+  },
+  ...
+]
+
+Score based on:
+- Completeness of required sections
+- Clarity of language (no vague terms)
+- Presence of acceptance criteria/repro steps
+- Overall structure
+
+Issues to score:
+{BATCH_ISSUE_DATA}
+```
+
+**Progress indicator:**
+```
+Scanning issues... [batch 1/{TOTAL_BATCHES} complete]
+Scanning issues... [batch 2/{TOTAL_BATCHES} complete]
+...
+Scan complete.
+```
+
+### 3.3 Aggregate and Rank
+
+After all sub-agents complete:
+
+1. Collect all quick-score results
+2. Sort by quickScore ascending (worst first)
+3. Take top {X} issues (where X = user's "worst issues to surface" selection)
+4. Display scan summary:
+
+```
+## Scan Results
+
+Scanned {TOTAL} issues. Score distribution:
+
+| Score Range | Count | % |
+|-------------|-------|---|
+| 0-30 (Critical) | {N} | {%} |
+| 31-50 (Poor) | {N} | {%} |
+| 51-70 (Adequate) | {N} | {%} |
+| 71-85 (Good) | {N} | {%} |
+| 86-100 (Excellent) | {N} | {%} |
+
+Selected {X} worst-scoring issues for detailed analysis:
+
+| Issue | Quick Score | Top Flags |
+|-------|-------------|-----------|
+| PROJ-123 | 18 | Missing AC, vague description |
+| PROJ-456 | 25 | No repro steps, unclear scope |
+...
+
+Proceeding with detailed analysis of these {X} issues.
+```
+
+---
+
+## Phase 4: Detailed Analysis (Selected Issues Only)
+
+This phase performs full quality analysis on only the {X} worst-scoring issues identified in Phase 3.
+
+### 4.1 Determine Issue Set for Detailed Analysis
+
+**If project search with full scan (Branch B - Phase 3 completed):**
+- Use only the {X} worst-scoring issues identified in Phase 3.3
+- Fetch full details for these specific issues using their keys
+
+**If project search with limited scan (Branch B - Phase 3 skipped):**
+- Use issues fetched directly from JQL with `maxResults` limit
+- These are the first {X} issues, not necessarily the worst
 
 **If specific issue (Branch A - single issue):**
 - Issue already fetched in Phase 2.2.1
-- No additional search needed
+- Skip directly to Phase 4.2
 
 **If Epic with children (Branch A - Epic):**
-Use `searchJiraIssuesUsingJql` with the child issues JQL:
-```jql
-"Epic Link" = {EPIC_KEY} OR parent = {EPIC_KEY}
-ORDER BY type ASC, key ASC
-```
-- Include the Epic itself if user selected that option
-- Request same fields as project search
+- All child issues already identified
+- For large Epics (>20 children), perform lightweight scan (Phase 3) first
+- Otherwise, analyze all children directly
 
-### 3.2 Parallel Analysis
+### 4.2 Parallel Detailed Analysis
 
 For each issue found, spawn a sub-agent to score it against the quality rubric.
 
@@ -303,13 +427,13 @@ Score each dimension 0-100 based on the rubric criteria. Return your analysis as
 
 **Batching:** Process up to 10 issues in parallel using Task tool with sub-agents.
 
-### 3.3 Consolidate Results
+### 4.3 Consolidate Results
 
 Aggregate scores from all sub-agents and rank by overall score (lowest = needs most improvement).
 
 ---
 
-## Phase 4: Results Presentation
+## Phase 5: Results Presentation
 
 Display the ranked results table:
 
@@ -344,11 +468,11 @@ What would you like to do?
 
 ---
 
-## Phase 5: Context Gathering
+## Phase 6: Context Gathering
 
 For each issue selected for improvement:
 
-### 5.1 Ask Context Source
+### 6.1 Ask Context Source
 
 ```
 ## Gathering Context for {ISSUE_KEY}
@@ -366,7 +490,7 @@ How should I gather additional context to improve this issue?
 (4) Skip context - Improve based on rubric and templates only
 ```
 
-### 5.2 Codebase Dive (if selected)
+### 6.2 Codebase Dive (if selected)
 
 If user selected codebase context:
 
@@ -392,9 +516,9 @@ Code snippets that may be relevant:
 [Include brief relevant snippets]
 ```
 
-### 5.3 User Interview (if selected)
+### 6.3 User Interview (if selected)
 
-Ask targeted questions based on the gaps identified in Phase 3:
+Ask targeted questions based on the gaps identified in Phase 4:
 
 **For Bugs:**
 - "What are the exact steps to reproduce this bug?"
@@ -418,27 +542,27 @@ Ask targeted questions based on the gaps identified in Phase 3:
 - "What are the boundaries of this work?"
 - "What are the risks if this isn't done?"
 
-### 5.4 Synthesize Context
+### 6.4 Synthesize Context
 
 Combine codebase findings and user answers into a context summary that will inform the improvement.
 
 ---
 
-## Phase 6: Improvement Proposal and Application
+## Phase 7: Improvement Proposal and Application
 
 For each issue selected for improvement:
 
-### 6.1 Generate Improved Content
+### 7.1 Generate Improved Content
 
 Using:
 - The quality rubric requirements
 - The appropriate template from `{{SKILL_DIR}}/../../references/templates.md`
-- The gathered context from Phase 5
+- The gathered context from Phase 6
 - The team pattern (Description-only vs Custom fields)
 
 Generate improved content for each field.
 
-### 6.2 Preview Changes
+### 7.2 Preview Changes
 
 Present a clear diff-style preview:
 
@@ -483,7 +607,7 @@ Apply this improvement?
 (A) Apply all remaining - Apply this and all subsequent improvements without asking
 ```
 
-### 6.3 Apply Changes
+### 7.3 Apply Changes
 
 On approval:
 
@@ -504,12 +628,17 @@ On approval:
 
 ---
 
-## Phase 7: Summary Report
+## Phase 8: Summary Report
 
 After all improvements are applied (or skipped):
 
 ```
 ## Improvement Session Complete
+
+### Scan Statistics
+- Total issues scanned: {TOTAL_SCANNED}
+- Issues selected for detailed analysis: {X}
+- Selection method: Worst-scoring from full scan
 
 ### Results
 
@@ -520,7 +649,7 @@ After all improvements are applied (or skipped):
 | PROJ-789 | Task | 42 | -- | Skipped | -- |
 
 ### Summary
-- Issues analyzed: {N}
+- Issues analyzed in detail: {N}
 - Issues improved: {M}
 - Issues skipped: {K}
 - Average score improvement: {OLD_AVG} → {NEW_AVG}
