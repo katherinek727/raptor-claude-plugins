@@ -61,6 +61,15 @@
       "author": {
         "name": "Andy Kay"
       }
+    },
+    {
+      "name": "jira-improve",
+      "source": "./plugins/jira-improve",
+      "description": "Find and improve poorly written Jira issues using a quality rubric",
+      "version": "1.0.0",
+      "author": {
+        "name": "Andy Kay"
+      }
     }
   ]
 }
