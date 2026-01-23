@@ -1,6 +1,45 @@
 # Raptortech Claude Code Plugins
 
-A curated marketplace of Claude Code plugins for development workflows, project planning, and AI-assisted coding.
+A collection of plugins that extend [Claude Code](https://docs.anthropic.com/en/docs/claude-code/overview)'s capabilities for development workflows, project planning, and AI-assisted coding. Claude Code is Anthropic's agentic coding tool that helps developers write, understand, and improve code through AI assistance. These plugins add specialized capabilities for structured planning, issue tracking, code quality, and more.
+
+## Why Use These Plugins?
+
+- **Structured Planning** — Create detailed project plans with AI-DLC methodology, from Intent documents through to Jira tickets
+- **Issue Management** — Streamline Jira issue creation, GitLab MRs, and release notes generation
+- **Code Quality** — Run Rubocop with intelligent auto-fixing and violation handling
+- **Backlog Health** — Find and improve poorly written Jira issues using quality rubrics
+- **Second Opinions** — Get feedback from multiple AI providers (Grok, ChatGPT, Gemini) on your code
+- **Evidence-Based Reasoning** — Enforce `[FACT]`/`[INFERRED]`/`[ASSUMED]` labeling for rigorous analysis
+
+## Usage Examples
+
+**Start a new project initiative:**
+```
+/planning:aidlc-plan
+Create an intent for adding user authentication with OAuth2 support
+```
+
+**Improve Jira backlog quality:**
+```
+/jira-improve:jira-improve PROJ
+```
+Analyzes issues in the PROJ project, scores them against a quality rubric, and helps rewrite poorly written tickets.
+
+**Get a second opinion on your code:**
+```
+Review this authentication implementation with Grok and Gemini
+```
+The pair-programming skill auto-triggers and queries multiple AI providers.
+
+**Create a GitLab MR for your current branch:**
+```
+/issues:create-mr
+```
+
+**Run Rubocop with intelligent fixes:**
+```
+/ruby:rubocop app/models/user.rb
+```
 
 ## Quick Start
 
