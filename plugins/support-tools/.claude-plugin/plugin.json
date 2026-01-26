@@ -1,0 +1,11 @@
+{
+  "name": "support-tools",
+  "version": "1.0.0",
+  "description": "Support tools for CPOMS/StaffSafe: diagnostics, script recommendations, and incident workflows",
+  "author": {
+    "name": "Connor Parris"
+  },
+  "repository": "https://gitlab.com/raptortech1/aidevops/claude-plugins",
+  "keywords": ["sentry", "cpoms", "staffsafe", "diagnostics", "scripts"],
+  "mcpServers": "./.mcp.json"
+}
