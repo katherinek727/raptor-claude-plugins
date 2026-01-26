@@ -1,11 +1,18 @@
 {
   "name": "planning",
   "description": "Project planning skills for Confluence initiatives and phased delivery plans",
-  "version": "1.7.1",
+  "version": "1.7.2",
   "author": {
     "name": "Andy Kay"
   },
   "license": "MIT",
   "keywords": ["planning", "confluence", "jira", "initiative", "roadmap", "delivery"],
-  "skills": "./skills/"
+  "skills": "./skills/",
+  "commands": [
+    "./skills/aidlc-decompose/",
+    "./skills/aidlc-design/",
+    "./skills/aidlc-help/",
+    "./skills/aidlc-plan/",
+    "./skills/aidlc-verify/"
+  ]
 }
