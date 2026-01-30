@@ -1,3 +1,4 @@
+<!-- AI_SUGGESTION_MARKER_20260130181149 -->
 <!-- AI_SUGGESTION_MARKER_20260126144849 -->
 # Raptortech Claude Code Plugins
 
@@ -11,6 +12,7 @@ A collection of plugins that extend [Claude Code](https://docs.anthropic.com/en/
 - **Backlog Health** — Find and improve poorly written Jira issues using quality rubrics
 - **Second Opinions** — Get feedback from multiple AI providers (Grok, ChatGPT, Gemini) on your code
 - **Evidence-Based Reasoning** — Enforce `[FACT]`/`[INFERRED]`/`[ASSUMED]` labeling for rigorous analysis
+- **Behavioral Diff** - Detect logic inversions and behavioral changes in code diffs
 
 ## Usage Examples
 
@@ -40,6 +42,11 @@ The pair-programming skill auto-triggers and queries multiple AI providers.
 **Run Rubocop with intelligent fixes:**
 ```
 /ruby:rubocop app/models/user.rb
+```
+
+**Check for behavioral logic inversions:**
+```
+/behavioral-diff:review
 ```
 
 ## Quick Start
@@ -165,6 +172,39 @@ Features:
 
 ---
 
+### Behavioral Diff (`/behavioral-diff:*`)
+
+Detect logic inversions, control flow changes, and semantic alterations that could break business logic. Uses a dual-analyzer architecture (control-flow + business-logic) with context-aware confidence scoring.
+
+| Command | Triggers |
+|---------|----------|
+| `/behavioral-diff:review` | `review diff`, `check inversions`, `behavioral review`, `logic check` |
+
+**Arguments:**
+
+| Argument | Behavior |
+|----------|----------|
+| `--staged` (default) | Review staged changes |
+| `--branch` | Review current branch vs main |
+| `--commit` | Review last commit |
+| `--strict` (default) | Maximum sensitivity, more false positives |
+| `--normal` | Reduced sensitivity, fewer false positives |
+| `file_path` | Limit review to specific file(s) |
+
+**What Gets Flagged:**
+- **CRITICAL:** Boolean inversions (`if (x)` → `if (!x)`), swapped if/else branches, equality inversions (`==` → `!=`)
+- **HIGH:** Comparison operator changes, null check inversions, guard clause inversions, authorization/validation changes
+- **MEDIUM:** Loop bound changes, LINQ semantic changes, ternary swaps, state machine modifications
+
+```
+/behavioral-diff:review --branch
+/behavioral-diff:review src/Services/OrderService.cs
+```
+
+**Requires:** Git repository with staged changes or commits to analyze
+
+---
+
 ### Epistemic Reasoning (hook-based)
 
 Enforces evidence-based reasoning by requiring `[FACT]`, `[INFERRED]`, and `[ASSUMED]` labels on all claims. Automatically enabled via `SessionStart` hook—no slash commands needed.
@@ -204,6 +244,7 @@ claude plugin marketplace add git@gitlab.com:raptortech1/aidevops/claude-plugins
 /plugin install epistemic-reasoning
 /plugin install context-init
 /plugin install jira-improve
+/plugin install behavioral-diff
 
 # Reload after changes
 /plugin

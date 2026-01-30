@@ -70,6 +70,15 @@
       "author": {
         "name": "Andy Kay"
       }
+    },
+    {
+      "name": "behavioral-diff",
+      "source": "./plugins/behavioral-diff",
+      "description": "Behavioural diff analysis to detect logic inversions, control flow changes, and semantic alterations that could break business logic. Catch bugs like inverted if-clauses before they reach production.",
+      "version": "1.2.0",
+      "author": {
+        "name": "Matthew Bailey"
+      }
     }
   ]
 }

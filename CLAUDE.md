@@ -39,6 +39,7 @@ plugins/<plugin-name>/
 | `ruby` | Rubocop linting with auto-fix |
 | `context-init` | Project setup for non-developers with repo cloning and MCP config |
 | `jira-improve` | Find and improve poorly written Jira issues using quality rubric |
+| `behavioral-diff` | Detect logic inversions and behavioral changes in code diffs |
 
 ### Plugin Skills Reference
 
@@ -83,6 +84,16 @@ plugins/<plugin-name>/
 | Command | Triggers | Description |
 |---------|----------|-------------|
 | `/jira-improve:jira-improve` | `jira improve`, `fix jira`, `improve issues`, `jira quality`, `backlog cleanup`, `improve epic` | Find and improve poorly written Jira issues using quality rubric |
+
+#### Behavioral Diff (`/behavioral-diff:*`)
+
+| Command | Triggers | Description |
+|---------|----------|-------------|
+| `/behavioral-diff:review` | `review diff`, `check inversions`, `behavioral review`, `logic check` | Analyze code diffs for logic inversions, control flow changes, and behavioral alterations |
+
+**Arguments:** `[--staged|--branch|--commit] [--strict|--normal] [file_path]`
+
+Uses dual-analyzer architecture (control-flow-analyzer + business-logic-analyzer) with context-aware confidence scoring. Flags CRITICAL (boolean inversions), HIGH (comparison/null check changes), and MEDIUM (loop bounds, LINQ changes) issues.
 
 #### Epistemic Reasoning (hook-based)
 

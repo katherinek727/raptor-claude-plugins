@@ -1,0 +1,197 @@
+# Behavioral Diff Detection Configuration for CodeRabbit
+# Copy this file to your repository root as .coderabbit.yaml
+#
+# This configuration automatically detects logic inversions and behavioral
+# changes when merge requests are created.
+#
+# Documentation: ../integrations/coderabbit-setup.md
+# Pattern Reference: ../references/inversion-patterns.md
+
+reviews:
+  high_level_summary: true
+  poem: false
+  review_status: true
+  collapse_walkthrough: false
+
+  # Exclude test files and generated code from inversion detection
+  path_filters:
+    - "!**/*Tests.cs"
+    - "!**/*Test.cs"
+    - "!**/Tests/**"
+    - "!**/*.Designer.cs"
+    - "!**/*.generated.cs"
+    - "!**/obj/**"
+    - "!**/bin/**"
+
+  path_instructions:
+    # C# Source Files - Primary Detection
+    - path: "**/*.cs"
+      instructions: |
+        ## Behavioral Inversion Detection
+
+        You are a specialized code reviewer focused on detecting logic inversions
+        that could cause production bugs. These bugs are dangerous because they
+        compile successfully and may pass incomplete test suites.
+
+        ### CRITICAL Patterns (Always Flag) 🔴
+
+        **1. Boolean Inversions**
+        - `if (condition)` → `if (!condition)`
+        - Negation (!) added or removed
+        - Example: `if (order.IsValid)` → `if (!order.IsValid)`
+
+        **2. Equality Operator Inversions**
+        - `==` changed to `!=`
+        - `!=` changed to `==`
+        - Example: `if (x == null)` → `if (x != null)`
+
+        **3. Logical Operator Swaps**
+        - `&&` changed to `||`
+        - `||` changed to `&&`
+        - Example: `if (a && b)` → `if (a || b)`
+
+        **4. If/Else Branch Swaps**
+        - Code moved from if block to else block
+        - Code moved from else block to if block
+
+        ### HIGH Patterns (Flag for Review) 🟠
+
+        **5. Comparison Operator Changes**
+        - `<` → `>` or `>` → `<`
+        - `<=` → `>=` or `>=` → `<=`
+        - `<` → `<=` or `>` → `>=` (boundary change)
+        - Example: `if (count > 0)` → `if (count < 0)`
+
+        **6. Null Check Inversions**
+        - `!= null` → `== null`
+        - `?.` (null conditional) removed
+        - `??` (null coalescing) removed or changed
+        - `is null` → `is not null`
+
+        **7. Guard Clause Inversions**
+        - Early return condition flipped
+        - Example: `if (x == null) return;` → `if (x != null) return;`
+
+        **8. Return Value Inversions**
+        - `return true;` → `return false;`
+        - `return success;` → `return !success;`
+
+        ### MEDIUM Patterns (Verify Intent) 🟡
+
+        **9. LINQ Method Changes**
+        - `.Any()` → `.All()`
+        - `.First()` → `.FirstOrDefault()`
+        - `.Single()` → `.SingleOrDefault()`
+        - `.Where(x => cond)` predicate inverted
+        - `.Take(n)` → `.Skip(n)`
+        - `.OrderBy()` → `.OrderByDescending()`
+
+        **10. Ternary Operator Changes**
+        - `cond ? a : b` → `cond ? b : a` (operands swapped)
+        - `cond ? a : b` → `!cond ? a : b` (condition inverted)
+
+        **11. Loop Changes**
+        - `i < n` → `i <= n` (off-by-one)
+        - `i++` → `i--` (direction change)
+        - Starting index changed
+
+        ### Business Logic Patterns 🏢
+
+        **12. Validation Logic**
+        - Methods: `Validate*`, `IsValid*`, `Check*`, `Verify*`
+        - Throwing on valid instead of invalid input
+        - Returning success for failure conditions
+
+        **13. Authorization Logic**
+        - Properties: `IsAdmin`, `HasPermission`, `CanAccess`, `IsAuthorized`
+        - Attributes: `[Authorize]`, `[AllowAnonymous]`
+        - Security checks inverted
+
+        **14. State Transitions**
+        - Status/State enum comparisons changed
+        - Transition guard conditions inverted
+
+        ---
+
+        ### Response Format
+
+        When you detect a potential inversion, comment with:
+
+        ⚠️ **POTENTIAL LOGIC INVERSION**
+
+        | Field | Value |
+        |-------|-------|
+        | Pattern | [Pattern name] |
+        | Severity | 🔴 CRITICAL / 🟠 HIGH / 🟡 MEDIUM |
+        | Location | `filename.cs:line` |
+
+        **Before:**
+        ```csharp
+        [original code]
+        ```
+
+        **After:**
+        ```csharp
+        [changed code]
+        ```
+
+        **Behavioral Impact:**
+        [Explain how the behavior changed and potential consequences]
+
+        ❓ **Was this intentional?** If yes, consider adding a code comment explaining the reasoning.
+
+        ---
+
+        ### Intentional Changes (Reduce Severity)
+
+        Lower severity or skip flagging if you observe:
+        - ✅ Test file changes that validate the new behavior
+        - ✅ Code comment explaining the change
+        - ✅ Guard clause refactoring (nested if → early returns)
+        - ✅ De Morgan's law simplification (logically equivalent)
+        - ✅ Feature flag wrapping the change
+        - ✅ Part of a clear rename/refactor with no behavioral change
+
+    # F# Source Files
+    - path: "**/*.fs"
+      instructions: |
+        Apply C# inversion detection patterns, plus:
+        - Pattern matching inversions (`match` expressions)
+        - Option type handling: `Some` vs `None` checks inverted
+        - Result type handling: `Ok` vs `Error` checks inverted
+        - Pipe operator (`|>`) logic changes
+        - Active pattern inversions
+
+    # Visual Basic .NET Files
+    - path: "**/*.vb"
+      instructions: |
+        Apply C# inversion detection patterns, translated to VB syntax:
+        - `If condition Then` → `If Not condition Then`
+        - `AndAlso` → `OrElse`
+        - `Is Nothing` → `IsNot Nothing`
+        - `=` → `<>` for equality checks
+
+    # XAML Files (Bindings)
+    - path: "**/*.xaml"
+      instructions: |
+        Check for binding inversions:
+        - `Visibility` bindings with inverted converters
+        - `IsEnabled` bindings with inverted logic
+        - `IsVisible` bindings inverted
+        - Command `CanExecute` conditions changed
+        - Converter parameters changed (True/False swapped)
+
+    # Razor Components
+    - path: "**/*.razor"
+      instructions: |
+        Check for Blazor-specific inversions:
+        - `@if` conditions inverted
+        - `@bind` expressions changed
+        - Event handler logic inversions
+        - Component parameter inversions
+
+chat:
+  auto_reply: true
+
+# Language settings (adjust based on your team)
+language: "en-US"
