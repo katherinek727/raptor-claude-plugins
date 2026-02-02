@@ -1,5 +1,5 @@
 ---
-name: aidlc-help
+name: help
 description: Explain AI-DLC methodology, available skills, and how to use this plugin. Use when users ask "what is AI-DLC", "how do I use planning", "what skills are available", or need guidance on the workflow. (Triggers - aidlc help, what is aidlc, explain aidlc, planning help, how to plan, ai-dlc)
 ---
 
@@ -51,31 +51,31 @@ This reversal allows developers to focus on high-value decision-making while AI 
 
 | Skill | Purpose | When to Use |
 |-------|---------|-------------|
-| `/planning:aidlc-plan` | Create Level 1 Intent docs in Confluence | Starting a new initiative |
-| `/planning:aidlc-decompose` | Break Intent into Stories & Units in Confluence | After Intent is approved |
-| `/planning:aidlc-design` | Domain Design & ADRs with confidence assessment | After Units are created |
-| `/planning:aidlc-verify` | Verify docs & transfer to Jira | After design, before implementation |
-| `/planning:aidlc-help` | This help guide | When you need guidance |
+| `/aidlc:intent` | Create Level 1 Intent docs in Confluence | Starting a new initiative |
+| `/aidlc:elaborate` | Break Intent into Stories & Units in Confluence | After Intent is approved |
+| `/aidlc:design` | Domain Design & ADRs with confidence assessment | After Units are created |
+| `/aidlc:verify` | Verify docs & transfer to Jira | After design, before implementation |
+| `/aidlc:help` | This help guide | When you need guidance |
 
 ## Workflow Order
 
 ```
-1. /planning:aidlc-plan
+1. /aidlc:intent
    |
    v (Intent approved in Confluence)
-2. /planning:aidlc-decompose
+2. /aidlc:elaborate
    |
    v (Stories & Units created in Confluence, reviewed, reorganized)
-3. /planning:aidlc-design
+3. /aidlc:design
    |
    v (Domain model & ADRs documented, confidence assessed)
-4. /planning:aidlc-verify
+4. /aidlc:verify
    |
    v (Documentation verified, transferred to Jira)
 5. Implementation
 ```
 
-### Phase 1: Intent Documentation (`/planning:aidlc-plan`)
+### Phase 1: Intent Documentation (`/aidlc:intent`)
 
 Creates a Level 1 Intent document in Confluence containing:
 - Problem/Opportunity statement
@@ -88,7 +88,7 @@ Creates a Level 1 Intent document in Confluence containing:
 
 **Output:** Approved Confluence document with workflow status tracking
 
-### Phase 2: Decomposition (`/planning:aidlc-decompose`)
+### Phase 2: Decomposition (`/aidlc:elaborate`)
 
 Breaks the Intent into actionable work using Mob Elaboration:
 1. Theme clusters identified
@@ -101,7 +101,7 @@ Breaks the Intent into actionable work using Mob Elaboration:
 
 **Output:** Confluence pages for Units and Stories (Jira transfer happens later in verify phase)
 
-### Phase 3: Design (`/planning:aidlc-design`)
+### Phase 3: Design (`/aidlc:design`)
 
 Creates design artifacts for implementation with confidence assessment:
 1. Assess context sufficiency (confidence check)
@@ -111,7 +111,7 @@ Creates design artifacts for implementation with confidence assessment:
 
 **Output:** Design documentation linked to Units in Confluence
 
-### Phase 4: Verification (`/planning:aidlc-verify`)
+### Phase 4: Verification (`/aidlc:verify`)
 
 Verifies documentation completeness and transfers to Jira:
 1. Spawn parallel sub-agents to assess each Unit
@@ -127,7 +127,7 @@ Verifies documentation completeness and transfers to Jira:
 ### Starting Fresh?
 
 > "I want to plan a new feature for user authentication"
-> Use `/planning:aidlc-plan`
+> Use `/aidlc:intent`
 
 This will:
 1. Gather requirements through clarifying questions
@@ -137,7 +137,7 @@ This will:
 ### Have an Approved Intent?
 
 > "Break down the authentication intent into stories"
-> Use `/planning:aidlc-decompose`
+> Use `/aidlc:elaborate`
 
 This will:
 1. Validate the Intent is approved
@@ -146,12 +146,12 @@ This will:
 4. Create Confluence pages for Stories and Units
 5. Guide you through review and reorganization
 
-> **Note:** Jira transfer happens later in `/planning:aidlc-verify` after design is complete.
+> **Note:** Jira transfer happens later in `/aidlc:verify` after design is complete.
 
 ### Ready to Design?
 
 > "Create the domain model for the auth unit"
-> Use `/planning:aidlc-design`
+> Use `/aidlc:design`
 
 This will:
 1. Validate Units exist in Confluence
@@ -163,7 +163,7 @@ This will:
 ### Ready to Transfer to Jira?
 
 > "Verify documentation and transfer to Jira"
-> Use `/planning:aidlc-verify`
+> Use `/aidlc:verify`
 
 This will:
 1. Spawn sub-agents to assess each Unit's documentation
@@ -227,7 +227,7 @@ When this skill is invoked:
 **Response:** Explain the core concept, key principles, and how it differs from traditional methods.
 
 **User:** "How do I start planning a new feature?"
-**Response:** Recommend `/planning:aidlc-plan`, explain what it does, and what they'll need (project context, stakeholder info).
+**Response:** Recommend `/aidlc:intent`, explain what it does, and what they'll need (project context, stakeholder info).
 
 **User:** "What's the difference between a Unit and an Epic?"
 **Response:** Explain that Units are cohesive work elements from AI-DLC, while Epics are Jira's work tracking. Units become Sub-epics in Jira.
@@ -239,7 +239,7 @@ When this skill is invoked:
 
 ### "I don't have a Confluence doc yet"
 
-Start with `/planning:aidlc-plan` to create the Level 1 Intent document.
+Start with `/aidlc:intent` to create the Level 1 Intent document.
 
 ### "I have a Confluence doc but it's not approved"
 
@@ -255,9 +255,9 @@ While possible with explicit override, Confluence-first is recommended for:
 ### "The skill said my prerequisites are incomplete"
 
 Check that prior phases are complete:
-- For `/planning:aidlc-decompose`: Need approved Level 1 Intent in Confluence
-- For `/planning:aidlc-design`: Need Units created in Confluence (from decompose phase)
-- For `/planning:aidlc-verify`: Need design documentation complete
+- For `/aidlc:elaborate`: Need approved Level 1 Intent in Confluence
+- For `/aidlc:design`: Need Units created in Confluence (from decompose phase)
+- For `/aidlc:verify`: Need design documentation complete
 
 ## Further Reading
 

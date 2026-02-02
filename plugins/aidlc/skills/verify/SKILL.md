@@ -1,5 +1,5 @@
 ---
-name: aidlc-verify
+name: verify
 description: Verify documentation completeness and assess AI-execution confidence before transferring to Jira. Uses parallel sub-agents to review Intent, Units, Stories, and Design docs. Identifies gaps and provides remediation suggestions. (Triggers - verify docs, check readiness, transfer to jira, aidlc verify, ready for implementation, confidence check)
 ---
 
@@ -43,8 +43,8 @@ Before starting, validate:
    - Check if "Domain Design" is complete (improves confidence score)
 
 3. **If prerequisites incomplete**
-   - Offer to run `/planning:aidlc-design` first if design is missing
-   - Offer to run `/planning:aidlc-decompose` if Units are missing
+   - Offer to run `/aidlc:design` first if design is missing
+   - Offer to run `/aidlc:elaborate` if Units are missing
    - Or allow override with explicit confirmation (see Override Pattern in @${CLAUDE_PLUGIN_ROOT}/references/planning-shared.md)
 
 ## Confidence Assessment Framework
@@ -77,7 +77,7 @@ When identifying gaps, categorize them:
 | **Missing AC** | Story without acceptance criteria | Add testable conditions |
 | **Unmeasurable NFR** | "should be fast" | Add specific target (e.g., <200ms) |
 | **Unknown integration** | "connects to backend" | Identify specific APIs/services |
-| **Missing design** | No domain model | Run `/planning:aidlc-design` |
+| **Missing design** | No domain model | Run `/aidlc:design` |
 
 ## Workflow
 
@@ -253,7 +253,7 @@ Critical gaps:
 - [List blocking gaps]
 
 Recommended actions:
-1. Run `/planning:aidlc-design` if design is missing
+1. Run `/aidlc:design` if design is missing
 2. Update stories with missing acceptance criteria
 3. Define measurable NFRs
 
@@ -311,7 +311,7 @@ Provide:
 
 ## Workflow Chain
 
-- **Previous**: `/planning:aidlc-design` (Domain and Logical Design)
+- **Previous**: `/aidlc:design` (Domain and Logical Design)
 - **Next**: Implementation
 
 ## Definition of Done
@@ -336,5 +336,5 @@ Provide:
 - **Low confidence score**: Guide user to address specific gaps; offer to re-run verification after updates.
 - **Sub-agent failure**: Report which Unit verification failed and offer to retry or assess manually.
 - **Confluence page deletion fails**: Verify permissions; may need admin to delete pages.
-- **Design missing**: Confidence will be lower; recommend running `/planning:aidlc-design` first but allow override.
+- **Design missing**: Confidence will be lower; recommend running `/aidlc:design` first but allow override.
 - **User wants to skip verification**: Allow with explicit confirmation, but warn that AI execution quality may suffer.

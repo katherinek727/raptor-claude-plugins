@@ -45,10 +45,10 @@
       }
     },
     {
-      "name": "planning",
-      "source": "./plugins/planning",
-      "description": "Project planning skills for Confluence initiatives and phased delivery plans",
-      "version": "1.7.2",
+      "name": "aidlc",
+      "source": "./plugins/aidlc",
+      "description": "AI-DLC (AI-Driven Development Lifecycle) planning skills for Confluence initiatives and phased delivery plans",
+      "version": "1.8.0",
       "author": {
         "name": "Andy Kay"
       }

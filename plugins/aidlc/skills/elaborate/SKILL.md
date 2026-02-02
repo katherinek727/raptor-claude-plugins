@@ -1,5 +1,5 @@
 ---
-name: aidlc-decompose
+name: elaborate
 description: Decompose an approved Intent into User Stories and Units using Mob Elaboration. Stories are created as Confluence pages for collaborative review, re-assessed using domain knowledge and loose coupling/high cohesion principles, then transferred to Jira after approval. (Triggers - decompose intent, break down intent, create units, unit decomposition, create stories, break into units, split intent, aidlc decompose, mob elaboration)
 ---
 
@@ -53,7 +53,7 @@ Before starting, validate:
    - Verify "Level 1 Intent" row shows "✅ Approved"
 
 3. **If prerequisites incomplete**
-   - Offer to run `/planning:aidlc-plan` first if Confluence doc is missing or not approved
+   - Offer to run `/aidlc:intent` first if Confluence doc is missing or not approved
    - Or allow override with explicit confirmation (see Override Pattern in @${CLAUDE_PLUGIN_ROOT}/references/planning-shared.md)
 
 ## Confluence Page Hierarchy
@@ -317,14 +317,14 @@ Report back with:
 - Any cross-cutting concerns or dependencies
 
 Ask whether to proceed with Domain Design for any Unit.
-If yes, invoke `/planning:aidlc-design` with the Unit context.
+If yes, invoke `/aidlc:design` with the Unit context.
 
-> **Note**: Jira transfer happens later in `/planning:aidlc-verify` after design is complete and documentation has been verified.
+> **Note**: Jira transfer happens later in `/aidlc:verify` after design is complete and documentation has been verified.
 
 ## Workflow Chain
 
-- **Previous**: `/planning:aidlc-plan` (Level 1 Intent documentation)
-- **Next**: `/planning:aidlc-design` (Domain and Logical Design)
+- **Previous**: `/aidlc:intent` (Level 1 Intent documentation)
+- **Next**: `/aidlc:design` (Domain and Logical Design)
 
 ## Definition of Done
 
@@ -357,9 +357,9 @@ If yes, invoke `/planning:aidlc-design` with the Unit context.
 - Unit pages renamed/repurposed (not duplicated)
 - Units Overview updated with new groupings and boundary rationale
 - Workflow status table updated in Confluence
-- User informed that next step is `/planning:aidlc-design`
+- User informed that next step is `/aidlc:design`
 
-> **Note**: Jira transfer (Sub-epics and Stories) happens later in `/planning:aidlc-verify` after design and verification are complete.
+> **Note**: Jira transfer (Sub-epics and Stories) happens later in `/aidlc:verify` after design and verification are complete.
 
 ## Troubleshooting
 

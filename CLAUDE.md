@@ -32,7 +32,7 @@ plugins/<plugin-name>/
 
 | Plugin | Purpose |
 |--------|---------|
-| `planning` | AI-DLC workflow: Intent docs → Jira Epics → Units → Stories |
+| `aidlc` | AI-DLC workflow: Intent docs → Jira Epics → Units → Stories → Bolts |
 | `issues` | Jira issue creation, GitLab MRs, release notes |
 | `pair-programming` | Get second opinions from Grok/ChatGPT/Gemini |
 | `epistemic-reasoning` | Enforces [FACT]/[INFERRED]/[ASSUMED] labeling |
@@ -43,15 +43,16 @@ plugins/<plugin-name>/
 
 ### Plugin Skills Reference
 
-#### Planning (`/planning:*`)
+#### AIDLC (`/aidlc:*`)
 
 | Command | Triggers | Description |
 |---------|----------|-------------|
-| `/planning:aidlc-plan` | `create intent`, `level 1 doc`, `intent document`, `new initiative`, `draft intent`, `aidlc plan` | Create Level 1 Intent documentation in Confluence |
-| `/planning:aidlc-decompose` | `decompose intent`, `break down intent`, `create units`, `create stories`, `mob elaboration` | Break Intent into Units and Stories via Mob Elaboration |
-| `/planning:aidlc-design` | `domain design`, `logical design`, `create ADR`, `architecture decision`, `aidlc design` | Domain/Logical Design and Architecture Decision Records |
-| `/planning:aidlc-verify` | `verify docs`, `check readiness`, `transfer to jira`, `aidlc verify`, `confidence check` | Verify doc completeness before Jira transfer |
-| `/planning:aidlc-help` | `aidlc help`, `what is aidlc`, `explain aidlc`, `planning help`, `how to plan` | Explain AI-DLC methodology and available skills |
+| `/aidlc:intent` | `create intent`, `level 1 doc`, `intent document`, `new initiative`, `draft intent`, `aidlc plan` | Create Level 1 Intent documentation in Confluence |
+| `/aidlc:elaborate` | `decompose intent`, `break down intent`, `create units`, `create stories`, `mob elaboration` | Break Intent into Units and Stories via Mob Elaboration |
+| `/aidlc:design` | `domain design`, `logical design`, `create ADR`, `architecture decision`, `aidlc design` | Domain/Logical Design and Architecture Decision Records |
+| `/aidlc:verify` | `verify docs`, `check readiness`, `transfer to jira`, `aidlc verify`, `confidence check` | Verify doc completeness before Jira transfer |
+| `/aidlc:bolt` | `bolt`, `implement bolt`, `start bolt`, `bolt implementation`, `new bolt` | Guide implementation of a bolt with TDD emphasis |
+| `/aidlc:help` | `aidlc help`, `what is aidlc`, `explain aidlc`, `planning help`, `how to plan` | Explain AI-DLC methodology and available skills |
 
 #### Issues (`/issues:*`)
 

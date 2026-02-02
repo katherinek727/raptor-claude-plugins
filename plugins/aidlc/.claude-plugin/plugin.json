@@ -1,0 +1,19 @@
+{
+  "name": "aidlc",
+  "description": "AI-DLC (AI-Driven Development Lifecycle) planning skills for Confluence initiatives and phased delivery plans",
+  "version": "1.8.0",
+  "author": {
+    "name": "Andy Kay"
+  },
+  "license": "MIT",
+  "keywords": ["aidlc", "planning", "confluence", "jira", "initiative", "roadmap", "delivery"],
+  "skills": "./skills/",
+  "commands": [
+    "./skills/help/",
+    "./skills/intent/",
+    "./skills/elaborate/",
+    "./skills/design/",
+    "./skills/verify/",
+    "./skills/bolt/"
+  ]
+}
