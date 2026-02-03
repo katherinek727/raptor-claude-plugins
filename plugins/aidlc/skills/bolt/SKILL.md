@@ -40,20 +40,24 @@ This skill follows the AI-DLC principle where AI initiates and directs the conve
 #### Step 1: Gather Jira Context
 
 Ask for the work context:
-- Jira artifact (story or sub-epic key, e.g., PROJ-123)
+- Jira artifact (Bolt/Story key, e.g., PROJ-123)
 - Fetch the Jira issue using the `acli` CLI (preferred for lower token usage):
   ```bash
   # First check acli is installed
   which acli || echo "acli not installed - see: https://developer.atlassian.com/cloud/acli/"
 
-  # Fetch the issue with relevant fields
+  # Fetch the Bolt (Story) with relevant fields
   acli jira workitem view PROJ-123 --fields summary,description,status,issuetype --json
+
+  # Fetch child Tasks (Sub-tasks) for context
+  acli jira workitem children PROJ-123 --json
   ```
 - Extract acceptance criteria, description, and dependencies from the response
+- Note the Tasks (Sub-tasks) that are part of this Bolt
 
 If no Jira key provided, ask:
 ```
-What Jira story or sub-epic should I work on?
+What Jira Bolt (Story) should I work on?
 Please provide the issue key (e.g., PROJ-123).
 ```
 
@@ -301,7 +305,7 @@ Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>
 
 ## Workflow Chain
 
-- **Previous**: Story/Task in Jira (from `/aidlc:verify` or manual creation)
+- **Previous**: Bolt (Story) in Jira with Tasks (Sub-tasks) from `/aidlc:verify`
 - **Next**: Pull/Merge Request (manual or via `/issues:create-mr`)
 
 ## Definition of Done

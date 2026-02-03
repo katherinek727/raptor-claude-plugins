@@ -33,8 +33,8 @@ This skill follows the AI-DLC principle where AI initiates and directs the conve
 Before starting, validate:
 
 1. **Required artifacts**
-   - Confluence Level 1 Intent document (ask for link)
-   - Units Overview page with Unit and Story child pages in Confluence
+   - Confluence Intent document (ask for link)
+   - Units Overview page with Unit and Task child pages in Confluence
    - Fetch all using Atlassian MCP to confirm they exist
 
 2. **Required status**
@@ -50,7 +50,7 @@ Before starting, validate:
 1. **Gather context**
    Ask only for what is missing:
    - Unit to design (from Confluence Units Overview page)
-   - User Stories within the Unit (from Confluence child pages)
+   - Tasks within the Unit (from Confluence child pages)
    - Relevant NFRs (performance, security, scalability, etc.)
    - Existing codebase context (for brown-field)
    - Any architectural constraints or preferences
@@ -62,7 +62,7 @@ Before starting, validate:
 
    For the Unit being designed, verify:
    - [ ] Unit scope is bounded (no "and more", "etc.", open-ended language)
-   - [ ] At least 2 user stories exist with acceptance criteria
+   - [ ] At least 2 Tasks exist with acceptance criteria
    - [ ] NFRs have measurable targets (not just "fast" or "secure")
    - [ ] Integration points are identified (APIs, services, databases)
    - [ ] For brownfield: existing code patterns are understood
@@ -74,7 +74,7 @@ Before starting, validate:
    | Factor | Score | Notes |
    |--------|-------|-------|
    | Unit scope clarity | /20 | Clear boundaries, defined outcomes |
-   | Story quality | /20 | Testable acceptance criteria |
+   | Task quality | /20 | Testable acceptance criteria |
    | NFR specificity | /20 | Measurable targets with baselines |
    | Technical context | /20 | Integration points, dependencies known |
    | Architectural constraints | /20 | Patterns, limitations documented |
@@ -158,7 +158,7 @@ For existing systems, add these steps before Domain Design:
 
 ## Workflow Chain
 
-- **Previous**: `/aidlc:elaborate` (Unit and Story creation in Confluence)
+- **Previous**: `/aidlc:elaborate` (Unit and Task creation in Confluence)
 - **Next**: `/aidlc:verify` (Verification and Jira transfer)
 
 ## Definition of Done

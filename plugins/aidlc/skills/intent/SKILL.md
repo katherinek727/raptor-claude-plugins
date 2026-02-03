@@ -1,16 +1,16 @@
 ---
 name: intent
-description: Create and iteratively refine the AI-DLC Level 1 Intent documentation in Confluence, with human-in-the-loop validation, risk surfacing, NFRs, and measurement criteria. Use when asked to draft or update an Intent/Level 1 plan, initiative doc, or Confluence planning document before Jira work is created. (Triggers - create intent, level 1 doc, intent document, new initiative, draft intent, planning doc, intent brief, confluence intent, aidlc plan)
+description: Create and iteratively refine the AI-DLC Intent documentation in Confluence, with human-in-the-loop validation, risk surfacing, NFRs, and measurement criteria. Use when asked to draft or update an Intent, initiative doc, or Confluence planning document before Jira work is created. (Triggers - create intent, intent document, new initiative, draft intent, planning doc, intent brief, confluence intent, aidlc plan)
 ---
 
 # AI-DLC Plan Intent
 
-Produce the Level 1 Intent documentation in Confluence as the single source of truth for the project idea. Emphasize iteration, human approval, and risk visibility before any Jira artifacts are created.
+Produce the Intent documentation in Confluence as the single source of truth for the project idea. Emphasize iteration, human approval, and risk visibility before any Jira artifacts are created.
 
 > **IMPORTANT: Keep Intent Docs Lightweight**
 >
 > Intent documents capture WHAT needs to be achieved, not HOW to break it down.
-> - Do NOT include detailed unit decomposition or story breakdowns
+> - Do NOT include detailed unit decomposition or Task breakdowns
 > - Do NOT create Jira artifacts at this stage
 > - Unit breakdown happens later in `/aidlc:elaborate` (Mob Elaboration)
 > - You may include "Proposed Units (hypotheses only)" as rough scope indicators
@@ -32,7 +32,7 @@ At each step, AI should:
 
 ## Example Invocations
 
-- "Create a Level 1 Intent doc for the new authentication system"
+- "Create an Intent doc for the new authentication system"
 - "Draft an intent document for adding dark mode"
 - "Help me create a Confluence intent brief for the billing overhaul"
 - "Start a new initiative doc for the API migration"
@@ -75,7 +75,7 @@ Include in Confluence doc as a collapsible section or separate child page. See P
 3. **Confirm understanding**
    Summarize in 5-8 bullets and ask for corrections before drafting.
 
-4. **Draft Level 1 documentation**
+4. **Draft Intent documentation**
    Use the template in @${CLAUDE_PLUGIN_ROOT}/references/planning-shared.md. Keep it concise and scannable.
 
 5. **Review and iterate**
@@ -86,11 +86,11 @@ Include in Confluence doc as a collapsible section or separate child page. See P
    Include the Workflow Status table from @${CLAUDE_PLUGIN_ROOT}/references/planning-shared.md.
 
 7. **Approval gate**
-   Explicitly ask whether the Level 1 documentation is approved.
+   Explicitly ask whether the Intent documentation is approved.
 
 8. **Update workflow status**
    When approved, update the Confluence page status table:
-   - Set "Level 1 Intent" row to "✅ Approved" with today's date
+   - Set "Intent" row to "✅ Approved" with today's date
 
 9. **Chain to Decompose**
    If approved and the user wants to proceed, invoke `/aidlc:elaborate` with the Confluence page link. Pass along the Intent name and any context gathered. Note: Jira artifacts are created later, after Mob Elaboration and Unit Re-assessment.
@@ -98,13 +98,13 @@ Include in Confluence doc as a collapsible section or separate child page. See P
 ## Workflow Chain
 
 - **This is the first step** in the AI-DLC planning workflow
-- **Next**: `/aidlc:elaborate` (Mob Elaboration - Unit and Story decomposition)
+- **Next**: `/aidlc:elaborate` (Mob Elaboration - Unit and Task decomposition)
 
 ## Definition of Done
 
-- Confluence Level 1 Intent document exists and is approved.
+- Confluence Intent document exists and is approved.
 - Risks, NFRs, measurement criteria, and testing strategy are explicitly documented.
-- Approval to proceed to Jira is explicitly confirmed.
+- Approval to proceed to elaboration is explicitly confirmed.
 
 ## Troubleshooting
 

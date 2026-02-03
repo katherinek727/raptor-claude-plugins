@@ -51,10 +51,11 @@ This reversal allows developers to focus on high-value decision-making while AI 
 
 | Skill | Purpose | When to Use |
 |-------|---------|-------------|
-| `/aidlc:intent` | Create Level 1 Intent docs in Confluence | Starting a new initiative |
-| `/aidlc:elaborate` | Break Intent into Stories & Units in Confluence | After Intent is approved |
+| `/aidlc:intent` | Create Intent docs in Confluence | Starting a new initiative |
+| `/aidlc:elaborate` | Break Intent into Tasks & Units in Confluence, propose Bolt groupings | After Intent is approved |
 | `/aidlc:design` | Domain Design & ADRs with confidence assessment | After Units are created |
-| `/aidlc:verify` | Verify docs & transfer to Jira | After design, before implementation |
+| `/aidlc:verify` | Verify docs, refine Bolts & transfer to Jira | After design, before implementation |
+| `/aidlc:bolt` | Guide Bolt implementation with TDD | During implementation |
 | `/aidlc:help` | This help guide | When you need guidance |
 
 ## Workflow Order
@@ -65,19 +66,21 @@ This reversal allows developers to focus on high-value decision-making while AI 
    v (Intent approved in Confluence)
 2. /aidlc:elaborate
    |
-   v (Stories & Units created in Confluence, reviewed, reorganized)
+   v (Tasks & Units created in Confluence, Bolt groupings proposed, reviewed, reorganized)
 3. /aidlc:design
    |
    v (Domain model & ADRs documented, confidence assessed)
 4. /aidlc:verify
    |
-   v (Documentation verified, transferred to Jira)
-5. Implementation
+   v (Documentation verified, Bolts refined, transferred to Jira)
+5. /aidlc:bolt
+   |
+   v (Bolt implementation with TDD)
 ```
 
 ### Phase 1: Intent Documentation (`/aidlc:intent`)
 
-Creates a Level 1 Intent document in Confluence containing:
+Creates an Intent document in Confluence containing:
 - Problem/Opportunity statement
 - Target users and outcomes
 - Scope (in/out)
@@ -92,14 +95,15 @@ Creates a Level 1 Intent document in Confluence containing:
 
 Breaks the Intent into actionable work using Mob Elaboration:
 1. Theme clusters identified
-2. Stories elaborated in parallel (subagents)
-3. Stories grouped into Units
-4. Confluence pages created for review
-5. Team reviews and comments
-6. Comments resolved, stories refined
-7. Units reorganized based on domain principles
+2. Tasks elaborated in parallel (subagents)
+3. Tasks grouped into Units
+4. Bolt groupings proposed for each Unit
+5. Confluence pages created for review
+6. Team reviews and comments
+7. Comments resolved, Tasks refined
+8. Units reorganized based on domain principles
 
-**Output:** Confluence pages for Units and Stories (Jira transfer happens later in verify phase)
+**Output:** Confluence pages for Units and Tasks with proposed Bolt groupings (Jira transfer happens later in verify phase)
 
 ### Phase 3: Design (`/aidlc:design`)
 
@@ -117,10 +121,14 @@ Verifies documentation completeness and transfers to Jira:
 1. Spawn parallel sub-agents to assess each Unit
 2. Calculate confidence score across all documentation
 3. Identify gaps and provide remediation suggestions
-4. If confidence ≥80%, transfer to Jira as Sub-epics and Stories
-5. Clean up Confluence decomposition pages
+4. Refine Bolt groupings based on assessment
+5. If confidence ≥80%, transfer to Jira:
+   - Units → Sub-epics
+   - Bolts → Stories
+   - Tasks → Sub-tasks
+6. Clean up Confluence decomposition pages
 
-**Output:** Jira artifacts (Sub-epics and Stories) linked to Intent
+**Output:** Jira artifacts (Sub-epics → Stories → Sub-tasks) linked to Intent
 
 ## Quick Start Guide
 
@@ -131,20 +139,21 @@ Verifies documentation completeness and transfers to Jira:
 
 This will:
 1. Gather requirements through clarifying questions
-2. Draft a Level 1 Intent document
+2. Draft an Intent document
 3. Create the Confluence page for team review
 
 ### Have an Approved Intent?
 
-> "Break down the authentication intent into stories"
+> "Break down the authentication intent into Tasks"
 > Use `/aidlc:elaborate`
 
 This will:
 1. Validate the Intent is approved
 2. Identify theme clusters
-3. Spawn parallel agents to elaborate stories
-4. Create Confluence pages for Stories and Units
-5. Guide you through review and reorganization
+3. Spawn parallel agents to elaborate Tasks
+4. Create Confluence pages for Tasks and Units
+5. Propose Bolt groupings for each Unit
+6. Guide you through review and reorganization
 
 > **Note:** Jira transfer happens later in `/aidlc:verify` after design is complete.
 
@@ -169,8 +178,9 @@ This will:
 1. Spawn sub-agents to assess each Unit's documentation
 2. Calculate confidence score (needs ≥80% to proceed)
 3. Identify gaps and suggest fixes
-4. Transfer Units as Sub-epics and Stories to Jira
-5. Clean up Confluence decomposition pages
+4. Refine Bolt groupings for each Unit
+5. Transfer to Jira: Units → Sub-epics, Bolts → Stories, Tasks → Sub-tasks
+6. Clean up Confluence decomposition pages
 
 ## Key Concepts Explained
 
@@ -183,13 +193,21 @@ This will:
 | Created first | Created later (if at all) |
 | Living document | Work tracking |
 
-### Unit vs Epic
+### Unit vs Sub-epic
 
 | Unit | Sub-epic |
 |------|----------|
 | Cohesive work grouping (like DDD Subdomain) | Jira representation of a Unit |
-| Designed for loose coupling | Created in Phase 5 of decomposition |
-| Enables parallel development | Tracks stories in Jira |
+| Designed for loose coupling | Created during verify phase |
+| Enables parallel development | Contains Bolts (Stories) in Jira |
+
+### Task vs Sub-task
+
+| Task (Confluence) | Sub-task (Jira) |
+|-------------------|-----------------|
+| Work item in Confluence | Jira representation of a Task |
+| Contains AC, dependencies, risks | Grouped under a Bolt/Story |
+| Created during elaborate phase | Created during verify phase |
 
 ### Bolt vs Sprint
 
@@ -199,12 +217,14 @@ This will:
 | Intense focus | Planned capacity |
 | Testable increment | Shippable increment |
 | Multiple per Unit | One at a time |
+| Becomes Story in Jira | N/A |
+| Groups related Tasks | Tracks work items |
 
 ### Mob Elaboration
 
 A collaborative ritual where AI and humans work together:
 - Single room (physical or virtual) with shared screen
-- AI proposes breakdown of Intent into Stories and Units
+- AI proposes breakdown of Intent into Tasks, Units, and Bolt groupings
 - Team reviews, challenges, and refines
 - Condenses weeks of work into hours
 
@@ -243,7 +263,7 @@ Start with `/aidlc:intent` to create the Level 1 Intent document.
 
 ### "I have a Confluence doc but it's not approved"
 
-Review the Workflow Status table in the doc. If "Level 1 Intent" is not "Approved", gather stakeholder approval before proceeding to decomposition.
+Review the Workflow Status table in the doc. If "Intent" is not "Approved", gather stakeholder approval before proceeding to decomposition.
 
 ### "I want to skip the Confluence phase"
 
@@ -255,9 +275,9 @@ While possible with explicit override, Confluence-first is recommended for:
 ### "The skill said my prerequisites are incomplete"
 
 Check that prior phases are complete:
-- For `/aidlc:elaborate`: Need approved Level 1 Intent in Confluence
-- For `/aidlc:design`: Need Units created in Confluence (from decompose phase)
-- For `/aidlc:verify`: Need design documentation complete
+- For `/aidlc:elaborate`: Need approved Intent in Confluence
+- For `/aidlc:design`: Need Units created in Confluence (from elaborate phase)
+- For `/aidlc:verify`: Need design documentation and Bolt groupings complete
 
 ## Further Reading
 
