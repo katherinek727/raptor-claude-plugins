@@ -79,6 +79,15 @@
       "author": {
         "name": "Matthew Bailey"
       }
+    },
+    {
+      "name": "dotnet",
+      "source": "./plugins/dotnet",
+      "description": ".NET development tools including trunk-based migration for Raptor platform services",
+      "version": "1.0.0",
+      "author": {
+        "name": "Wenham Dorsett"
+      }
     }
   ]
 }

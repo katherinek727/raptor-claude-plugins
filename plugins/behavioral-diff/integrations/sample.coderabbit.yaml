@@ -4,8 +4,8 @@
 # This configuration automatically detects logic inversions and behavioral
 # changes when merge requests are created.
 #
-# Documentation: ../integrations/coderabbit-setup.md
-# Pattern Reference: ../references/inversion-patterns.md
+# Documentation (plugin repo): plugins/behavioral-diff/integrations/coderabbit-setup.md
+# Pattern Reference (plugin repo): plugins/behavioral-diff/references/inversion-patterns.md
 
 reviews:
   high_level_summary: true

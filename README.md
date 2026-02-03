@@ -1,5 +1,3 @@
-<!-- AI_SUGGESTION_MARKER_20260130181149 -->
-<!-- AI_SUGGESTION_MARKER_20260126144849 -->
 # Raptortech Claude Code Plugins
 
 A collection of plugins that extend [Claude Code](https://docs.anthropic.com/en/docs/claude-code/overview)'s capabilities for development workflows, project planning, and AI-assisted coding. Claude Code is Anthropic's agentic coding tool that helps developers write, understand, and improve code through AI assistance. These plugins add specialized capabilities for structured planning, issue tracking, code quality, and more.
@@ -13,6 +11,7 @@ A collection of plugins that extend [Claude Code](https://docs.anthropic.com/en/
 - **Second Opinions** — Get feedback from multiple AI providers (Grok, ChatGPT, Gemini) on your code
 - **Evidence-Based Reasoning** — Enforce `[FACT]`/`[INFERRED]`/`[ASSUMED]` labeling for rigorous analysis
 - **Behavioral Diff** - Detect logic inversions and behavioral changes in code diffs
+- **.NET Migration** — Automate trunk-based development migration for .NET API services with Kustomize and GitLab CI/CD
 
 ## Usage Examples
 
@@ -47,6 +46,13 @@ The pair-programming skill auto-triggers and queries multiple AI providers.
 **Check for behavioral logic inversions:**
 ```
 /behavioral-diff:review
+```
+
+**Migrate a .NET service to trunk-based development:**
+```
+/dotnet:trunk-discover
+/dotnet:trunk-plan
+/dotnet:trunk-migrate
 ```
 
 ## Quick Start
@@ -205,6 +211,26 @@ Detect logic inversions, control flow changes, and semantic alterations that cou
 
 ---
 
+### .NET (`/dotnet:*`)
+
+Trunk-based development migration tools for .NET API services. Automates the migration from GitLab Flow to trunk-based development with Kustomize, shared pipeline templates, review apps, and production approval gates.
+
+| Command | Triggers | Description |
+|---------|----------|-------------|
+| `/dotnet:trunk-help` | `trunk help`, `what is trunk migration`, `how to migrate` | Overview of the migration plugin and workflow |
+| `/dotnet:trunk-discover` | `trunk discover`, `discover service`, `analyze repo` | Scan repo and generate migration config YAML |
+| `/dotnet:trunk-plan` | `trunk plan`, `migration plan`, `show plan` | Preview migration execution plan |
+| `/dotnet:trunk-migrate` | `trunk migrate`, `migrate to trunk`, `trunk-based migration` | Execute the full migration |
+| `/dotnet:trunk-validate` | `trunk validate`, `validate migration`, `check migration` | Run 6 validation checks on the migration |
+| `/dotnet:trunk-troubleshoot` | `trunk troubleshoot`, `trunk fix`, `migration issue` | Diagnose and fix common migration issues |
+| `/dotnet:trunk-post-migrate` | `trunk post-migrate`, `post migration`, `cleanup migration` | Post-merge cleanup, monitoring, and hardening |
+
+**Workflow:** Discover → Plan → Migrate → Validate → (MR merge) → Post-Migrate
+
+**Requires:** .NET 8 project with GitLab CI/CD, `kustomize` CLI, `glab` CLI
+
+---
+
 ### Epistemic Reasoning (hook-based)
 
 Enforces evidence-based reasoning by requiring `[FACT]`, `[INFERRED]`, and `[ASSUMED]` labels on all claims. Automatically enabled via `SessionStart` hook—no slash commands needed.
@@ -245,6 +271,7 @@ claude plugin marketplace add git@gitlab.com:raptortech1/aidevops/claude-plugins
 /plugin install context-init
 /plugin install jira-improve
 /plugin install behavioral-diff
+/plugin install dotnet
 
 # Reload after changes
 /plugin
