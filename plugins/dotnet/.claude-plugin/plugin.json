@@ -1,0 +1,27 @@
+{
+  "name": "dotnet",
+  "description": ".NET development tools including trunk-based migration for Raptor platform services",
+  "version": "1.0.0",
+  "author": {
+    "name": "Wenham Dorsett"
+  },
+  "license": "MIT",
+  "keywords": [
+    "dotnet",
+    "trunk-based",
+    "migration",
+    "kustomize",
+    "kubernetes",
+    "gitlab-ci"
+  ],
+  "skills": "./skills/",
+  "commands": [
+    "./skills/trunk-help/",
+    "./skills/trunk-discover/",
+    "./skills/trunk-plan/",
+    "./skills/trunk-migrate/",
+    "./skills/trunk-validate/",
+    "./skills/trunk-troubleshoot/",
+    "./skills/trunk-post-migrate/"
+  ]
+}
