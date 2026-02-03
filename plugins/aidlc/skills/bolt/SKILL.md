@@ -41,8 +41,15 @@ This skill follows the AI-DLC principle where AI initiates and directs the conve
 
 Ask for the work context:
 - Jira artifact (story or sub-epic key, e.g., PROJ-123)
-- Fetch the Jira issue using Atlassian MCP
-- Extract acceptance criteria, description, and dependencies
+- Fetch the Jira issue using the `acli` CLI (preferred for lower token usage):
+  ```bash
+  # First check acli is installed
+  which acli || echo "acli not installed - see: https://developer.atlassian.com/cloud/acli/"
+
+  # Fetch the issue with relevant fields
+  acli jira workitem view PROJ-123 --fields summary,description,status,issuetype --json
+  ```
+- Extract acceptance criteria, description, and dependencies from the response
 
 If no Jira key provided, ask:
 ```

@@ -272,6 +272,25 @@ Confirm the user is ready:
 
 #### Step 2: Create Jira Artifacts
 
+**Preferred: Use `acli` CLI** (lower token usage than Atlassian MCP):
+
+```bash
+# First check acli is installed
+which acli || echo "acli not installed - see: https://developer.atlassian.com/cloud/acli/"
+
+# Create Sub-epic
+acli jira workitem create --project "PROJ" --type "Sub-epic" \
+  --summary "Unit: [Name]" \
+  --description-file unit-description.md \
+  --label "aidlc:unit"
+
+# Create Story under Sub-epic
+acli jira workitem create --project "PROJ" --type "Story" \
+  --summary "[Story Title]" \
+  --description-file story-description.md \
+  --parent "PROJ-123"
+```
+
 For each Unit:
 
 1. **Create Sub-epic** (or Epic if Sub-epic unavailable)

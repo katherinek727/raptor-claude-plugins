@@ -573,12 +573,25 @@ Before reading, prompt the user:
 - **Page content only**: Use `getConfluencePage`
 - **With comments**: Also fetch `getConfluencePageInlineComments` and `getConfluencePageFooterComments`
 
-**For Jira operations:**
+**For Jira operations (prefer `acli` CLI - lower token usage):**
+
+First, check if `acli` is installed:
+```bash
+which acli || echo "acli not installed - see: https://developer.atlassian.com/cloud/acli/"
+```
+
+If `acli` is available, use it for Jira operations:
 1. Confirm the Jira project key (never assume a default)
-2. Verify issue types using `getJiraProjectIssueTypesMetadata`
-3. Get field metadata using `getJiraIssueTypeMetaWithFields` if custom fields are needed
-4. Create issues using `createJiraIssue`
-5. Link issues to Confluence pages in the description field
+2. View issues: `acli jira workitem view PROJ-123 --json`
+3. Create issues: `acli jira workitem create --project "PROJ" --type "Story" --summary "Title" --description-file desc.md`
+4. Edit issues: `acli jira workitem edit PROJ-123 --label "aidlc:unit"`
+5. Search issues: `acli jira workitem search --project "PROJ" --jql "type = Story"`
+
+If `acli` is not available, fall back to Atlassian MCP:
+1. Verify issue types using `getJiraProjectIssueTypesMetadata`
+2. Get field metadata using `getJiraIssueTypeMetaWithFields` if custom fields are needed
+3. Create issues using `createJiraIssue`
+4. Link issues to Confluence pages in the description field
 
 **Common issues:**
 - Space/project not found: Verify key spelling and permissions
@@ -666,6 +679,57 @@ In Claude Code, tools are namespaced with the `mcp__plugin_atlassian_atlassian__
 | `editJiraIssue` | `mcp__plugin_atlassian_atlassian__editJiraIssue` |
 | `addCommentToJiraIssue` | `mcp__plugin_atlassian_atlassian__addCommentToJiraIssue` |
 | `lookupJiraAccountId` | `mcp__plugin_atlassian_atlassian__lookupJiraAccountId` |
+
+## Atlassian CLI (`acli`) Commands (Preferred for Jira)
+
+**Why prefer `acli` for Jira?** The Atlassian CLI uses significantly fewer tokens than the MCP tools, making it more efficient for Jira operations. Use MCP for Confluence (richer tooling) and `acli` for Jira.
+
+**Installation check:**
+```bash
+which acli || echo "Not installed - see: https://developer.atlassian.com/cloud/acli/"
+```
+
+**Authentication:**
+```bash
+acli auth login  # Interactive login (one-time setup)
+```
+
+### Common Jira Commands
+
+| Operation | Command |
+|-----------|---------|
+| View issue | `acli jira workitem view PROJ-123 --json` |
+| View with fields | `acli jira workitem view PROJ-123 --fields summary,description,status,issuetype --json` |
+| Search issues | `acli jira workitem search --project "PROJ" --jql "type = Story AND status = Open"` |
+| Create issue | `acli jira workitem create --project "PROJ" --type "Story" --summary "Title" --description "Body"` |
+| Create from file | `acli jira workitem create --project "PROJ" --type "Story" --summary "Title" --description-file desc.md` |
+| Create with parent | `acli jira workitem create --project "PROJ" --type "Story" --summary "Title" --parent "PROJ-100"` |
+| Edit issue | `acli jira workitem edit PROJ-123 --summary "New Title"` |
+| Add label | `acli jira workitem edit PROJ-123 --label "aidlc:unit"` |
+| Add comment | `acli jira workitem comment add PROJ-123 --body "Comment text"` |
+| Transition | `acli jira workitem transition PROJ-123 --transition "In Progress"` |
+| List projects | `acli jira project list` |
+
+### Example: Create Sub-epic with Stories
+
+```bash
+# Create Sub-epic (Unit)
+acli jira workitem create \
+  --project "PROJ" \
+  --type "Sub-epic" \
+  --summary "Unit: Authentication" \
+  --description-file unit-auth.md \
+  --label "aidlc:unit" \
+  --json
+
+# Parse the key from JSON output, then create child stories
+acli jira workitem create \
+  --project "PROJ" \
+  --type "Story" \
+  --summary "Implement login form" \
+  --description-file story-login.md \
+  --parent "PROJ-123"
+```
 
 ## Story Elaboration Subagent
 
