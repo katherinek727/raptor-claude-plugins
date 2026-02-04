@@ -54,6 +54,17 @@
       }
     },
     {
+      "name": "planning",
+      "source": "./plugins/planning",
+      "description": "DEPRECATED: This plugin has been renamed to 'aidlc'. Please uninstall and install 'aidlc' instead.",
+      "version": "1.9.1",
+      "deprecated": true,
+      "replacement": "aidlc",
+      "author": {
+        "name": "Andy Kay"
+      }
+    },
+    {
       "name": "context-init",
       "source": "./plugins/context-init",
       "description": "Set up project context environments for non-developers with GitLab repos, Confluence, and Jira integration",
