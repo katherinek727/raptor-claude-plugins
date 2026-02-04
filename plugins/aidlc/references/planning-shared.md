@@ -23,6 +23,9 @@ Use this reference for the AI-DLC Intent → Unit planning flow.
   - Scale (quick win | bounded delivery | strategic initiative)
   - Constraints (timeboxed, budget-limited, MVP-only, etc.)
   - Programme context (standalone | part of <programme name>)
+- Project Type
+  - .NET (if applicable; enables .NET-specific guidance)
+  - Other (global guidance only)
 - Outcomes (Business + User)
 - Scope
   - In scope
@@ -31,6 +34,13 @@ Use this reference for the AI-DLC Intent → Unit planning flow.
   - Known technical constraints
   - Key systems affected
   - Integration points (high-level)
+- Technical Guidance (project-level overrides and constraints)
+  - Approved technologies (required or prohibited)
+  - Architectural patterns (patterns to use or avoid)
+  - Security requirements (beyond global standards)
+  - Integration standards (APIs, protocols, data formats)
+  - Performance targets (specific to this project)
+  - Deviations from standards (with rationale)
 - Designs & Diagrams (if available)
   - UI mockups / wireframes / prototypes
   - Flow diagrams (system or process)
@@ -404,6 +414,76 @@ Use these prompts to elicit risks during Intent and Unit planning:
 - What operational risks apply (availability, cost, observability)?
 - What dependencies are least certain?
 - Can this change be rolled back quickly if needed?
+
+## Technical Guidance Hierarchy
+
+The `/aidlc-design` skill incorporates technical guidance from up to three tiers:
+
+### Tier 1: Global Guidance (Baseline)
+
+**Source:** `references/technical-guidance/global.md`
+**Owner:** Architecture Guild
+**Applies to:** All projects
+
+Universal standards:
+- Security (authentication, secrets, OWASP)
+- Observability (logging, metrics, tracing)
+- API design (REST conventions, error formats)
+- Data governance (classification, PII handling)
+- Testing (pyramid, coverage targets)
+- Resilience (timeouts, retries, circuit breakers)
+
+### Tier 2: .NET Guidance (Stack-Specific)
+
+**Source:** `references/technical-guidance/dotnet.md`
+**Owner:** .NET Chapter
+**Applies to:** .NET projects only
+
+.NET-specific standards that extend global guidance:
+- NuGet package management
+- ASP.NET Core conventions
+- Entity Framework Core patterns
+- Async/await patterns
+- Dependency injection
+- Configuration and options pattern
+
+### Tier 3: Project-Level Guidance (Intent-Specific)
+
+**Source:** Confluence Intent doc "Technical Guidance" section
+**Owner:** Project tech lead
+**Applies to:** This project only
+
+Project-specific constraints and overrides:
+- Approved/prohibited technologies
+- Required architectural patterns
+- Integration standards
+- Performance targets
+- Explicit deviations from standards
+
+### Precedence Rules
+
+| Conflict Scenario | Resolution |
+|-------------------|------------|
+| Project-level vs .NET | Project-level wins |
+| Project-level vs Global | Project-level wins |
+| .NET vs Global | .NET wins |
+
+**All deviations require an ADR documenting:**
+- The standard being deviated from
+- The project-level decision
+- Rationale for the deviation
+- Risks of deviating
+
+### Project Type Detection
+
+The skill detects .NET projects from codebase markers:
+
+| Markers | Guidance Applied |
+|---------|------------------|
+| *.csproj, *.sln, *.slnx, *.cs, global.json | Global + .NET |
+| Any other stack | Global only |
+
+The detection is presented for confirmation during the design workflow.
 
 ## NFR Checklist (prompt as needed)
 

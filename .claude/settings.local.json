@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__GitLab__get_merge_request",
+      "mcp__GitLab__get_merge_request_diffs",
+      "Bash(git -C \"C:\\\\git\\\\AIDevOps\\\\claude-plugins\" status)"
+    ]
+  }
+}
