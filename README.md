@@ -1,3 +1,4 @@
+<!-- AI_SUGGESTION_MARKER_20260204100611 -->
 # Raptortech Claude Code Plugins
 
 A collection of plugins that extend [Claude Code](https://docs.anthropic.com/en/docs/claude-code/overview)'s capabilities for development workflows, project planning, and AI-assisted coding. Claude Code is Anthropic's agentic coding tool that helps developers write, understand, and improve code through AI assistance. These plugins add specialized capabilities for structured planning, issue tracking, code quality, and more.
