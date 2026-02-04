@@ -150,7 +150,9 @@ decisions:
   # Decision Tree 4: UI Regression Tests
   ui_tests:
     enabled: false            # true if service has UI regression tests in qa-automation
-    schedule_name: ""         # QA framework schedule name (e.g., "CICD - Client Building Service - P0,P1 - Staging")
+    trigger_project: ""       # GitLab project path for QA automation (e.g., "raptortech1/raptor/quality-assurance/qa-automation/web-ui-framework-2-platform")
+    schedule_name: ""         # QA framework schedule name for staging (e.g., "CICD - Client Building Service - P0,P1 - Staging")
+    schedule_name_prod: ""    # QA framework schedule name for prod (e.g., "CICD - Client Building Service - P0,P1 - Prod")
 
   # Decision Tree 5: EF Migrations
   ef_migrations:
@@ -198,7 +200,9 @@ pipeline:
 | `decisions.nuget.enabled` | bool | `false` | Whether NuGet packages are published |
 | `decisions.nuget.packages` | list | `[]` | Package project suffixes to publish |
 | `decisions.ui_tests.enabled` | bool | `false` | Whether UI regression tests exist |
+| `decisions.ui_tests.trigger_project` | string | `""` | GitLab project path for QA automation trigger |
 | `decisions.ui_tests.schedule_name` | string | `""` | QA framework schedule name for staging tests |
+| `decisions.ui_tests.schedule_name_prod` | string | `""` | QA framework schedule name for prod tests |
 | `decisions.ef_migrations.enabled` | bool | `false` | Whether EF Core migrations exist |
 | `decisions.ef_migrations.db_context_name` | string | `""` | EF Core DbContext class name |
 | `decisions.ef_migrations.connection_string_key` | string | `""` | Azure App Config connection string key |
@@ -289,7 +293,9 @@ decisions:
     packages: ["Client", "Shared", "Maps"]
   ui_tests:
     enabled: true
+    trigger_project: "raptortech1/raptor/quality-assurance/qa-automation/web-ui-framework-2-platform"
     schedule_name: "CICD - Client Building Service - P0,P1 - Staging"
+    schedule_name_prod: "CICD - Client Building Service - P0,P1 - Prod"
   ef_migrations:
     enabled: true
     db_context_name: "ClientsDBContext"

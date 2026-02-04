@@ -49,7 +49,7 @@ nuget.enabled: {true/false}
 ### Decision Tree 4: UI Regression Tests
 ```
 ui_tests.enabled: {true/false}
-→ {Enabled: test-ui-staging job in prod-gate stage | Disabled: no UI test jobs}
+→ {Enabled: test-ui-staging job in prod-gate stage and/or test-ui-prod job in post-deploy stage | Disabled: no UI test jobs}
 ```
 
 ### Decision Tree 5: EF Migrations
@@ -158,6 +158,7 @@ Stages:
      - upload-api-prod (matrix: depends on versioning)
 
   7. post-deploy
+     - test-ui-prod {optional}
      - (semantic-release tag creation)
 ```
 

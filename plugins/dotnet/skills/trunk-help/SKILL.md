@@ -67,7 +67,7 @@ The migration adapts based on 5 decision trees:
 1. **API Versioning** — Single version (v1) or multi-version (v1 + v2) affects APIM and swagger jobs
 2. **Auth0 Integration** — If `auth0/` directory exists, Auth0 deployment jobs are added
 3. **NuGet Packages** — If `.Client`/`.Shared`/`.Maps` projects exist, NuGet publishing is configured
-4. **UI Regression Tests** — If `decisions.ui_tests` is enabled, a `test-ui-staging` job is added to the prod-gate stage
+4. **UI Regression Tests** — If `decisions.ui_tests` is enabled, a `test-ui-staging` job is added to prod-gate and/or a `test-ui-prod` job is added to post-deploy
 5. **EF Migrations** — If DataMigrations project exists, database migration jobs are added
 
 ## Configuration
