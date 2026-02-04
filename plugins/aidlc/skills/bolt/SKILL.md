@@ -74,13 +74,65 @@ I see you're in [current repo]. Is this the correct repository for this work?
 If this bolt spans multiple services, please list the local paths to all repositories.
 ```
 
-#### Step 3: Explore Codebase
+#### Step 2.5: Determine Sub-agent Strategy
+
+Based on the Bolt's Tasks, decide whether to use parallel sub-agents:
+
+**Single Task:** Proceed with single-agent exploration (Step 3).
+
+**Multiple Tasks:** Spawn parallel Task Context Agents to explore in parallel.
+
+Ask:
+```
+This Bolt has [N] Tasks. Should I explore the codebase for each Task in parallel?
+(Recommended for efficiency - each Task gets focused exploration)
+
+1. Yes, explore in parallel (recommended)
+2. No, explore sequentially
+```
+
+#### Step 3: Explore Codebase (Parallel or Sequential)
+
+**If single Task or user declines parallel:**
 
 Understand the implementation area:
 - Identify relevant files and modules
 - Understand existing patterns and conventions
 - Note any related tests that exist
 - Identify integration points
+
+**If multiple Tasks and parallel approved:**
+
+1. Spawn one **Task Context Agent** per Task using the Task tool
+2. Use `subagent_type: "general-purpose"`
+3. Pass Task content + repo context to each agent
+4. Use the **Task Context Subagent** template from `planning-shared.md`
+5. Spawn all agents in a single message (parallel execution)
+
+**After agents return:**
+1. Parse JSON results from each agent
+2. Merge relevant files lists (dedupe by path)
+3. Combine existing patterns discovered
+4. Surface any conflicting approaches
+5. Present unified context summary:
+
+```
+## Codebase Context (Consolidated)
+
+### Relevant Files
+- [file1] - relates to [Task A, Task B]
+- [file2] - relates to [Task C]
+
+### Existing Patterns
+- [pattern 1]
+- [pattern 2]
+
+### Related Tests
+- [test file 1] - covers [related functionality]
+
+### Integration Points
+- [API/service/database]
+```
 
 ---
 
@@ -119,6 +171,39 @@ Present the test plan:
 - tests/unit/test_[feature].py
 - tests/integration/test_[feature]_api.py
 ```
+
+#### Step 4.5: Parallel Test Planning (Multi-Task Bolts)
+
+**If Bolt has multiple Tasks:**
+
+1. Spawn one **Task Test Planning Agent** per Task using the Task tool
+2. Use `subagent_type: "general-purpose"`
+3. Pass Task content + context from Phase 1 to each agent
+4. Use the **Task Test Planning Subagent** template from `planning-shared.md`
+5. Spawn all agents in a single message (parallel execution)
+
+**Consolidation:**
+1. Merge test plans into unified structure
+2. Identify shared test fixtures/utilities
+3. Resolve any conflicting approaches
+4. Present combined test plan for approval
+
+**Optional: Expert Perspectives**
+
+For high-risk Tasks (security-sensitive, performance-critical, complex domain logic):
+
+Ask:
+```
+This Bolt includes [security-sensitive/performance-critical/complex] Tasks.
+Would you like expert perspectives on:
+1. Security (OWASP, auth, input validation)
+2. Performance (latency, memory, scalability)
+3. Domain (business rules, edge cases)
+4. All of the above
+5. Skip expert review
+```
+
+If yes, spawn Expert Perspective Agents in parallel using templates from `planning-shared.md`, then integrate their recommendations into the test plan.
 
 #### Step 5: Plan Implementation Steps
 
@@ -272,7 +357,42 @@ Ready to begin implementation. The plan is saved at [plan-file-path].
 
 ### Phase 6: Begin Implementation
 
-#### Step 11: Start First TDD Cycle
+#### Step 10.5: Determine Implementation Strategy
+
+**If single Task:** Proceed with sequential TDD cycles (Step 11).
+
+**If multiple Tasks:**
+
+1. Analyze Task dependencies from Phase 1 context
+2. Identify which Tasks are independent (no shared file modifications, no sequential dependencies)
+3. Offer parallel implementation for independent Tasks
+
+Ask:
+```
+Based on the context gathered:
+
+**Independent Tasks** (can run in parallel):
+- [Task A] - touches [files]
+- [Task B] - touches [files]
+
+**Dependent Tasks** (must run sequentially):
+- [Task C] depends on [Task A]
+
+Should I implement the independent Tasks in parallel using separate agents?
+(Recommended for efficiency - each Task gets focused TDD cycles)
+
+1. Yes, implement in parallel (recommended)
+2. No, implement sequentially
+```
+
+**Important Constraints:**
+- Only parallelize Tasks with no shared file modifications
+- Each agent owns its TDD cycles (Red → Green → Refactor)
+- Main agent coordinates merging and resolves conflicts
+
+#### Step 11: Execute TDD Cycles (Parallel or Sequential)
+
+**Sequential (single Task or dependent Tasks):**
 
 Begin with the first test case:
 1. Create the test file if it doesn't exist
@@ -282,9 +402,44 @@ Begin with the first test case:
 
 **At each step, update the plan file** to mark completed items.
 
-#### Step 12: Continue TDD Cycles
+**Parallel (independent Tasks):**
 
-For each cycle:
+1. Spawn one **Task Implementation Agent** per independent Task using the Task tool
+2. Use `subagent_type: "general-purpose"`
+3. Pass Task content + test plan + context to each agent
+4. Use the **Task Implementation Subagent** template from `planning-shared.md`
+5. Spawn all agents in a single message (parallel execution)
+6. Agents commit independently with meaningful messages
+
+**After parallel agents complete:**
+1. Parse JSON results from each agent
+2. Verify no file conflicts between agents
+3. Merge any overlapping changes (rare if dependencies analyzed correctly)
+4. Run full test suite to verify integration
+5. Update plan file with combined progress
+6. Report completion status for all Tasks:
+
+```
+## Implementation Progress
+
+### Task A: [Title] ✅ Complete
+- Cycles completed: 3
+- Files modified: [list]
+- Tests passing: Yes
+
+### Task B: [Title] ✅ Complete
+- Cycles completed: 2
+- Files modified: [list]
+- Tests passing: Yes
+
+### Integration Verification
+- Full test suite: ✅ Passing
+- Conflicts resolved: None
+```
+
+#### Step 12: Continue TDD Cycles (Sequential Mode)
+
+For each cycle (when running sequentially):
 1. Write failing test (RED) - run to confirm failure
 2. Implement minimal code (GREEN) - run to confirm pass
 3. Refactor if needed - run to confirm still passing

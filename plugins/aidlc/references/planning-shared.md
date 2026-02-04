@@ -1008,6 +1008,225 @@ After collecting results from all page creation subagents:
 3. **Compile page links**: Build a summary of all created pages for the user
 4. **Update Units Overview**: Add links to Unit pages in the summary table
 
+## Bolt Implementation Subagents
+
+The `/aidlc:bolt` skill uses parallel subagents for efficient, accurate implementation of multi-Task Bolts. Sub-agents operate per-Task when a Bolt contains multiple Tasks.
+
+### Task Context Subagent (Phase 1)
+
+Use this template when spawning Task Context Agents to explore the codebase for each Task in parallel:
+
+```markdown
+You are gathering implementation context for a single Task within a Bolt.
+
+## Task: <Task Title>
+
+<Task content: user story, acceptance criteria>
+
+## Repository Context
+
+**Repo Path:** <path>
+**Tech Stack:** <languages, frameworks>
+**Key Directories:** <src/, tests/, etc.>
+
+## Instructions
+
+1. Search for existing code related to this Task's domain
+2. Identify relevant files, modules, and patterns
+3. Find existing tests that cover related functionality
+4. Note any integration points or dependencies
+
+## Return Format
+
+Return your results as JSON in this exact structure:
+
+{
+  "task": "<task title>",
+  "relevant_files": [
+    { "path": "<file path>", "relevance": "<why this file is relevant>" }
+  ],
+  "existing_patterns": [
+    "<pattern description>"
+  ],
+  "related_tests": [
+    { "path": "<test file path>", "coverage": "<what it tests>" }
+  ],
+  "integration_points": [
+    "<service/API/database>"
+  ],
+  "technical_notes": "<observations about implementation approach>"
+}
+```
+
+### Task Test Planning Subagent (Phase 2)
+
+Use this template when spawning Task Test Planning Agents to design test cases for each Task:
+
+```markdown
+You are planning TDD test cases for a single Task.
+
+## Task: <Task Title>
+
+<Task content: user story, acceptance criteria>
+
+## Context from Phase 1
+
+**Relevant Files:** <list>
+**Existing Patterns:** <list>
+**Related Tests:** <list>
+
+## Instructions
+
+1. Design unit tests for each acceptance criterion
+2. Identify edge cases and error scenarios
+3. Design integration tests if applicable
+4. Suggest mocks/stubs needed
+5. Plan Red-Green-Refactor cycles
+
+## Return Format
+
+Return your results as JSON in this exact structure:
+
+{
+  "task": "<task title>",
+  "unit_tests": [
+    { "name": "<test name>", "verifies": "<what it verifies>", "approach": "<how to test>" }
+  ],
+  "edge_cases": [
+    "<edge case description>"
+  ],
+  "integration_tests": [
+    { "name": "<test name>", "verifies": "<what it verifies>" }
+  ],
+  "mocks_needed": [
+    "<mock/stub description>"
+  ],
+  "tdd_cycles": [
+    { "cycle": 1, "red": "<failing test>", "green": "<implementation>", "refactor": "<improvements>" }
+  ]
+}
+```
+
+### Expert Perspective Subagents (Phase 2)
+
+For high-risk Tasks, spawn Expert Perspective Agents to catch blind spots:
+
+| Expert | Focus | Adds |
+|--------|-------|------|
+| Security | OWASP, auth, input validation | Security-focused test cases |
+| Performance | Latency, memory, scalability | Performance test scenarios |
+| Domain | Business rules, edge cases | Domain-specific scenarios |
+
+**Security Expert Prompt:**
+```markdown
+You are reviewing test coverage from a security perspective.
+
+## Task: <Task Title>
+## Proposed Tests: <test plan from Tier 1>
+
+Identify missing security test cases for:
+- Input validation and sanitization
+- Authentication/authorization boundaries
+- Injection vulnerabilities (SQL, XSS, command)
+- Sensitive data handling
+
+Return additional test cases in the same JSON format as Task Test Planning.
+```
+
+**Performance Expert Prompt:**
+```markdown
+You are reviewing test coverage from a performance perspective.
+
+## Task: <Task Title>
+## Proposed Tests: <test plan from Tier 1>
+
+Identify missing performance test cases for:
+- Response time targets
+- Memory usage
+- Concurrent access
+- Data volume edge cases
+
+Return additional test cases in the same JSON format as Task Test Planning.
+```
+
+### Task Implementation Subagent (Phase 6)
+
+Use this template when spawning Task Implementation Agents to execute TDD for independent Tasks in parallel:
+
+```markdown
+You are implementing a single Task using TDD.
+
+## Task: <Task Title>
+
+<Task content: user story, acceptance criteria>
+
+## Test Plan from Phase 2
+
+**TDD Cycles:**
+<cycle details>
+
+**Test Cases:**
+<test case list>
+
+## Implementation Context
+
+**Relevant Files:** <list>
+**Patterns to Follow:** <list>
+
+## Instructions
+
+1. For each TDD cycle:
+   - RED: Write failing test, verify it fails
+   - GREEN: Write minimal code to pass
+   - REFACTOR: Improve code quality
+2. Commit after each cycle with meaningful message
+3. Update progress tracking
+
+## Return Format
+
+Return your results as JSON in this exact structure:
+
+{
+  "task": "<task title>",
+  "status": "complete|blocked|partial",
+  "cycles_completed": [
+    { "cycle": 1, "test_file": "<path>", "impl_file": "<path>", "commit": "<commit hash or message>" }
+  ],
+  "files_modified": [
+    "<file path>"
+  ],
+  "blockers": [
+    "<blocker description>"
+  ],
+  "notes": "<implementation notes>"
+}
+```
+
+### Subagent Consolidation Logic
+
+After collecting results from all subagents:
+
+**Phase 1 (Context) Consolidation:**
+1. Parse JSON results from each agent
+2. Merge relevant files lists (dedupe by path)
+3. Combine existing patterns discovered
+4. Surface any conflicting approaches
+5. Present unified context summary
+
+**Phase 2 (Planning) Consolidation:**
+1. Merge test plans into unified structure
+2. Identify shared test fixtures/utilities
+3. Resolve any conflicting approaches
+4. Integrate expert recommendations
+5. Present combined test plan for approval
+
+**Phase 6 (Implementation) Consolidation:**
+1. Verify no file conflicts between agents
+2. Merge any overlapping changes
+3. Run full test suite to verify integration
+4. Update plan file with combined progress
+5. Report completion status for all Tasks
+
 ## Template Standardization
 
 All templates must use consistent formatting for common sections.
