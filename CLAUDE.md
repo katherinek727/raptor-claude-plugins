@@ -43,16 +43,16 @@ plugins/<plugin-name>/
 
 ### Plugin Skills Reference
 
-#### AIDLC (`/aidlc:*`)
+#### AIDLC (`/aidlc-*`)
 
 | Command | Triggers | Description |
 |---------|----------|-------------|
-| `/aidlc:intent` | `create intent`, `intent document`, `new initiative`, `draft intent`, `aidlc plan` | Create Intent documentation in Confluence |
-| `/aidlc:elaborate` | `decompose intent`, `break down intent`, `create units`, `create tasks`, `mob elaboration` | Break Intent into Units and Tasks via Mob Elaboration, propose Bolt groupings |
-| `/aidlc:design` | `domain design`, `logical design`, `create ADR`, `architecture decision`, `aidlc design` | Domain/Logical Design and Architecture Decision Records |
-| `/aidlc:verify` | `verify docs`, `check readiness`, `transfer to jira`, `aidlc verify`, `confidence check` | Verify docs, refine Bolts, transfer to Jira (Unit→Sub-epic, Bolt→Story, Task→Sub-task) |
-| `/aidlc:bolt` | `bolt`, `implement bolt`, `start bolt`, `bolt implementation`, `new bolt` | Guide implementation of a bolt with TDD emphasis |
-| `/aidlc:help` | `aidlc help`, `what is aidlc`, `explain aidlc`, `planning help`, `how to plan` | Explain AI-DLC methodology and available skills |
+| `/aidlc-intent` | `create intent`, `intent document`, `new initiative`, `draft intent`, `aidlc plan` | Create Intent documentation in Confluence |
+| `/aidlc-elaborate` | `decompose intent`, `break down intent`, `create units`, `create tasks`, `mob elaboration` | Break Intent into Units and Tasks via Mob Elaboration, propose Bolt groupings |
+| `/aidlc-design` | `domain design`, `logical design`, `create ADR`, `architecture decision`, `aidlc design` | Domain/Logical Design and Architecture Decision Records |
+| `/aidlc-verify` | `verify docs`, `check readiness`, `transfer to jira`, `aidlc verify`, `confidence check` | Verify docs, refine Bolts, transfer to Jira (Unit→Sub-epic, Bolt→Story, Task→Sub-task) |
+| `/aidlc-bolt` | `bolt`, `implement bolt`, `start bolt`, `bolt implementation`, `new bolt` | Guide implementation of a bolt with TDD emphasis |
+| `/aidlc-help` | `aidlc help`, `what is aidlc`, `explain aidlc`, `planning help`, `how to plan` | Explain AI-DLC methodology and available skills |
 
 #### Issues (`/issues:*`)
 

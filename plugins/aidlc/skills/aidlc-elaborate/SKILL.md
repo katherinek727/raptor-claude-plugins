@@ -1,5 +1,5 @@
 ---
-name: elaborate
+name: aidlc-elaborate
 description: Decompose an approved Intent into Tasks and Units using Mob Elaboration. Tasks are created as Confluence pages for collaborative review, re-assessed using domain knowledge and loose coupling/high cohesion principles, with proposed Bolt groupings for Jira transfer. (Triggers - decompose intent, break down intent, create units, unit decomposition, create tasks, break into units, split intent, aidlc decompose, mob elaboration)
 ---
 
@@ -16,7 +16,7 @@ Break down an approved Intent into Tasks and Units using the AI-DLC Mob Elaborat
 >
 > Units are cohesive, self-contained work elements (analogous to Subdomains in DDD).
 > Tasks are grouped into Bolts (rapid iteration cycles) for implementation.
-> Jira artifacts are created later in `/aidlc:verify` after design and verification.
+> Jira artifacts are created later in `/aidlc-verify` after design and verification.
 
 > **CRITICAL: Confluence First, Jira Later**
 >
@@ -26,7 +26,7 @@ Break down an approved Intent into Tasks and Units using the AI-DLC Mob Elaborat
 > - **Phase 3**: Comment resolution session - address feedback, update content, resolve comments.
 > - **Phase 4**: Reorganization - regroup Tasks into Units, propose Bolt groupings.
 >
-> **Jira transfer happens in `/aidlc:verify`** after design and verification are complete.
+> **Jira transfer happens in `/aidlc-verify`** after design and verification are complete.
 > **DO NOT** create Jira issues in this skill.
 > **DO NOT** skip phases without explicit user approval.
 
@@ -54,7 +54,7 @@ Before starting, validate:
    - Verify "Intent" row shows "✅ Approved"
 
 3. **If prerequisites incomplete**
-   - Offer to run `/aidlc:intent` first if Confluence doc is missing or not approved
+   - Offer to run `/aidlc-intent` first if Confluence doc is missing or not approved
    - Or allow override with explicit confirmation (see Override Pattern in @${CLAUDE_PLUGIN_ROOT}/references/planning-shared.md)
 
 ## Confluence Page Hierarchy
@@ -74,7 +74,7 @@ Intent Document (existing)
     └── ...
 ```
 
-**Note:** Bolt groupings are documented in the Units Overview page (not as separate pages). During `/aidlc:verify`, Bolts become Stories in Jira that group Tasks as Sub-tasks.
+**Note:** Bolt groupings are documented in the Units Overview page (not as separate pages). During `/aidlc-verify`, Bolts become Stories in Jira that group Tasks as Sub-tasks.
 
 ## Workflow
 
@@ -96,7 +96,7 @@ Intent Document (existing)
 
 Ask only for what is missing:
 - Approved Confluence Intent doc link (this will be the parent for the Units Overview)
-- Jira project key (for later transfer in `/aidlc:verify` - no default)
+- Jira project key (for later transfer in `/aidlc-verify` - no default)
 - Any known constraints, dependencies, or sequencing needs
 
 #### Step 2: Identify Theme Clusters
@@ -163,7 +163,7 @@ For each Unit, propose how Tasks should be grouped into Bolts:
 | Bolt 1 | [Scope description] | 1, 2, 3 | X hours/days |
 | Bolt 2 | [Scope description] | 4, 5 | X hours/days |
 
-Note: These are proposals. Final groupings are refined during `/aidlc:verify`.
+Note: These are proposals. Final groupings are refined during `/aidlc-verify`.
 
 See Bolt Planning Guidance in @${CLAUDE_PLUGIN_ROOT}/references/planning-shared.md
 
@@ -354,14 +354,14 @@ Report back with:
 - Any cross-cutting concerns or dependencies
 
 Ask whether to proceed with Domain Design for any Unit.
-If yes, invoke `/aidlc:design` with the Unit context.
+If yes, invoke `/aidlc-design` with the Unit context.
 
-> **Note**: Jira transfer happens later in `/aidlc:verify` after design is complete and documentation has been verified. Final Bolt groupings are confirmed during verify before creating Jira artifacts.
+> **Note**: Jira transfer happens later in `/aidlc-verify` after design is complete and documentation has been verified. Final Bolt groupings are confirmed during verify before creating Jira artifacts.
 
 ## Workflow Chain
 
-- **Previous**: `/aidlc:intent` (Intent documentation)
-- **Next**: `/aidlc:design` (Domain and Logical Design)
+- **Previous**: `/aidlc-intent` (Intent documentation)
+- **Next**: `/aidlc-design` (Domain and Logical Design)
 
 ## Definition of Done
 
@@ -396,9 +396,9 @@ If yes, invoke `/aidlc:design` with the Unit context.
 - Bolt groupings refined based on re-assessment
 - Units Overview updated with new groupings, Bolt proposals, and boundary rationale
 - Workflow status table updated in Confluence
-- User informed that next step is `/aidlc:design`
+- User informed that next step is `/aidlc-design`
 
-> **Note**: Jira transfer (Sub-epics → Units, Stories → Bolts, Sub-tasks → Tasks) happens later in `/aidlc:verify` after design and verification are complete.
+> **Note**: Jira transfer (Sub-epics → Units, Stories → Bolts, Sub-tasks → Tasks) happens later in `/aidlc-verify` after design and verification are complete.
 
 ## Troubleshooting
 

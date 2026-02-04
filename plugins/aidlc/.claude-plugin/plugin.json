@@ -9,11 +9,11 @@
   "keywords": ["aidlc", "planning", "confluence", "jira", "initiative", "roadmap", "delivery"],
   "skills": "./skills/",
   "commands": [
-    "./skills/help/",
-    "./skills/intent/",
-    "./skills/elaborate/",
-    "./skills/design/",
-    "./skills/verify/",
-    "./skills/bolt/"
+    "./skills/aidlc-help/",
+    "./skills/aidlc-intent/",
+    "./skills/aidlc-elaborate/",
+    "./skills/aidlc-design/",
+    "./skills/aidlc-verify/",
+    "./skills/aidlc-bolt/"
   ]
 }

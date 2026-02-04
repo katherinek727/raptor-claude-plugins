@@ -1,5 +1,5 @@
 ---
-name: design
+name: aidlc-design
 description: Guide the Construction Phase with Domain Design, Logical Design, and Architecture Decision Records (ADRs). Use after Units and Stories are created to bridge planning to implementation. (Triggers - domain design, logical design, create ADR, architecture decision, aidlc design, construction phase, model domain)
 ---
 
@@ -42,7 +42,7 @@ Before starting, validate:
    - Verify "Unit Decomposition" row shows "✅ Complete"
 
 3. **If prerequisites incomplete**
-   - Offer to run `/aidlc:elaborate` first (or `/aidlc:intent` if Confluence doc missing)
+   - Offer to run `/aidlc-elaborate` first (or `/aidlc-intent` if Confluence doc missing)
    - Or allow override with explicit confirmation (see Override Pattern in @${CLAUDE_PLUGIN_ROOT}/references/planning-shared.md)
 
 ## Workflow
@@ -141,7 +141,7 @@ Before starting, validate:
 
 9. **Report back and chain to verify**
    Provide links to created artifacts and ask for any refinements.
-   When design is complete, offer to run `/aidlc:verify` to assess readiness for Jira transfer.
+   When design is complete, offer to run `/aidlc-verify` to assess readiness for Jira transfer.
 
 ## Brown-Field Considerations
 
@@ -158,8 +158,8 @@ For existing systems, add these steps before Domain Design:
 
 ## Workflow Chain
 
-- **Previous**: `/aidlc:elaborate` (Unit and Task creation in Confluence)
-- **Next**: `/aidlc:verify` (Verification and Jira transfer)
+- **Previous**: `/aidlc-elaborate` (Unit and Task creation in Confluence)
+- **Next**: `/aidlc-verify` (Verification and Jira transfer)
 
 ## Definition of Done
 

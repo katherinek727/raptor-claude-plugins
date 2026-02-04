@@ -1,5 +1,5 @@
 ---
-name: bolt
+name: aidlc-bolt
 description: Guide implementation of a bolt (rapid iteration cycle) with TDD emphasis. Gathers context from Jira, creates a TDD-focused plan, stores it locally, and creates a feature branch for implementation. (Triggers - bolt, implement bolt, start bolt, bolt implementation, new bolt)
 ---
 
@@ -460,7 +460,7 @@ Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>
 
 ## Workflow Chain
 
-- **Previous**: Bolt (Story) in Jira with Tasks (Sub-tasks) from `/aidlc:verify`
+- **Previous**: Bolt (Story) in Jira with Tasks (Sub-tasks) from `/aidlc-verify`
 - **Next**: Pull/Merge Request (manual or via `/issues:create-mr`)
 
 ## Definition of Done

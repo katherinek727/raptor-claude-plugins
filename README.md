@@ -17,7 +17,7 @@ A collection of plugins that extend [Claude Code](https://docs.anthropic.com/en/
 
 **Start a new project initiative:**
 ```
-/aidlc:intent
+/aidlc-intent
 Create an intent for adding user authentication with OAuth2 support
 ```
 
@@ -78,18 +78,18 @@ Then install individual plugins:
 
 ## Available Plugins
 
-### AIDLC (`/aidlc:*`)
+### AIDLC (`/aidlc-*`)
 
 AI-DLC (AI-Driven Development Lifecycle) workflow for structured project planning with human-in-the-loop validation.
 
 | Command | Triggers | Description |
 |---------|----------|-------------|
-| `/aidlc:intent` | `create intent`, `intent document`, `new initiative`, `draft intent`, `aidlc plan` | Create Intent documentation in Confluence |
-| `/aidlc:elaborate` | `decompose intent`, `break down intent`, `create units`, `create tasks`, `mob elaboration` | Break Intent into Units and Tasks via Mob Elaboration, propose Bolt groupings |
-| `/aidlc:design` | `domain design`, `logical design`, `create ADR`, `architecture decision`, `aidlc design` | Domain/Logical Design and Architecture Decision Records |
-| `/aidlc:verify` | `verify docs`, `check readiness`, `transfer to jira`, `confidence check` | Verify docs, refine Bolts, transfer to Jira (Unit→Sub-epic, Bolt→Story, Task→Sub-task) |
-| `/aidlc:bolt` | `bolt`, `implement bolt`, `start bolt`, `bolt implementation`, `new bolt` | Guide implementation of a Bolt with TDD emphasis |
-| `/aidlc:help` | `aidlc help`, `what is aidlc`, `explain aidlc`, `planning help` | Explain AI-DLC methodology and available skills |
+| `/aidlc-intent` | `create intent`, `intent document`, `new initiative`, `draft intent`, `aidlc plan` | Create Intent documentation in Confluence |
+| `/aidlc-elaborate` | `decompose intent`, `break down intent`, `create units`, `create tasks`, `mob elaboration` | Break Intent into Units and Tasks via Mob Elaboration, propose Bolt groupings |
+| `/aidlc-design` | `domain design`, `logical design`, `create ADR`, `architecture decision`, `aidlc design` | Domain/Logical Design and Architecture Decision Records |
+| `/aidlc-verify` | `verify docs`, `check readiness`, `transfer to jira`, `confidence check` | Verify docs, refine Bolts, transfer to Jira (Unit→Sub-epic, Bolt→Story, Task→Sub-task) |
+| `/aidlc-bolt` | `bolt`, `implement bolt`, `start bolt`, `bolt implementation`, `new bolt` | Guide implementation of a Bolt with TDD emphasis |
+| `/aidlc-help` | `aidlc help`, `what is aidlc`, `explain aidlc`, `planning help` | Explain AI-DLC methodology and available skills |
 
 **Workflow:** Intent → Units → Tasks → Design → Verify → Jira (Sub-epic → Story → Sub-task) → Bolt Implementation
 

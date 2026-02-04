@@ -83,14 +83,14 @@ Add labels to Units (Sub-epics) to track phase:
 ### Skill Responsibilities
 
 Each skill updates the Confluence status table:
-- `/aidlc:intent`: Set "Intent: ✅ Approved"
-- `/aidlc:elaborate`: Set "Unit Decomposition: ✅ Complete" (Units remain in Confluence)
-- `/aidlc:design`: Set "Domain Design: ✅ Complete"
-- `/aidlc:verify`: Set "Verification: ✅ Complete", create Jira artifacts with appropriate labels
+- `/aidlc-intent`: Set "Intent: ✅ Approved"
+- `/aidlc-elaborate`: Set "Unit Decomposition: ✅ Complete" (Units remain in Confluence)
+- `/aidlc-design`: Set "Domain Design: ✅ Complete"
+- `/aidlc-verify`: Set "Verification: ✅ Complete", create Jira artifacts with appropriate labels
 
 ## Prerequisite Validation
 
-Before proceeding with any skill (except `/planning:aidlc-plan`), validate that prerequisites are met.
+Before proceeding with any skill (except `/aidlc-intent`), validate that prerequisites are met.
 
 ### Validation Steps
 
@@ -111,10 +111,10 @@ Before proceeding with any skill (except `/planning:aidlc-plan`), validate that 
 
 | Skill | Required Artifacts | Required Status |
 |-------|-------------------|-----------------|
-| `/aidlc:intent` | None (first step) | — |
-| `/aidlc:elaborate` | Confluence Intent doc | "Intent: ✅ Approved" |
-| `/aidlc:design` | Units Overview page with Unit/Task pages in Confluence | "Unit Decomposition: ✅ Complete" |
-| `/aidlc:verify` | Units with design documentation | "Domain Design: ✅ Complete" (recommended) |
+| `/aidlc-intent` | None (first step) | — |
+| `/aidlc-elaborate` | Confluence Intent doc | "Intent: ✅ Approved" |
+| `/aidlc-design` | Units Overview page with Unit/Task pages in Confluence | "Unit Decomposition: ✅ Complete" |
+| `/aidlc-verify` | Units with design documentation | "Domain Design: ✅ Complete" (recommended) |
 
 ### Override Pattern
 
@@ -260,7 +260,7 @@ Use this template for the Units Overview page in Confluence. This page is a chil
 
 ## Proposed Bolts
 
-Initial groupings of Tasks into Bolts for each Unit. These are proposals that will be refined during `/aidlc:verify`.
+Initial groupings of Tasks into Bolts for each Unit. These are proposals that will be refined during `/aidlc-verify`.
 
 ### Unit 1: <Name>
 
@@ -785,7 +785,7 @@ acli jira workitem create \
 
 ## Task Elaboration Subagent
 
-The `/aidlc:elaborate` skill uses parallel subagents to elaborate Tasks by theme cluster. This section defines the prompt template and expected return format.
+The `/aidlc-elaborate` skill uses parallel subagents to elaborate Tasks by theme cluster. This section defines the prompt template and expected return format.
 
 ### Theme Clustering Guidance
 
@@ -916,7 +916,7 @@ After collecting results from all subagents, the parent agent:
 
 ## Confluence Page Creation Subagent
 
-The `/aidlc:elaborate` skill uses parallel subagents to create Confluence pages efficiently. After the Units Overview page is created, one subagent is spawned per Unit to create that Unit's page and all its Task pages in parallel.
+The `/aidlc-elaborate` skill uses parallel subagents to create Confluence pages efficiently. After the Units Overview page is created, one subagent is spawned per Unit to create that Unit's page and all its Task pages in parallel.
 
 ### Subagent Prompt Template
 
@@ -1010,7 +1010,7 @@ After collecting results from all page creation subagents:
 
 ## Bolt Implementation Subagents
 
-The `/aidlc:bolt` skill uses parallel subagents for efficient, accurate implementation of multi-Task Bolts. Sub-agents operate per-Task when a Bolt contains multiple Tasks.
+The `/aidlc-bolt` skill uses parallel subagents for efficient, accurate implementation of multi-Task Bolts. Sub-agents operate per-Task when a Bolt contains multiple Tasks.
 
 ### Task Context Subagent (Phase 1)
 

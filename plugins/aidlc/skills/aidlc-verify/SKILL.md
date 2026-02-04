@@ -1,5 +1,5 @@
 ---
-name: verify
+name: aidlc-verify
 description: Verify documentation completeness and assess AI-execution confidence before transferring to Jira. Uses parallel sub-agents to review Intent, Units, Tasks, and Design docs. Refines Bolt groupings and transfers to Jira with proper hierarchy (Sub-epic → Story → Sub-task). (Triggers - verify docs, check readiness, transfer to jira, aidlc verify, ready for implementation, confidence check)
 ---
 
@@ -44,8 +44,8 @@ Before starting, validate:
    - Check if "Domain Design" is complete (improves confidence score)
 
 3. **If prerequisites incomplete**
-   - Offer to run `/aidlc:design` first if design is missing
-   - Offer to run `/aidlc:elaborate` if Units are missing
+   - Offer to run `/aidlc-design` first if design is missing
+   - Offer to run `/aidlc-elaborate` if Units are missing
    - Or allow override with explicit confirmation (see Override Pattern in @${CLAUDE_PLUGIN_ROOT}/references/planning-shared.md)
 
 ## Confidence Assessment Framework
@@ -78,7 +78,7 @@ When identifying gaps, categorize them:
 | **Missing AC** | Task without acceptance criteria | Add testable conditions |
 | **Unmeasurable NFR** | "should be fast" | Add specific target (e.g., <200ms) |
 | **Unknown integration** | "connects to backend" | Identify specific APIs/services |
-| **Missing design** | No domain model | Run `/aidlc:design` |
+| **Missing design** | No domain model | Run `/aidlc-design` |
 | **Poor Bolt grouping** | Tasks span unrelated areas | Regroup into cohesive Bolts |
 
 ## Workflow
@@ -276,7 +276,7 @@ Critical gaps:
 - [List blocking gaps]
 
 Recommended actions:
-1. Run `/aidlc:design` if design is missing
+1. Run `/aidlc-design` if design is missing
 2. Update Tasks with missing acceptance criteria
 3. Define measurable NFRs
 4. Refine Bolt groupings if needed
@@ -378,7 +378,7 @@ Provide:
 
 ## Workflow Chain
 
-- **Previous**: `/aidlc:design` (Domain and Logical Design)
+- **Previous**: `/aidlc-design` (Domain and Logical Design)
 - **Next**: Implementation
 
 ## Definition of Done
@@ -407,7 +407,7 @@ Provide:
 - **Low confidence score**: Guide user to address specific gaps; offer to re-run verification after updates.
 - **Sub-agent failure**: Report which Unit verification failed and offer to retry or assess manually.
 - **Confluence page deletion fails**: Verify permissions; may need admin to delete pages.
-- **Design missing**: Confidence will be lower; recommend running `/aidlc:design` first but allow override.
+- **Design missing**: Confidence will be lower; recommend running `/aidlc-design` first but allow override.
 - **User wants to skip verification**: Allow with explicit confirmation, but warn that AI execution quality may suffer.
 - **Bolt groupings unclear**: Review proposed Bolts in Units Overview; may need to regroup Tasks before transfer.
 - **Tasks span multiple Bolts**: Each Task should belong to exactly one Bolt; resolve before Jira transfer.

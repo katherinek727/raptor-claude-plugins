@@ -1,5 +1,5 @@
 ---
-name: intent
+name: aidlc-intent
 description: Create and iteratively refine the AI-DLC Intent documentation in Confluence, with human-in-the-loop validation, risk surfacing, NFRs, and measurement criteria. Use when asked to draft or update an Intent, initiative doc, or Confluence planning document before Jira work is created. (Triggers - create intent, intent document, new initiative, draft intent, planning doc, intent brief, confluence intent, aidlc plan)
 ---
 
@@ -12,7 +12,7 @@ Produce the Intent documentation in Confluence as the single source of truth for
 > Intent documents capture WHAT needs to be achieved, not HOW to break it down.
 > - Do NOT include detailed unit decomposition or Task breakdowns
 > - Do NOT create Jira artifacts at this stage
-> - Unit breakdown happens later in `/aidlc:elaborate` (Mob Elaboration)
+> - Unit breakdown happens later in `/aidlc-elaborate` (Mob Elaboration)
 > - You may include "Proposed Units (hypotheses only)" as rough scope indicators
 
 ## AI-Drives-Conversation Pattern
@@ -93,12 +93,12 @@ Include in Confluence doc as a collapsible section or separate child page. See P
    - Set "Intent" row to "✅ Approved" with today's date
 
 9. **Chain to Decompose**
-   If approved and the user wants to proceed, invoke `/aidlc:elaborate` with the Confluence page link. Pass along the Intent name and any context gathered. Note: Jira artifacts are created later, after Mob Elaboration and Unit Re-assessment.
+   If approved and the user wants to proceed, invoke `/aidlc-elaborate` with the Confluence page link. Pass along the Intent name and any context gathered. Note: Jira artifacts are created later, after Mob Elaboration and Unit Re-assessment.
 
 ## Workflow Chain
 
 - **This is the first step** in the AI-DLC planning workflow
-- **Next**: `/aidlc:elaborate` (Mob Elaboration - Unit and Task decomposition)
+- **Next**: `/aidlc-elaborate` (Mob Elaboration - Unit and Task decomposition)
 
 ## Definition of Done
 
