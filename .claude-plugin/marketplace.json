@@ -58,8 +58,6 @@
       "source": "./plugins/planning",
       "description": "DEPRECATED: This plugin has been renamed to 'aidlc'. Please uninstall and install 'aidlc' instead.",
       "version": "1.9.1",
-      "deprecated": true,
-      "replacement": "aidlc",
       "author": {
         "name": "Andy Kay"
       }
