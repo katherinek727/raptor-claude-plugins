@@ -48,7 +48,7 @@ Scan the repository to detect as much configuration as possible. Use Glob, Grep,
 - **NuGet packages**: Check for `.Client`, `.Shared`, `.Maps` project directories with `Glob("src/**/*.csproj")`
 - **EF Migrations**: Check for `DataMigrations` project with `Glob("src/**/*DataMigrations*/*.csproj")`
 - **API versions**: Check for `[ApiVersion]` attributes or versioned controllers with `Grep("ApiVersion|\\[Route.*v[0-9]")`
-- **UI regression tests**: Check if existing `.gitlab-ci.yml` contains a `test-ui-staging` job or references `web-ui-framework-2-platform`. If found, set `decisions.ui_tests.enabled: true` and extract the `SCHEDULE_NAME` variable value if present.
+- **UI regression tests**: Check if existing `.gitlab-ci.yml` contains a `test-ui-staging` or `test-ui-prod` job, or references a QA automation trigger project. If found, set `decisions.ui_tests.enabled: true` and extract the `trigger.project` path and `SCHEDULE_NAME` variable values if present (staging and prod may have different schedule names).
 
 ### 1.5 Database Configuration
 
@@ -84,7 +84,10 @@ After scanning, identify what could NOT be auto-detected. Use `AskUserQuestion` 
 5. **Jira ticket ID** for the migration work
 6. **Connection string key** (if EF migrations detected but key not found in code)
 7. **APIM API_IDs** for each region/environment/version combination (these are existing values from Azure APIM — do NOT generate new ones, ask the user to provide them)
-8. **UI regression tests** — ALWAYS ask the user: "Does this service have UI regression tests that should run after staging deployment?" If yes (or if auto-detected from `.gitlab-ci.yml`), set `decisions.ui_tests.enabled: true` and ask for the `schedule_name` (the exact QA framework schedule name, e.g., "CICD - Client Building Service - P0,P1 - Staging")
+8. **UI regression tests** — ALWAYS ask the user: "Does this service have UI regression tests that should run after staging deployment? And after production deployment?" If yes for either (or if auto-detected from `.gitlab-ci.yml`), set `decisions.ui_tests.enabled: true` and ask for:
+   - `trigger_project` — the GitLab project path for the QA automation framework (e.g., `raptortech1/raptor/quality-assurance/qa-automation/web-ui-framework-2-platform`)
+   - `schedule_name` — staging schedule name (e.g., "CICD - Client Building Service - P0,P1 - Staging"), leave empty if no staging UI tests
+   - `schedule_name_prod` — prod schedule name (e.g., "CICD - Client Building Service - P0,P1 - Prod"), leave empty if no prod UI tests
 
 ### Validation Questions
 
@@ -99,7 +102,7 @@ I detected the following configuration:
 - API versions: v1, v2
 - Auth0: enabled
 - NuGet packages: Client, Shared, Maps
-- UI Tests: enabled (schedule: "CICD - Client Building Service - P0,P1 - Staging")
+- UI Tests: enabled (staging: "CICD - Client Building Service - P0,P1 - Staging", prod: "CICD - Client Building Service - P0,P1 - Prod")
 - EF Migrations: enabled (ClientsDBContext)
 
 Is this correct? What needs to be changed?

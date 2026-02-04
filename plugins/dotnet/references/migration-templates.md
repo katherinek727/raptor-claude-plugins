@@ -13,6 +13,7 @@ Templates used by trunk-migration skills during the migration process. All templ
 | `TAG_PLACEHOLDER` | Image tag placeholder | `TAG_PLACEHOLDER` |
 | `DOMAIN_PLACEHOLDER` | Base domain placeholder | `raptortech.com` |
 | `CONNECTION_STRING_KEY` | Azure App Config key | `ClientsDB_Failover` |
+| `UI_TESTS_TRIGGER_PROJECT` | GitLab QA automation project path | `raptortech1/raptor/.../web-ui-framework-2-platform` |
 | `{{placeholder}}` | Review app runtime substitution | `{{MR_ID}}`, `{{REVIEW_HOST}}` |
 
 ---
@@ -1163,6 +1164,7 @@ deploy-k8s-lower:
   needs:
     - job: push-docker-images-lower
     - job: deploy-migrations-lower  # If using migrations
+      optional: true
   parallel:
     matrix:
       - REGION: *regions
@@ -1200,6 +1202,7 @@ deploy-prod-job:
     - job: manual-approval-prod
     - job: push-docker-images-prod
     - job: deploy-migrations-prod  # If using migrations
+      optional: true
   parallel:
     matrix:
       - REGION: *regions
@@ -1288,14 +1291,38 @@ test-ui-staging:
       artifacts: false
     - job: upload-api-lower
       artifacts: false
+      optional: true
   trigger:
-    project: 'raptortech1/raptor/quality-assurance/qa-automation/web-ui-framework-2-platform'
+    project: 'UI_TESTS_TRIGGER_PROJECT'
     branch: main
     strategy: depend
     forward:
       pipeline_variables: false
   variables:
     SCHEDULE_NAME: "CICD - SERVICE_DISPLAY_NAME - P0,P1 - Staging"
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+```
+
+### UI Regression Tests - Production (Optional)
+
+```yaml
+test-ui-prod:
+  stage: post-deploy
+  needs:
+    - job: deploy-prod-job
+      artifacts: false
+    - job: upload-api-prod
+      artifacts: false
+      optional: true
+  trigger:
+    project: 'UI_TESTS_TRIGGER_PROJECT'
+    branch: main
+    strategy: depend
+    forward:
+      pipeline_variables: false
+  variables:
+    SCHEDULE_NAME: "CICD - SERVICE_DISPLAY_NAME - P0,P1 - Prod"
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
 ```

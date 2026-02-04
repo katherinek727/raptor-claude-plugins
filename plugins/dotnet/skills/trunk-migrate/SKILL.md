@@ -168,8 +168,8 @@ The CI/CD config is built conditionally based on decision trees:
 - **false**: Omit NuGet jobs, can omit publish-packages stage
 
 #### Conditional on `decisions.ui_tests.enabled`:
-- **true**: `test-ui-staging` job in `prod-gate` stage, triggers QA framework with `SCHEDULE_NAME` from config
-- **false**: Omit `test-ui-staging` job entirely
+- **true**: Include `test-ui-staging` job in `prod-gate` stage if `schedule_name` is set, and `test-ui-prod` job in `post-deploy` stage if `schedule_name_prod` is set. Both trigger the QA framework with their respective `SCHEDULE_NAME` from config.
+- **false**: Omit UI test jobs entirely
 
 #### Conditional on `decisions.ef_migrations.enabled`:
 - **true**: Migration validation job, deploy-migrations-lower, deploy-migrations-prod, include ef-migrations.yml and sql-script-deploy.yml templates
