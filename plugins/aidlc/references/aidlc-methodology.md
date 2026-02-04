@@ -140,7 +140,7 @@ A **Unit** represents a cohesive, self-contained work element derived from an In
 **Analogy:** Units are analogous to Subdomains in DDD or Epics in Scrum.
 
 Each Unit encompasses:
-- A set of tasks (user stories) that articulate its functional scope
+- A set of Tasks that articulate its functional scope
 - Loose coupling to other Units, enabling autonomous development and independent deployment
 
 The process of decomposing Intents into Units is driven by AI, with developers and/or Product Owners validating and refining the resulting Units.
@@ -152,7 +152,7 @@ A **Bolt** is the smallest iteration in AI-DLC, designed for the rapid implement
 **Analogy:** Bolts are analogous to Sprints in Scrum, but emphasize intense focus and high-velocity delivery, with build-validation cycles measured in **hours or days** rather than weeks.
 
 Each Bolt:
-- Encapsulates a well-defined scope of work (e.g., user stories within a Unit)
+- Encapsulates a well-defined scope of work (e.g., Tasks within a Unit)
 - Enables incremental progress while maintaining alignment with Unit objectives
 - A Unit can be executed through one or more Bolts, running in parallel or sequentially
 
@@ -202,9 +202,10 @@ The Inception Phase focuses on capturing Intents and translating them into Units
 
 **AI's Role:**
 AI proposes an initial breakdown of the Intent into:
-- User Stories
+- Tasks
 - Acceptance Criteria
 - Units
+- Proposed Bolt groupings
 
 Using domain knowledge and principles of **loose coupling and high cohesion** for rapid parallel execution.
 
@@ -216,11 +217,11 @@ The mob collaboratively reviews and refines AI-generated artifacts by:
 **Outputs:**
 - Well-defined Units containing:
   - PRFAQ (optional)
-  - User Stories
+  - Tasks (following "As a... I want... So that..." format)
   - Non-Functional Requirements (NFRs)
   - Risk descriptions (matching organization's Risk Register)
   - Measurement Criteria (tracing to business intent)
-  - Suggested Bolts for construction
+  - Proposed Bolt groupings for construction
 
 **Value:** Mob Elaboration condenses weeks or months of sequential work into **a few hours**, achieving deep alignment both within the mob and between the mob and the AI.
 
@@ -271,8 +272,8 @@ Given a business intent (green-field, brown-field, modernization, or defect fixi
 | Step | Description |
 |------|-------------|
 | **1** | Build context from existing code |
-| **2** | Elaborate intent into user stories |
-| **3** | Plan the units of work |
+| **2** | Elaborate intent into Tasks and Units |
+| **3** | Group Tasks into Bolts |
 | **4** | Model the domain, code & test builds |
 | **5** | Solve the non-functional requirements |
 | **6** | Resolve deployment architecture, code & test |
@@ -282,7 +283,7 @@ Given a business intent (green-field, brown-field, modernization, or defect fixi
 
 **Key Principle:** At the heart of AI-DLC is applying human oversight to progressively enrich artifacts at each step, transforming them into semantically rich context for the next. Each step serves as a **strategic decision point** where human oversight functions like a loss function - catching and correcting errors early before they snowball downstream.
 
-**Context Memory:** All artifacts generated (intents, user stories, domain models, test plans) are persisted and serve as a "context memory" that AI references across the lifecycle. All artifacts are linked for backward and forward traceability.
+**Context Memory:** All artifacts generated (Intents, Tasks, domain models, test plans) are persisted and serve as a "context memory" that AI references across the lifecycle. All artifacts are linked for backward and forward traceability.
 
 ---
 
@@ -337,20 +338,20 @@ Confirm your understanding of this prompt. Create the necessary folders and
 files for storage, if they do not exist already.
 ```
 
-### Inception: User Stories
+### Inception: Tasks
 
 ```
 Your Role: You are an expert product manager tasked with creating well-defined
-user stories that become the contract for developing the system.
+Tasks that become the contract for developing the system.
 
-Plan for the work ahead and write your steps in an md file (user_stories_plan.md)
+Plan for the work ahead and write your steps in an md file (tasks_plan.md)
 with checkboxes for each step. If any step needs my clarification, add a note
 to get my confirmation. Do not make critical decisions on your own.
 
 Upon completing the plan, ask for my review and approval. After approval,
 execute the plan one step at a time. Mark checkboxes as done when complete.
 
-Your Task: Build user stories for the high-level requirement: <<describe product>>
+Your Task: Build Tasks for the high-level requirement: <<describe product>>
 ```
 
 ### Inception: Units
@@ -362,12 +363,12 @@ Before starting, do the planning and write steps in units_plan.md with checkboxe
 If any step needs clarification, add it to interact with me. Do not make critical
 decisions on your own.
 
-Your Task: Refer to the user stories mvp_user_stories.md file. Group the user
-stories into multiple units that can be built independently. Each unit contains
-highly cohesive user stories that can be built by a single team. The units are
-loosely coupled with each other.
+Your Task: Refer to the Tasks in mvp_tasks.md file. Group the Tasks into
+multiple units that can be built independently. Each unit contains highly
+cohesive Tasks that can be built by a single team. The units are loosely
+coupled with each other.
 
-For each unit, write their respective user stories and acceptance criteria in
+For each unit, write their respective Tasks and acceptance criteria in
 individual md files in the design/ folder.
 ```
 
@@ -378,8 +379,8 @@ Your Role: You are an experienced software engineer.
 
 Before starting, write planning steps in design/component_model.md with checkboxes.
 
-Your Task: Refer to the user stories in design/<unit_name>_unit.md. Design the
-component model to implement all user stories. This model shall contain all
+Your Task: Refer to the Tasks in design/<unit_name>_unit.md. Design the
+component model to implement all Tasks. This model shall contain all
 components, attributes, behaviors, and how components interact.
 
 Do not generate any code yet. Write the component model into a separate md file

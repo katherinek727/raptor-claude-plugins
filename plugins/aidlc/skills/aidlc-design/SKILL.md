@@ -33,8 +33,8 @@ This skill follows the AI-DLC principle where AI initiates and directs the conve
 Before starting, validate:
 
 1. **Required artifacts**
-   - Confluence Level 1 Intent document (ask for link)
-   - Units Overview page with Unit and Story child pages in Confluence
+   - Confluence Intent document (ask for link)
+   - Units Overview page with Unit and Task child pages in Confluence
    - Fetch all using Atlassian MCP to confirm they exist
 
 2. **Required status**
@@ -42,7 +42,7 @@ Before starting, validate:
    - Verify "Unit Decomposition" row shows "✅ Complete"
 
 3. **If prerequisites incomplete**
-   - Offer to run `/planning:aidlc-decompose` first (or `/planning:aidlc-plan` if Confluence doc missing)
+   - Offer to run `/aidlc-elaborate` first (or `/aidlc-intent` if Confluence doc missing)
    - Or allow override with explicit confirmation (see Override Pattern in @${CLAUDE_PLUGIN_ROOT}/references/planning-shared.md)
 
 ## Workflow
@@ -50,7 +50,7 @@ Before starting, validate:
 1. **Gather context**
    Ask only for what is missing:
    - Unit to design (from Confluence Units Overview page)
-   - User Stories within the Unit (from Confluence child pages)
+   - Tasks within the Unit (from Confluence child pages)
    - Relevant NFRs (performance, security, scalability, etc.)
    - Existing codebase context (for brown-field)
    - Any architectural constraints or preferences
@@ -62,7 +62,7 @@ Before starting, validate:
 
    For the Unit being designed, verify:
    - [ ] Unit scope is bounded (no "and more", "etc.", open-ended language)
-   - [ ] At least 2 user stories exist with acceptance criteria
+   - [ ] At least 2 Tasks exist with acceptance criteria
    - [ ] NFRs have measurable targets (not just "fast" or "secure")
    - [ ] Integration points are identified (APIs, services, databases)
    - [ ] For brownfield: existing code patterns are understood
@@ -74,7 +74,7 @@ Before starting, validate:
    | Factor | Score | Notes |
    |--------|-------|-------|
    | Unit scope clarity | /20 | Clear boundaries, defined outcomes |
-   | Story quality | /20 | Testable acceptance criteria |
+   | Task quality | /20 | Testable acceptance criteria |
    | NFR specificity | /20 | Measurable targets with baselines |
    | Technical context | /20 | Integration points, dependencies known |
    | Architectural constraints | /20 | Patterns, limitations documented |
@@ -141,7 +141,7 @@ Before starting, validate:
 
 9. **Report back and chain to verify**
    Provide links to created artifacts and ask for any refinements.
-   When design is complete, offer to run `/planning:aidlc-verify` to assess readiness for Jira transfer.
+   When design is complete, offer to run `/aidlc-verify` to assess readiness for Jira transfer.
 
 ## Brown-Field Considerations
 
@@ -158,8 +158,8 @@ For existing systems, add these steps before Domain Design:
 
 ## Workflow Chain
 
-- **Previous**: `/planning:aidlc-decompose` (Unit and Story creation in Confluence)
-- **Next**: `/planning:aidlc-verify` (Verification and Jira transfer)
+- **Previous**: `/aidlc-elaborate` (Unit and Task creation in Confluence)
+- **Next**: `/aidlc-verify` (Verification and Jira transfer)
 
 ## Definition of Done
 

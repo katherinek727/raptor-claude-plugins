@@ -9,7 +9,7 @@ Use this reference for the AI-DLC Intent → Unit planning flow.
 - Get explicit approval before creating Jira issues.
 - Do not create Bugs unless explicitly requested by a human.
 
-## Confluence Level 1 Intent Template
+## Confluence Intent Template
 
 - Intent Summary
 - Problem / Opportunity
@@ -63,7 +63,7 @@ Include this table in the Level 1 Intent document:
 
 | Phase | Status | Date | Artifact |
 |-------|--------|------|----------|
-| Level 1 Intent | ⏳ Draft | - | - |
+| Intent | ⏳ Draft | - | - |
 | Unit Decomposition | ⏳ Pending | - | - |
 | Domain Design | ⏳ Pending | - | - |
 | Verification | ⏳ Pending | - | - |
@@ -83,14 +83,14 @@ Add labels to Units (Sub-epics) to track phase:
 ### Skill Responsibilities
 
 Each skill updates the Confluence status table:
-- `/planning:aidlc-plan`: Set "Level 1 Intent: ✅ Approved"
-- `/planning:aidlc-decompose`: Set "Unit Decomposition: ✅ Complete" (Units remain in Confluence)
-- `/planning:aidlc-design`: Set "Domain Design: ✅ Complete"
-- `/planning:aidlc-verify`: Set "Verification: ✅ Complete", create Sub-epics with `aidlc:unit` and `aidlc:designed` labels
+- `/aidlc-intent`: Set "Intent: ✅ Approved"
+- `/aidlc-elaborate`: Set "Unit Decomposition: ✅ Complete" (Units remain in Confluence)
+- `/aidlc-design`: Set "Domain Design: ✅ Complete"
+- `/aidlc-verify`: Set "Verification: ✅ Complete", create Jira artifacts with appropriate labels
 
 ## Prerequisite Validation
 
-Before proceeding with any skill (except `/planning:aidlc-plan`), validate that prerequisites are met.
+Before proceeding with any skill (except `/aidlc-intent`), validate that prerequisites are met.
 
 ### Validation Steps
 
@@ -111,10 +111,10 @@ Before proceeding with any skill (except `/planning:aidlc-plan`), validate that 
 
 | Skill | Required Artifacts | Required Status |
 |-------|-------------------|-----------------|
-| `/planning:aidlc-plan` | None (first step) | — |
-| `/planning:aidlc-decompose` | Confluence Level 1 doc | "Level 1 Intent: ✅ Approved" |
-| `/planning:aidlc-design` | Units Overview page with Unit/Story pages in Confluence | "Unit Decomposition: ✅ Complete" |
-| `/planning:aidlc-verify` | Units with design documentation | "Domain Design: ✅ Complete" (recommended) |
+| `/aidlc-intent` | None (first step) | — |
+| `/aidlc-elaborate` | Confluence Intent doc | "Intent: ✅ Approved" |
+| `/aidlc-design` | Units Overview page with Unit/Task pages in Confluence | "Unit Decomposition: ✅ Complete" |
+| `/aidlc-verify` | Units with design documentation | "Domain Design: ✅ Complete" (recommended) |
 
 ### Override Pattern
 
@@ -132,6 +132,19 @@ This may indicate a skipped step. Options:
 Select an option to continue.
 ```
 
+## Jira Artifact Hierarchy
+
+When transferring from Confluence to Jira, use this hierarchy:
+
+```
+Sub-epic (Unit)
+├── Story (Bolt) ← Groups related Tasks
+│   ├── Sub-task (Task)
+│   ├── Sub-task (Task)
+└── Story (Bolt)
+    └── Sub-task (Task)
+```
+
 ## Jira Unit (Sub-epic) Template
 
 - Summary: "Unit: <Unit Name>"
@@ -142,12 +155,23 @@ Select an option to continue.
   - Risks (use table: Risk | Impact | Likelihood | Mitigation)
   - Dependencies (use bulleted list with references)
   - Testing approach (which test types apply, test environment needs)
-  - Link to Level 1 Intent Confluence doc
+  - Link to Intent Confluence doc
 - Label: `aidlc:unit`
 
 See **Template Standardization** section for format details.
 
-## Jira Work Item Template (Story/Chore)
+## Jira Bolt (Story) Template
+
+- Summary: "Bolt: <Bolt Description>"
+- Description:
+  - Scope summary (what this Bolt delivers)
+  - Tasks included (list of child sub-tasks)
+  - Dependencies (other Bolts or external)
+  - Estimated duration
+- Parent: The Unit Sub-epic
+- Label: `aidlc:bolt`
+
+## Jira Task (Sub-task) Template
 
 - Summary: "<Verb> <Outcome>"
 - Description:
@@ -155,14 +179,15 @@ See **Template Standardization** section for format details.
   - Acceptance criteria (use checkbox format: `- [ ] Criterion`)
   - Dependencies (use bulleted list with references)
   - Test notes (bulleted list of test scenarios)
+- Parent: The Bolt Story
 
 See **Template Standardization** section for format details.
 
-## Story Page Template (Confluence)
+## Task Page Template (Confluence)
 
-Use this template when creating Story pages in Confluence. Each story is a child page under its Unit page.
+Use this template when creating Task pages in Confluence. Each Task is a child page under its Unit page.
 
-**Page Title**: `<Story Title>` (this becomes the Jira summary when transferred)
+**Page Title**: `<Task Title>` (this becomes the Jira sub-task summary when transferred)
 
 **Page Content**:
 
@@ -171,9 +196,9 @@ Use this template when creating Story pages in Confluence. Each story is a child
 
 ## Summary
 
-<Brief description of what this story delivers>
+<Brief description of what this Task delivers>
 
-## User Story
+## Task
 
 As a <user type>,
 I want <goal/action>,
@@ -207,11 +232,11 @@ So that <benefit/value>.
 - <Test scenario 2>
 ```
 
-**Note**: When transferred to Jira, the page title becomes the Jira summary and all content becomes the description.
+**Note**: When transferred to Jira, the page title becomes the sub-task summary and all content becomes the description. Tasks are grouped into Bolts (Stories) based on the Proposed Bolts table in the Units Overview.
 
 ## Units Overview Page Template (Confluence)
 
-Use this template for the Units Overview page in Confluence. This page is a child of the Level 1 Intent document.
+Use this template for the Units Overview page in Confluence. This page is a child of the Intent document.
 
 **Page Title**: `Units Overview`
 
@@ -224,12 +249,31 @@ Use this template for the Units Overview page in Confluence. This page is a chil
 
 ## Unit Summary
 
-| Unit | Stories | Bolts | Dependencies |
-|------|---------|-------|--------------|
+| Unit | Tasks | Bolts | Dependencies |
+|------|-------|-------|--------------|
 | <Unit 1 Name> | <count> | <count> | <list> |
 | <Unit 2 Name> | <count> | <count> | <list> |
 
-**Total Stories**: <count>
+**Total Tasks**: <count>
+
+---
+
+## Proposed Bolts
+
+Initial groupings of Tasks into Bolts for each Unit. These are proposals that will be refined during `/aidlc-verify`.
+
+### Unit 1: <Name>
+
+| Bolt | Description | Tasks | Est. Duration |
+|------|-------------|-------|---------------|
+| Bolt 1.1 | <Scope description> | 1, 2, 3 | X hours/days |
+| Bolt 1.2 | <Scope description> | 4, 5 | X hours/days |
+
+### Unit 2: <Name>
+
+| Bolt | Description | Tasks | Est. Duration |
+|------|-------------|-------|---------------|
+| Bolt 2.1 | <Scope description> | 1, 2 | X hours/days |
 
 ---
 
@@ -263,7 +307,7 @@ Unit 1: <Name>
 
 ## Links
 
-- [Level 1 Intent](<Confluence link>)
+- [Intent](<Confluence link>)
 ```
 
 ## Unit Page Template (Confluence)
@@ -279,19 +323,19 @@ Use this template for Unit pages in Confluence. Each Unit page is a child of the
 
 **Status**: Draft | In Review | Approved | Transferred
 
-## Stories
+## Tasks
 
-| # | Story | Status |
-|---|-------|--------|
-| 1 | <Story title> | Draft |
-| 2 | <Story title> | Draft |
+| # | Task | Status |
+|---|------|--------|
+| 1 | <Task title> | Draft |
+| 2 | <Task title> | Draft |
 
-*(Stories are child pages of this Unit)*
+*(Tasks are child pages of this Unit)*
 
 ## Bolt Plan
 
-| Bolt | Scope | Stories | Estimate |
-|------|-------|---------|----------|
+| Bolt | Scope | Tasks | Estimate |
+|------|-------|-------|----------|
 | Bolt 1 | <Description> | 1, 2, 3 | X hours |
 | Bolt 2 | <Description> | 4, 5 | X hours |
 
@@ -496,6 +540,14 @@ Each artifact should reference:
 - **Forward**: What it decomposes into
 - **Backward**: What it derives from
 
+**Confluence to Jira Mapping:**
+```
+Confluence Intent Document → Reference (not transferred)
+Confluence Unit Page → Jira Sub-epic
+Confluence Task Page → Jira Sub-task (under Bolt/Story)
+Proposed Bolts (Units Overview) → Jira Stories (grouping sub-tasks)
+```
+
 This enables:
 - Impact analysis when requirements change
 - Audit trail for compliance
@@ -573,12 +625,25 @@ Before reading, prompt the user:
 - **Page content only**: Use `getConfluencePage`
 - **With comments**: Also fetch `getConfluencePageInlineComments` and `getConfluencePageFooterComments`
 
-**For Jira operations:**
+**For Jira operations (prefer `acli` CLI - lower token usage):**
+
+First, check if `acli` is installed:
+```bash
+which acli || echo "acli not installed - see: https://developer.atlassian.com/cloud/acli/"
+```
+
+If `acli` is available, use it for Jira operations:
 1. Confirm the Jira project key (never assume a default)
-2. Verify issue types using `getJiraProjectIssueTypesMetadata`
-3. Get field metadata using `getJiraIssueTypeMetaWithFields` if custom fields are needed
-4. Create issues using `createJiraIssue`
-5. Link issues to Confluence pages in the description field
+2. View issues: `acli jira workitem view PROJ-123 --json`
+3. Create issues: `acli jira workitem create --project "PROJ" --type "Story" --summary "Title" --description-file desc.md`
+4. Edit issues: `acli jira workitem edit PROJ-123 --label "aidlc:unit"`
+5. Search issues: `acli jira workitem search --project "PROJ" --jql "type = Story"`
+
+If `acli` is not available, fall back to Atlassian MCP:
+1. Verify issue types using `getJiraProjectIssueTypesMetadata`
+2. Get field metadata using `getJiraIssueTypeMetaWithFields` if custom fields are needed
+3. Create issues using `createJiraIssue`
+4. Link issues to Confluence pages in the description field
 
 **Common issues:**
 - Space/project not found: Verify key spelling and permissions
@@ -667,9 +732,60 @@ In Claude Code, tools are namespaced with the `mcp__plugin_atlassian_atlassian__
 | `addCommentToJiraIssue` | `mcp__plugin_atlassian_atlassian__addCommentToJiraIssue` |
 | `lookupJiraAccountId` | `mcp__plugin_atlassian_atlassian__lookupJiraAccountId` |
 
-## Story Elaboration Subagent
+## Atlassian CLI (`acli`) Commands (Preferred for Jira)
 
-The `/planning:aidlc-decompose` skill uses parallel subagents to elaborate stories by theme cluster. This section defines the prompt template and expected return format.
+**Why prefer `acli` for Jira?** The Atlassian CLI uses significantly fewer tokens than the MCP tools, making it more efficient for Jira operations. Use MCP for Confluence (richer tooling) and `acli` for Jira.
+
+**Installation check:**
+```bash
+which acli || echo "Not installed - see: https://developer.atlassian.com/cloud/acli/"
+```
+
+**Authentication:**
+```bash
+acli auth login  # Interactive login (one-time setup)
+```
+
+### Common Jira Commands
+
+| Operation | Command |
+|-----------|---------|
+| View issue | `acli jira workitem view PROJ-123 --json` |
+| View with fields | `acli jira workitem view PROJ-123 --fields summary,description,status,issuetype --json` |
+| Search issues | `acli jira workitem search --project "PROJ" --jql "type = Story AND status = Open"` |
+| Create issue | `acli jira workitem create --project "PROJ" --type "Story" --summary "Title" --description "Body"` |
+| Create from file | `acli jira workitem create --project "PROJ" --type "Story" --summary "Title" --description-file desc.md` |
+| Create with parent | `acli jira workitem create --project "PROJ" --type "Story" --summary "Title" --parent "PROJ-100"` |
+| Edit issue | `acli jira workitem edit PROJ-123 --summary "New Title"` |
+| Add label | `acli jira workitem edit PROJ-123 --label "aidlc:unit"` |
+| Add comment | `acli jira workitem comment add PROJ-123 --body "Comment text"` |
+| Transition | `acli jira workitem transition PROJ-123 --transition "In Progress"` |
+| List projects | `acli jira project list` |
+
+### Example: Create Sub-epic with Stories
+
+```bash
+# Create Sub-epic (Unit)
+acli jira workitem create \
+  --project "PROJ" \
+  --type "Sub-epic" \
+  --summary "Unit: Authentication" \
+  --description-file unit-auth.md \
+  --label "aidlc:unit" \
+  --json
+
+# Parse the key from JSON output, then create child stories
+acli jira workitem create \
+  --project "PROJ" \
+  --type "Story" \
+  --summary "Implement login form" \
+  --description-file story-login.md \
+  --parent "PROJ-123"
+```
+
+## Task Elaboration Subagent
+
+The `/aidlc-elaborate` skill uses parallel subagents to elaborate Tasks by theme cluster. This section defines the prompt template and expected return format.
 
 ### Theme Clustering Guidance
 
@@ -681,10 +797,10 @@ When identifying theme clusters from an Intent:
 
 ### Subagent Prompt Template
 
-Use this template when spawning story elaboration subagents via the Task tool:
+Use this template when spawning Task elaboration subagents via the Task tool:
 
 ```markdown
-You are elaborating User Stories for the "<THEME_NAME>" theme cluster.
+You are elaborating Tasks for the "<THEME_NAME>" theme cluster.
 
 ## Intent Context
 
@@ -696,34 +812,35 @@ You are elaborating User Stories for the "<THEME_NAME>" theme cluster.
 
 **Constraints:** <any constraints or limitations>
 
-## Stories to Elaborate
+## Tasks to Elaborate
 
-Elaborate the following stories for this theme:
-<list of story titles/scopes>
+Elaborate the following Tasks for this theme:
+<list of Task titles/scopes>
 
 ## Instructions
 
-For each story:
-1. Write the full story content using the Story Markdown Template format
-2. Identify risks specific to this story
+For each Task:
+1. Write the full Task content using the Task Markdown Template format
+2. Identify risks specific to this Task
 3. Identify dependencies:
    - Within this theme cluster
    - Cross-cluster dependencies (reference other themes by name)
 
-## Story Markdown Template
+## Task Markdown Template
 
-Use this format for each story:
+Use this format for each Task:
 
-# Story: <Story Title>
+# Task: <Task Title>
 
 **Unit**: _pending_ <!-- Assigned after grouping -->
+**Bolt**: _pending_ <!-- Assigned after Bolt grouping -->
 **Jira Key**: _pending_ <!-- Updated after Jira creation -->
 **Status**: Draft
 
 ## Summary
-<Brief description of what this story delivers>
+<Brief description of what this Task delivers>
 
-## User Story
+## Task
 As a <user type>,
 I want <goal/action>,
 So that <benefit/value>.
@@ -742,7 +859,7 @@ So that <benefit/value>.
 - <Risk 1>
 
 ## Test Notes
-<Guidance for testing this story>
+<Guidance for testing this Task>
 
 ## Return Format
 
@@ -750,14 +867,14 @@ Return your results as JSON in this exact structure:
 
 {
   "theme": "<THEME_NAME>",
-  "stories": [
+  "tasks": [
     {
-      "title": "<story title>",
-      "content": "<full markdown content for the story>",
+      "title": "<Task title>",
+      "content": "<full markdown content for the Task>",
       "risks": ["<risk 1>", "<risk 2>"],
       "dependencies": {
-        "within_theme": ["<story title in same theme>"],
-        "cross_theme": ["<Theme Name>: <story or capability>"]
+        "within_theme": ["<Task title in same theme>"],
+        "cross_theme": ["<Theme Name>: <Task or capability>"]
       }
     }
   ],
@@ -774,38 +891,39 @@ Each subagent returns structured JSON with these fields:
 | Field | Type | Description |
 |-------|------|-------------|
 | `theme` | string | The theme cluster name |
-| `stories` | array | Array of elaborated stories |
-| `stories[].title` | string | Story title |
-| `stories[].content` | string | Full markdown content for the story file |
-| `stories[].risks` | array | Risks specific to this story |
-| `stories[].dependencies.within_theme` | array | Dependencies on other stories in the same theme |
-| `stories[].dependencies.cross_theme` | array | Dependencies on other themes (format: "Theme: capability") |
+| `tasks` | array | Array of elaborated Tasks |
+| `tasks[].title` | string | Task title |
+| `tasks[].content` | string | Full markdown content for the Task file |
+| `tasks[].risks` | array | Risks specific to this Task |
+| `tasks[].dependencies.within_theme` | array | Dependencies on other Tasks in the same theme |
+| `tasks[].dependencies.cross_theme` | array | Dependencies on other themes (format: "Theme: capability") |
 | `cross_cutting_concerns` | array | Concerns that span multiple themes |
 
 ### Consolidation Logic
 
 After collecting results from all subagents, the parent agent:
 
-1. **Parse results**: Extract stories from each subagent's JSON response
+1. **Parse results**: Extract Tasks from each subagent's JSON response
 2. **Merge risks**: Combine all `cross_cutting_concerns` into a unified list
-3. **Build dependency graph**: Map `cross_theme` dependencies to actual stories
-4. **Identify conflicts**: Flag stories with conflicting assumptions or overlapping scope
+3. **Build dependency graph**: Map `cross_theme` dependencies to actual Tasks
+4. **Identify conflicts**: Flag Tasks with conflicting assumptions or overlapping scope
 5. **Group into Units**:
    - Start with theme boundaries
    - Merge themes with tight coupling
    - Split themes with clear sub-boundaries
-6. **Assign Unit slugs**: Add unit prefix to each story filename
+6. **Propose Bolt groupings**: Group Tasks into Bolts based on cohesive scope
+7. **Assign Unit slugs**: Add unit prefix to each Task filename
 
 ## Confluence Page Creation Subagent
 
-The `/planning:aidlc-decompose` skill uses parallel subagents to create Confluence pages efficiently. After the Units Overview page is created, one subagent is spawned per Unit to create that Unit's page and all its Story pages in parallel.
+The `/aidlc-elaborate` skill uses parallel subagents to create Confluence pages efficiently. After the Units Overview page is created, one subagent is spawned per Unit to create that Unit's page and all its Task pages in parallel.
 
 ### Subagent Prompt Template
 
 Use this template when spawning Confluence page creation subagents via the Task tool:
 
 ```markdown
-You are creating a Unit page and its Story pages in Confluence.
+You are creating a Unit page and its Task pages in Confluence.
 
 ## Context
 
@@ -820,8 +938,8 @@ You are creating a Unit page and its Story pages in Confluence.
 
 ### Bolt Plan
 
-| Bolt | Scope | Stories | Estimate |
-|------|-------|---------|----------|
+| Bolt | Scope | Tasks | Estimate |
+|------|-------|-------|----------|
 <bolt plan rows>
 
 ### Dependencies
@@ -835,21 +953,21 @@ You are creating a Unit page and its Story pages in Confluence.
 |------|--------|------------|------------|
 <risk rows>
 
-## Stories to Create
+## Tasks to Create
 
-<JSON array of stories with full content>
+<JSON array of Tasks with full content>
 
 ## Instructions
 
 1. Create the Unit page as child of Units Overview using the Unit Page Template
-2. For each story, create a Story page as child of the Unit page using the Story Page Template
-3. Return the Unit page ID and all Story page IDs
+2. For each Task, create a Task page as child of the Unit page using the Task Page Template
+3. Return the Unit page ID and all Task page IDs
 
 ## Templates
 
 Use the templates from planning-shared.md:
 - Unit Page Template (for the Unit)
-- Story Page Template (for each Story)
+- Task Page Template (for each Task)
 
 ## Return Format
 
@@ -861,8 +979,8 @@ Return your results as JSON in this exact structure:
     "pageId": "<unit page ID>",
     "pageUrl": "<unit page URL>"
   },
-  "stories": [
-    { "title": "<story title>", "pageId": "<story page ID>", "pageUrl": "<story page URL>" }
+  "tasks": [
+    { "title": "<Task title>", "pageId": "<Task page ID>", "pageUrl": "<Task page URL>" }
   ]
 }
 ```
@@ -876,19 +994,238 @@ Each subagent returns structured JSON with these fields:
 | `unit.name` | string | The Unit name |
 | `unit.pageId` | string | Confluence page ID for the Unit |
 | `unit.pageUrl` | string | URL to the Unit page |
-| `stories` | array | Array of created story pages |
-| `stories[].title` | string | Story title |
-| `stories[].pageId` | string | Confluence page ID for the story |
-| `stories[].pageUrl` | string | URL to the story page |
+| `tasks` | array | Array of created Task pages |
+| `tasks[].title` | string | Task title |
+| `tasks[].pageId` | string | Confluence page ID for the Task |
+| `tasks[].pageUrl` | string | URL to the Task page |
 
 ### Consolidation After Page Creation
 
 After collecting results from all page creation subagents:
 
 1. **Verify all pages created**: Check that each subagent returned valid page IDs
-2. **Handle failures**: If any subagent failed, report which Unit/Stories failed and offer to retry
+2. **Handle failures**: If any subagent failed, report which Unit/Tasks failed and offer to retry
 3. **Compile page links**: Build a summary of all created pages for the user
 4. **Update Units Overview**: Add links to Unit pages in the summary table
+
+## Bolt Implementation Subagents
+
+The `/aidlc-bolt` skill uses parallel subagents for efficient, accurate implementation of multi-Task Bolts. Sub-agents operate per-Task when a Bolt contains multiple Tasks.
+
+### Task Context Subagent (Phase 1)
+
+Use this template when spawning Task Context Agents to explore the codebase for each Task in parallel:
+
+```markdown
+You are gathering implementation context for a single Task within a Bolt.
+
+## Task: <Task Title>
+
+<Task content: user story, acceptance criteria>
+
+## Repository Context
+
+**Repo Path:** <path>
+**Tech Stack:** <languages, frameworks>
+**Key Directories:** <src/, tests/, etc.>
+
+## Instructions
+
+1. Search for existing code related to this Task's domain
+2. Identify relevant files, modules, and patterns
+3. Find existing tests that cover related functionality
+4. Note any integration points or dependencies
+
+## Return Format
+
+Return your results as JSON in this exact structure:
+
+{
+  "task": "<task title>",
+  "relevant_files": [
+    { "path": "<file path>", "relevance": "<why this file is relevant>" }
+  ],
+  "existing_patterns": [
+    "<pattern description>"
+  ],
+  "related_tests": [
+    { "path": "<test file path>", "coverage": "<what it tests>" }
+  ],
+  "integration_points": [
+    "<service/API/database>"
+  ],
+  "technical_notes": "<observations about implementation approach>"
+}
+```
+
+### Task Test Planning Subagent (Phase 2)
+
+Use this template when spawning Task Test Planning Agents to design test cases for each Task:
+
+```markdown
+You are planning TDD test cases for a single Task.
+
+## Task: <Task Title>
+
+<Task content: user story, acceptance criteria>
+
+## Context from Phase 1
+
+**Relevant Files:** <list>
+**Existing Patterns:** <list>
+**Related Tests:** <list>
+
+## Instructions
+
+1. Design unit tests for each acceptance criterion
+2. Identify edge cases and error scenarios
+3. Design integration tests if applicable
+4. Suggest mocks/stubs needed
+5. Plan Red-Green-Refactor cycles
+
+## Return Format
+
+Return your results as JSON in this exact structure:
+
+{
+  "task": "<task title>",
+  "unit_tests": [
+    { "name": "<test name>", "verifies": "<what it verifies>", "approach": "<how to test>" }
+  ],
+  "edge_cases": [
+    "<edge case description>"
+  ],
+  "integration_tests": [
+    { "name": "<test name>", "verifies": "<what it verifies>" }
+  ],
+  "mocks_needed": [
+    "<mock/stub description>"
+  ],
+  "tdd_cycles": [
+    { "cycle": 1, "red": "<failing test>", "green": "<implementation>", "refactor": "<improvements>" }
+  ]
+}
+```
+
+### Expert Perspective Subagents (Phase 2)
+
+For high-risk Tasks, spawn Expert Perspective Agents to catch blind spots:
+
+| Expert | Focus | Adds |
+|--------|-------|------|
+| Security | OWASP, auth, input validation | Security-focused test cases |
+| Performance | Latency, memory, scalability | Performance test scenarios |
+| Domain | Business rules, edge cases | Domain-specific scenarios |
+
+**Security Expert Prompt:**
+```markdown
+You are reviewing test coverage from a security perspective.
+
+## Task: <Task Title>
+## Proposed Tests: <test plan from Tier 1>
+
+Identify missing security test cases for:
+- Input validation and sanitization
+- Authentication/authorization boundaries
+- Injection vulnerabilities (SQL, XSS, command)
+- Sensitive data handling
+
+Return additional test cases in the same JSON format as Task Test Planning.
+```
+
+**Performance Expert Prompt:**
+```markdown
+You are reviewing test coverage from a performance perspective.
+
+## Task: <Task Title>
+## Proposed Tests: <test plan from Tier 1>
+
+Identify missing performance test cases for:
+- Response time targets
+- Memory usage
+- Concurrent access
+- Data volume edge cases
+
+Return additional test cases in the same JSON format as Task Test Planning.
+```
+
+### Task Implementation Subagent (Phase 6)
+
+Use this template when spawning Task Implementation Agents to execute TDD for independent Tasks in parallel:
+
+```markdown
+You are implementing a single Task using TDD.
+
+## Task: <Task Title>
+
+<Task content: user story, acceptance criteria>
+
+## Test Plan from Phase 2
+
+**TDD Cycles:**
+<cycle details>
+
+**Test Cases:**
+<test case list>
+
+## Implementation Context
+
+**Relevant Files:** <list>
+**Patterns to Follow:** <list>
+
+## Instructions
+
+1. For each TDD cycle:
+   - RED: Write failing test, verify it fails
+   - GREEN: Write minimal code to pass
+   - REFACTOR: Improve code quality
+2. Commit after each cycle with meaningful message
+3. Update progress tracking
+
+## Return Format
+
+Return your results as JSON in this exact structure:
+
+{
+  "task": "<task title>",
+  "status": "complete|blocked|partial",
+  "cycles_completed": [
+    { "cycle": 1, "test_file": "<path>", "impl_file": "<path>", "commit": "<commit hash or message>" }
+  ],
+  "files_modified": [
+    "<file path>"
+  ],
+  "blockers": [
+    "<blocker description>"
+  ],
+  "notes": "<implementation notes>"
+}
+```
+
+### Subagent Consolidation Logic
+
+After collecting results from all subagents:
+
+**Phase 1 (Context) Consolidation:**
+1. Parse JSON results from each agent
+2. Merge relevant files lists (dedupe by path)
+3. Combine existing patterns discovered
+4. Surface any conflicting approaches
+5. Present unified context summary
+
+**Phase 2 (Planning) Consolidation:**
+1. Merge test plans into unified structure
+2. Identify shared test fixtures/utilities
+3. Resolve any conflicting approaches
+4. Integrate expert recommendations
+5. Present combined test plan for approval
+
+**Phase 6 (Implementation) Consolidation:**
+1. Verify no file conflicts between agents
+2. Merge any overlapping changes
+3. Run full test suite to verify integration
+4. Update plan file with combined progress
+5. Report completion status for all Tasks
 
 ## Template Standardization
 
@@ -902,7 +1239,7 @@ All templates must use consistent formatting for common sections.
 | **Risks** | Table with columns: Risk, Impact, Likelihood, Mitigation | See Risks Table Format |
 | **Dependencies** | Bulleted list with link/reference | `- [AUTH-123] SSO provider setup` |
 | **Status** | Bold label + current value | `**Status:** Draft` |
-| **User Story** | "As a... I want... So that..." format | Standard user story |
+| **Task** | "As a... I want... So that..." format | Standard user story format |
 | **NFRs** | Table with columns: Category, Requirement, Target | See NFRs Table Format |
 | **Test Notes** | Bulleted list of test scenarios | `- Verify login with valid credentials` |
 | **Context** | Prose paragraph(s) | Free-form text |
