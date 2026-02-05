@@ -24,8 +24,9 @@ Use this reference for the AI-DLC Intent → Unit planning flow.
   - Constraints (timeboxed, budget-limited, MVP-only, etc.)
   - Programme context (standalone | part of <programme name>)
 - Project Type
-  - .NET (if applicable; enables .NET-specific guidance)
-  - Other (global guidance only)
+  - Auto-detected from codebase markers (see `references/technical-guidance/`)
+  - Supported: .NET, Rails (more stacks planned)
+  - Override if auto-detection is wrong
 - Outcomes (Business + User)
 - Scope
   - In scope
@@ -433,19 +434,23 @@ Universal standards:
 - Testing (pyramid, coverage targets)
 - Resilience (timeouts, retries, circuit breakers)
 
-### Tier 2: .NET Guidance (Stack-Specific)
+### Tier 2: Stack-Specific Guidance
 
-**Source:** `references/technical-guidance/dotnet.md`
-**Owner:** .NET Chapter
-**Applies to:** .NET projects only
+**Source:** `references/technical-guidance/<stack>.md`
+**Owner:** Respective technology chapter
+**Applies to:** Projects matching the stack's detection markers
 
-.NET-specific standards that extend global guidance:
-- NuGet package management
-- ASP.NET Core conventions
-- Entity Framework Core patterns
-- Async/await patterns
-- Dependency injection
-- Configuration and options pattern
+Each guidance file defines `detection-markers` in its frontmatter. The `aidlc-design` skill
+scans the repository for these markers to determine which stack guidance to load.
+
+| Stack | File | Detection Markers |
+|-------|------|-------------------|
+| .NET | `dotnet.md` | *.csproj, *.sln, *.slnx, *.cs, global.json |
+| Rails | `rails.md` | Gemfile, config/routes.rb, bin/rails, config/application.rb |
+
+Stack-specific guidance extends (never replaces) global guidance. Examples of what
+stack files cover: package management, framework conventions, testing tools, project
+structure, and preferred libraries.
 
 ### Tier 3: Project-Level Guidance (Intent-Specific)
 
@@ -464,9 +469,9 @@ Project-specific constraints and overrides:
 
 | Conflict Scenario | Resolution |
 |-------------------|------------|
-| Project-level vs .NET | Project-level wins |
+| Project-level vs Stack-specific | Project-level wins |
 | Project-level vs Global | Project-level wins |
-| .NET vs Global | .NET wins |
+| Stack-specific vs Global | Stack-specific wins |
 
 **All deviations require an ADR documenting:**
 - The standard being deviated from
@@ -476,14 +481,14 @@ Project-specific constraints and overrides:
 
 ### Project Type Detection
 
-The skill detects .NET projects from codebase markers:
+The `aidlc-design` skill detects the project type by scanning the repository for
+markers defined in each `references/technical-guidance/<stack>.md` file's
+`detection-markers` frontmatter.
 
-| Markers | Guidance Applied |
-|---------|------------------|
-| *.csproj, *.sln, *.slnx, *.cs, global.json | Global + .NET |
-| Any other stack | Global only |
+If multiple stacks are detected (e.g., a Rails app with a Vue frontend), load all
+matching guidance files. If no stack matches, use Global guidance only.
 
-The detection is presented for confirmation during the design workflow.
+The detection is presented to the user for confirmation during the design workflow.
 
 ## NFR Checklist (prompt as needed)
 
