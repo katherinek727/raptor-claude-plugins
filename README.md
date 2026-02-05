@@ -237,7 +237,7 @@ Trunk-based development migration tools for .NET API services. Automates the mig
 
 **Workflow:** Discover → Plan → Migrate → Validate → (MR merge) → Post-Migrate
 
-**Requires:** .NET 8 project with GitLab CI/CD, `kustomize` CLI, `glab` CLI
+**Requires:** .NET 8 project with GitLab CI/CD, `kustomize` CLI, `gitlab-ci` plugin (for pipeline standards)
 
 ---
 

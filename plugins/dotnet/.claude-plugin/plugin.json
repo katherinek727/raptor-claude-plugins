@@ -1,7 +1,7 @@
 {
   "name": "dotnet",
-  "description": ".NET development tools including trunk-based migration for Raptor platform services",
-  "version": "1.2.0",
+  "description": ".NET development tools including trunk-based migration for Raptor platform services (requires: gitlab-ci plugin)",
+  "version": "2.0.0",
   "author": {
     "name": "Wenham Dorsett"
   },
