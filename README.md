@@ -13,6 +13,7 @@ A collection of plugins that extend [Claude Code](https://docs.anthropic.com/en/
 - **Evidence-Based Reasoning** — Enforce `[FACT]`/`[INFERRED]`/`[ASSUMED]` labeling for rigorous analysis
 - **Behavioral Diff** - Detect logic inversions and behavioral changes in code diffs
 - **.NET Migration** — Automate trunk-based development migration for .NET API services with Kustomize and GitLab CI/CD
+- **Security Scanning** — vulnerability scanning, secrets detection, SAST analysis checking against OWASP Top 10 and CWE Top 25
 
 ## Usage Examples
 
@@ -233,6 +234,19 @@ Trunk-based development migration tools for .NET API services. Automates the mig
 
 ---
 
+### Security (`/security:*`)
+
+Security audit tools for vulnerability scanning, secrets detection, and compliance checking.
+
+| Command | Description |
+|---------|-------------|
+| `/security:scan` | Scan codebase for vulnerabilities using OWASP Top 10 and CWE Top 25 |
+| `/security:secrets` | Detect hardcoded secrets, API keys, and credentials |
+
+**Requires:** Git repository with code to scan
+
+---
+
 ### Epistemic Reasoning (hook-based)
 
 Enforces evidence-based reasoning by requiring `[FACT]`, `[INFERRED]`, and `[ASSUMED]` labels on all claims. Automatically enabled via `SessionStart` hook—no slash commands needed.
@@ -274,6 +288,7 @@ claude plugin marketplace add git@gitlab.com:raptortech1/aidevops/claude-plugins
 /plugin install jira-improve
 /plugin install behavioral-diff
 /plugin install dotnet
+/plugin install security
 
 # Reload after changes
 /plugin
