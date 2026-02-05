@@ -339,6 +339,12 @@ Sub-agents score each Unit on these 6 dimensions (0-100 each):
    - Are Tasks grouped into cohesive Bolts?
    - Does each Bolt have a clear scope (hours to days)?
    - Are there no circular dependencies between Bolts?
+   - Are bolt-to-bolt dependencies explicitly identified?
+   - Is a Bolt Execution Plan with phases and lanes documented?
+   - Are independent Bolts assigned to parallel lanes within the same phase?
+   - Is each Bolt appropriately sized? (< 2h = overhead; > 3d = risk)
+   - Is a critical path identified?
+   - Are parallelism opportunities documented (teams needed per phase)?
 
 #### Gap Categories
 
@@ -352,3 +358,17 @@ When identifying gaps, categorise them:
 | **Unknown integration** | "connects to backend" | Identify specific APIs/services |
 | **Missing design** | No domain model | Run `/aidlc-design` |
 | **Poor Bolt grouping** | Tasks span unrelated areas | Regroup into cohesive Bolts |
+| **Missing bolt dependencies** | No dependency or parallelism analysis | Create Bolt Execution Plan with phases, lanes, critical path |
+| **Missing execution plan** | No phased execution plan | Generate Bolt Execution Plan with Phase/Lane structure |
+| **Oversized Bolt** | Bolt estimated > 3 days | Split into smaller Bolts |
+| **Undersized Bolt** | Bolt estimated < 2 hours | Merge with related Bolt |
+| **Circular dependency** | Bolts have circular dependency chain | Restructure into a DAG |
+
+#### Bolt Grouping Quality Scoring Guide
+
+| Score Range | Criteria |
+|-------------|----------|
+| 90-100 | Full Bolt Execution Plan with phases, lanes, critical path, parallelism table. All dependencies explicit. Bolts sized 2h-3d. No circular deps. |
+| 70-89 | Dependencies identified, phases assigned, but missing critical path or parallelism analysis. Minor sizing issues. |
+| 50-69 | Dependencies partially identified. No phased execution plan. Some bolts over/under-sized. |
+| 0-49 | No dependency analysis. Bolts listed without sequencing. Sizing inappropriate. |
