@@ -22,6 +22,14 @@ Project-Level (Intent doc)
 
 ## Available Profiles
 
+### Legacy Framework Profiles (.NET Framework 4.x)
+
+For **legacy monolithic applications** on .NET Framework 4.6.1-4.7.2:
+
+| Profile | Detection Markers | Key Patterns |
+|---------|-------------------|--------------|
+| [.NET Framework MVC](dotnet-framework-mvc-profile.md) | `TargetFrameworkVersion` v4.x, `Global.asax.cs`, `ContainerConfig.cs`, Areas/ | SimpleInjector, EF6+Dapper, Manual translators, OWIN |
+
 ### Legacy Profiles (.NET 6-9)
 
 For **existing applications** on .NET 6, 7, 8, or 9:
@@ -51,8 +59,11 @@ Check for `.csproj`, `.sln`, `*.cs` files (from dotnet.md detection).
 Check `global.json` or `*.csproj` for target framework:
 
 ```xml
-<!-- In .csproj -->
+<!-- SDK-style .csproj (.NET Core / .NET 5+) -->
 <TargetFramework>net10.0</TargetFramework>
+
+<!-- Legacy .csproj (.NET Framework) -->
+<TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
 
 <!-- Or in global.json -->
 {
@@ -62,10 +73,20 @@ Check `global.json` or `*.csproj` for target framework:
 
 | Version | Profile Set |
 |---------|-------------|
+| v4.6.1, v4.7, v4.7.2 (TargetFrameworkVersion) | Legacy Framework profiles |
 | net6.0, net7.0, net8.0, net9.0 | Legacy profiles |
 | net10.0+ | Modern (v10) profiles |
 
 ### Step 3: Detect Application Type
+
+**For .NET Framework 4.x:**
+
+```
+IF Global.asax.cs exists AND ContainerConfig.cs exists:
+    → .NET Framework MVC Profile
+ELSE:
+    → No specific profile (use dotnet.md only)
+```
 
 **For .NET 6-9 (Legacy):**
 
@@ -92,6 +113,15 @@ ELSE:
 ```
 
 ### Detailed Detection Markers
+
+**.NET Framework MVC - .NET Framework 4.6.1-4.7.2:**
+- `TargetFrameworkVersion` is v4.6.1, v4.7, or v4.7.2 (in legacy .csproj format)
+- `Global.asax.cs` exists with `Container.Init()` call
+- `ContainerConfig.cs` exists with SimpleInjector configuration
+- `Areas/` directory exists (MVC Areas pattern)
+- `web.config` file (not appsettings.json)
+- `App_Code/Startup.cs` with OWIN middleware (app.Use)
+- No SDK-style .csproj (uses legacy XML format)
 
 **Web API (Legacy) - .NET 6-9:**
 - `TargetFramework` is net6.0, net7.0, net8.0, or net9.0
@@ -131,15 +161,18 @@ ELSE:
 
 ## Key Differences Between Profile Sets
 
-| Aspect | Legacy (.NET 6-9) | Modern (.NET 10+) |
-|--------|-------------------|-------------------|
-| DI Container | SimpleInjector (Web API) / MS DI (Functions) | Microsoft DI (all) |
-| ContainerConfiguration | Returns `Container` (SimpleInjector) | Extends `IServiceCollection` (MS DI) |
-| DI Configuration | In entry point project | Shared `ContainerConfiguration.cs` |
-| Object Mapping | Mapster | AutoMapper |
-| Functions Model | In-process (`[FunctionName]`) | Isolated worker (`[Function]`) |
-| Business Logic | In entry point project | Separate BusinessLogic project |
-| Startup | `Startup.cs` / `FunctionsStartup` | `Program.cs` / `HostBuilder` |
+| Aspect | Framework (.NET 4.x) | Legacy (.NET 6-9) | Modern (.NET 10+) |
+|--------|----------------------|-------------------|-------------------|
+| Runtime | .NET Framework | .NET Core / .NET 5-9 | .NET 10+ |
+| DI Container | SimpleInjector | SimpleInjector (Web API) / MS DI (Functions) | Microsoft DI (all) |
+| DI Config File | `ContainerConfig.cs` | `ContainerConfiguration.cs` returns `Container` | `ContainerConfiguration.cs` extends `IServiceCollection` |
+| Web Framework | ASP.NET MVC 5 + OWIN | ASP.NET Core | ASP.NET Core |
+| Data Access | EF6 + Dapper | EF Core | EF Core |
+| Object Mapping | Manual translators | Mapster | AutoMapper |
+| Configuration | web.config + Azure App Config | appsettings.json | appsettings.json |
+| Project Structure | Areas-based monolith | In entry point project | Separate BusinessLogic project |
+| Startup | `Global.asax.cs` | `Startup.cs` / `FunctionsStartup` | `Program.cs` / `HostBuilder` |
+| Functions Model | N/A | In-process (`[FunctionName]`) | Isolated worker (`[Function]`) |
 
 ## How to Apply Profiles
 

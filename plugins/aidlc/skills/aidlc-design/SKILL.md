@@ -31,6 +31,8 @@ This skill follows the AI-DLC principle where AI initiates and directs the conve
 - Use @${CLAUDE_PLUGIN_ROOT}/references/technical-guidance/dotnet.md for .NET projects (in addition to global)
 - Use @${CLAUDE_PLUGIN_ROOT}/references/technical-guidance/rails.md for Rails projects (in addition to global)
 - Use @${CLAUDE_PLUGIN_ROOT}/references/technical-guidance/application-profiles/README.md for Application Profile detection and selection
+- **Legacy Framework (.NET Framework 4.x):**
+  - Use @${CLAUDE_PLUGIN_ROOT}/references/technical-guidance/application-profiles/dotnet-framework-mvc-profile.md for legacy MVC monoliths
 - **Legacy (.NET 6-9):**
   - Use @${CLAUDE_PLUGIN_ROOT}/references/technical-guidance/application-profiles/dotnet-webapi-profile.md for existing Web APIs
   - Use @${CLAUDE_PLUGIN_ROOT}/references/technical-guidance/application-profiles/dotnet-function-app-profile.md for existing Function Apps
@@ -77,7 +79,13 @@ Before starting, validate:
 
    **For .NET projects, also detect Application Profile:**
 
-   First, determine .NET version from `global.json` or `*.csproj` TargetFramework.
+   First, determine .NET version from `global.json` or `*.csproj` (TargetFramework or TargetFrameworkVersion).
+
+   **Legacy Framework Profiles (.NET Framework 4.x):**
+
+   | Markers | Application Profile | Additional Guidance |
+   |---------|---------------------|---------------------|
+   | `TargetFrameworkVersion` v4.x, `Global.asax.cs`, `ContainerConfig.cs`, `Areas/` | .NET Framework MVC | dotnet-framework-mvc-profile.md |
 
    **Legacy Profiles (.NET 6-9):**
 
@@ -99,13 +107,13 @@ Before starting, validate:
    Present the detection and ask for confirmation:
    > Based on the repository, this appears to be a **[.NET / Rails]** project.
    >
-   > **.NET Version:** [.NET 6/7/8/9 (Legacy) / .NET 10+ (Modern)]
-   > **Application Profile detected:** [Web API / Function App / Mixed Solution / None] [(Legacy) / (v10)]
+   > **.NET Version:** [.NET Framework 4.x (Legacy Framework) / .NET 6/7/8/9 (Legacy) / .NET 10+ (Modern)]
+   > **Application Profile detected:** [.NET Framework MVC / Web API / Function App / Mixed Solution / None] [(Legacy Framework) / (Legacy) / (v10)]
    >
    > Applicable technical guidance (in precedence order):
    > 1. Global standards (all projects)
    > 2. [.NET standards / Rails standards]
-   > 3. [Application Profile: Web API (Legacy) / Web API v10 / Function App (Legacy) / Function App v10 / Mixed Solution] ← if detected
+   > 3. [Application Profile: .NET Framework MVC / Web API (Legacy) / Web API v10 / Function App (Legacy) / Function App v10 / Mixed Solution] ← if detected
    > 4. Project-level guidance (from Intent doc)
    >
    > Is this correct?
@@ -280,7 +288,7 @@ For existing systems, add these steps before Domain Design:
 ## Definition of Done
 
 - Project type detected (.NET, Rails, or other) and confirmed
-- Application Profile detected (Web API, Function App, Mixed Solution, or none) and confirmed (for .NET)
+- Application Profile detected (.NET Framework MVC, Web API, Function App, Mixed Solution, or none) and confirmed (for .NET)
 - Technical guidance loaded (global → project-type → application-profile → project-level)
 - Confidence assessment completed (≥60% to proceed)
 - Domain model documented and approved
