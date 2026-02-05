@@ -26,6 +26,7 @@ This skill follows the AI-DLC principle where AI initiates and directs the conve
 ## References
 
 - Use @${CLAUDE_PLUGIN_ROOT}/references/planning-shared.md for templates, Jira tool names, and operational guidance.
+- Use @${CLAUDE_PLUGIN_ROOT}/references/review-criteria.md for scoring rubrics, quality checklists, and confidence thresholds.
 
 ## Prerequisites
 
@@ -52,34 +53,23 @@ Before starting, validate:
 
 ### Scoring Categories
 
-| Category | Weight | Criteria |
-|----------|--------|----------|
-| **Intent Clarity** | 20% | Problem/scope/outcomes clearly defined, no vague language |
+| Category | Weight | Summary |
+|----------|--------|---------|
+| **Intent Clarity** | 20% | Problem/scope/outcomes clearly defined |
 | **Task Completeness** | 25% | All Tasks have testable acceptance criteria |
-| **Design Readiness** | 25% | Domain model documented, patterns chosen, ADRs for key decisions |
-| **NFR Coverage** | 15% | Measurable targets (not "fast", "secure"), baselines documented |
-| **Dependency Mapping** | 15% | Integration points identified, APIs/services listed, sequencing clear |
+| **Design Readiness** | 25% | Domain model documented, patterns chosen |
+| **NFR Coverage** | 15% | Measurable targets with baselines |
+| **Dependency Mapping** | 15% | Integration points identified, sequencing clear |
+
+Full rubric definitions, sub-agent scoring dimensions, and gap categories: review-criteria.md **Part 3.3**
 
 ### Confidence Thresholds
 
-| Level | Score | Action |
-|-------|-------|--------|
-| **High** | 80-100% | Proceed to Jira transfer |
-| **Medium** | 60-79% | List gaps, ask targeted questions, allow override |
-| **Low** | <60% | STOP - must gather more context before continuing |
+Thresholds are defined in review-criteria.md **Part 1.2**. In summary:
 
-### Gap Categories
-
-When identifying gaps, categorize them:
-
-| Gap Type | Example | Remediation |
-|----------|---------|-------------|
-| **Vague scope** | "and more features" | Define explicit boundaries |
-| **Missing AC** | Task without acceptance criteria | Add testable conditions |
-| **Unmeasurable NFR** | "should be fast" | Add specific target (e.g., <200ms) |
-| **Unknown integration** | "connects to backend" | Identify specific APIs/services |
-| **Missing design** | No domain model | Run `/aidlc-design` |
-| **Poor Bolt grouping** | Tasks span unrelated areas | Regroup into cohesive Bolts |
+- **High (80-100%)**: Proceed to Jira transfer
+- **Medium (60-79%)**: List gaps, ask targeted questions, allow override
+- **Low (<60%)**: STOP — must gather more context before continuing
 
 ## Workflow
 
@@ -100,6 +90,8 @@ When identifying gaps, categorize them:
 ### Phase 2: Spawn Verification Sub-agents
 
 Spawn parallel sub-agents (one per Unit) to assess documentation quality.
+
+**When constructing the sub-agent prompt:** Read review-criteria.md and inject the Verification Readiness Rubric (Part 3.3) and Shared Quality Checklists (Part 2) into the Scoring Instructions section below.
 
 **Sub-agent Prompt Template:**
 
@@ -123,37 +115,16 @@ Review the following Unit documentation for AI-execution readiness.
 
 ## Scoring Instructions
 
-Rate each criterion 0-100:
+Rate each dimension 0-100:
 
-1. **Scope Clarity** (0-100)
-   - Is the Unit scope bounded? (no "and more", "etc.", vague outcomes)
-   - Are deliverables specific and measurable?
-   - Deduct points for open-ended language
+1. **Scope Clarity** — Is the Unit scope bounded with specific, measurable deliverables?
+2. **Task Quality** — Do all Tasks have testable acceptance criteria in proper format?
+3. **Technical Readiness** — Are integration points, data models, and error handling documented?
+4. **NFR Specificity** — Are performance, security, and availability targets measurable?
+5. **Dependency Clarity** — Are blockers, prerequisites, and sequencing documented?
+6. **Bolt Grouping Quality** — Are Tasks grouped into cohesive Bolts with clear scope?
 
-2. **Task Quality** (0-100)
-   - Do all Tasks have acceptance criteria?
-   - Are acceptance criteria testable (not vague)?
-   - Are Tasks in proper "As a... I want... So that..." format?
-
-3. **Technical Readiness** (0-100)
-   - Are integration points identified (APIs, services, databases)?
-   - Are data models or schemas referenced?
-   - Are error handling expectations documented?
-
-4. **NFR Specificity** (0-100)
-   - Are performance targets measurable (e.g., <200ms, not "fast")?
-   - Are security requirements specific?
-   - Are availability/reliability targets defined?
-
-5. **Dependency Clarity** (0-100)
-   - Are blockers and prerequisites documented?
-   - Is sequencing clear (what comes first)?
-   - Are external dependencies identified?
-
-6. **Bolt Grouping Quality** (0-100)
-   - Are Tasks grouped into cohesive Bolts?
-   - Does each Bolt have a clear scope (hours to days)?
-   - Are there no circular dependencies between Bolts?
+[Inject: Verification Readiness Rubric details (Part 3.3) and Shared Quality Checklists (Part 2) from review-criteria.md]
 
 ## Return Format
 
