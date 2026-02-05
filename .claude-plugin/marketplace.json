@@ -97,6 +97,15 @@
       "author": {
         "name": "Wenham Dorsett"
       }
+    },
+    {
+      "name": "security",
+      "source": "./plugins/security",
+      "description": "Security audit tools - vulnerability scanning, secrets detection, SAST analysis.",
+      "version": "1.0.0",
+      "author": {
+        "name": "Sunil Kumar"
+      }
     }
   ]
 }
