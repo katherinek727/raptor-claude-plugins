@@ -29,6 +29,7 @@ This skill follows the AI-DLC principle where AI initiates and directs the conve
 - Use @${CLAUDE_PLUGIN_ROOT}/references/planning-shared.md for DDD guidance, ADR templates, and tool names.
 - Use @${CLAUDE_PLUGIN_ROOT}/references/technical-guidance/global.md for universal architectural standards.
 - Use @${CLAUDE_PLUGIN_ROOT}/references/technical-guidance/dotnet.md for .NET projects (in addition to global)
+- Use @${CLAUDE_PLUGIN_ROOT}/references/technical-guidance/rails.md for Rails projects (in addition to global)
 
 ## Prerequisites
 
@@ -58,24 +59,25 @@ Before starting, validate:
    - Project-level technical guidance (from Intent doc "Technical Guidance" section)
 
 2. **Detect and confirm project type**
-   Check if the project is .NET by looking for markers:
+   Check the repository for project-type markers:
 
    | Markers | Project Type | Guidance Applied |
    |---------|--------------|------------------|
    | *.csproj, *.sln, *.slnx, *.cs, global.json | .NET | Global + .NET |
+   | Gemfile, config/routes.rb, bin/rails, config/application.rb | Rails | Global + Rails |
    | Any other stack | Other | Global only |
 
    Present the detection and ask for confirmation:
-   > Based on the repository, this appears to be a **.NET** project.
+   > Based on the repository, this appears to be a **[.NET / Rails]** project.
    >
    > Applicable technical guidance:
    > - Global standards (all projects)
-   > - .NET standards (ASP.NET Core, EF Core, etc.)
+   > - [.NET standards (ASP.NET Core, EF Core, etc.) / Rails standards (ActiveRecord, Sidekiq, etc.)]
    > - Project-level guidance (from Intent doc)
    >
    > Is this correct?
 
-   If not a .NET project:
+   If no project type detected:
    > This project will use **Global standards** only, plus any project-level guidance from the Intent doc.
    >
    > Applicable technical guidance:
@@ -136,13 +138,15 @@ Before starting, validate:
    |------|--------|------------|
    | Global | `references/technical-guidance/global.md` | Baseline (all projects) |
    | .NET | `references/technical-guidance/dotnet.md` | Extends global (.NET projects only) |
+   | Rails | `references/technical-guidance/rails.md` | Extends global (Rails projects only) |
    | Project-Level | Intent doc "Technical Guidance" section | Highest precedence |
 
    **Guidance application:**
    - Load global guidance as the baseline
    - If .NET project: layer .NET-specific guidance
+   - If Rails project: layer Rails-specific guidance
    - Apply project-level overrides from the Intent doc
-   - When guidance conflicts, project-level > .NET > global
+   - When guidance conflicts, project-level > project-type > global
 
    **Conflict detection:**
    When project-level or project-type guidance contradicts a higher tier:
@@ -228,8 +232,8 @@ For existing systems, add these steps before Domain Design:
 
 ## Definition of Done
 
-- Project type detected (.NET or other) and confirmed
-- Technical guidance loaded (global, + .NET if applicable, + project-level)
+- Project type detected (.NET, Rails, or other) and confirmed
+- Technical guidance loaded (global, + .NET/Rails if applicable, + project-level)
 - Confidence assessment completed (≥60% to proceed)
 - Domain model documented and approved
 - Logical design with architectural patterns documented
