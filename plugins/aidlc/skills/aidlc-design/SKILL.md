@@ -30,6 +30,14 @@ This skill follows the AI-DLC principle where AI initiates and directs the conve
 - Use @${CLAUDE_PLUGIN_ROOT}/references/technical-guidance/global.md for universal architectural standards.
 - Use @${CLAUDE_PLUGIN_ROOT}/references/technical-guidance/dotnet.md for .NET projects (in addition to global)
 - Use @${CLAUDE_PLUGIN_ROOT}/references/technical-guidance/rails.md for Rails projects (in addition to global)
+- Use @${CLAUDE_PLUGIN_ROOT}/references/technical-guidance/application-profiles/README.md for Application Profile detection and selection
+- **Legacy (.NET 6-9):**
+  - Use @${CLAUDE_PLUGIN_ROOT}/references/technical-guidance/application-profiles/dotnet-webapi-profile.md for existing Web APIs
+  - Use @${CLAUDE_PLUGIN_ROOT}/references/technical-guidance/application-profiles/dotnet-function-app-profile.md for existing Function Apps
+- **Modern (.NET 10+):**
+  - Use @${CLAUDE_PLUGIN_ROOT}/references/technical-guidance/application-profiles/dotnet-webapi-v10-profile.md for new Web APIs
+  - Use @${CLAUDE_PLUGIN_ROOT}/references/technical-guidance/application-profiles/dotnet-function-v10-profile.md for new Function Apps
+  - Use @${CLAUDE_PLUGIN_ROOT}/references/technical-guidance/application-profiles/dotnet-mixed-solution-profile.md for new Mixed Solutions
 
 ## Prerequisites
 
@@ -58,7 +66,7 @@ Before starting, validate:
    - Existing codebase context (for brown-field)
    - Project-level technical guidance (from Intent doc "Technical Guidance" section)
 
-2. **Detect and confirm project type**
+2. **Detect and confirm project type and application profile**
    Check the repository for project-type markers:
 
    | Markers | Project Type | Guidance Applied |
@@ -67,13 +75,38 @@ Before starting, validate:
    | Gemfile, config/routes.rb, bin/rails, config/application.rb | Rails | Global + Rails |
    | Any other stack | Other | Global only |
 
+   **For .NET projects, also detect Application Profile:**
+
+   First, determine .NET version from `global.json` or `*.csproj` TargetFramework.
+
+   **Legacy Profiles (.NET 6-9):**
+
+   | Markers | Application Profile | Additional Guidance |
+   |---------|---------------------|---------------------|
+   | `Controllers/`, `ContainerConfiguration` returns `Container` | Web API (Legacy) | dotnet-webapi-profile.md |
+   | `host.json`, `[FunctionName]`, `FunctionsStartup` | Function App (Legacy) | dotnet-function-app-profile.md |
+
+   **Modern Profiles (.NET 10+):**
+
+   | Markers | Application Profile | Additional Guidance |
+   |---------|---------------------|---------------------|
+   | `Controllers/`, `ContainerConfiguration` extends `IServiceCollection` | Web API v10 | dotnet-webapi-v10-profile.md |
+   | `host.json`, `[Function]`, `HostBuilder`, no Controllers | Function App v10 | dotnet-function-v10-profile.md |
+   | Both API + Functions, `ContainerConfiguration` extends `IServiceCollection` | Mixed Solution | dotnet-mixed-solution-profile.md |
+
+   See @${CLAUDE_PLUGIN_ROOT}/references/technical-guidance/application-profiles/README.md for detailed detection logic.
+
    Present the detection and ask for confirmation:
    > Based on the repository, this appears to be a **[.NET / Rails]** project.
    >
-   > Applicable technical guidance:
-   > - Global standards (all projects)
-   > - [.NET standards (ASP.NET Core, EF Core, etc.) / Rails standards (ActiveRecord, Sidekiq, etc.)]
-   > - Project-level guidance (from Intent doc)
+   > **.NET Version:** [.NET 6/7/8/9 (Legacy) / .NET 10+ (Modern)]
+   > **Application Profile detected:** [Web API / Function App / Mixed Solution / None] [(Legacy) / (v10)]
+   >
+   > Applicable technical guidance (in precedence order):
+   > 1. Global standards (all projects)
+   > 2. [.NET standards / Rails standards]
+   > 3. [Application Profile: Web API (Legacy) / Web API v10 / Function App (Legacy) / Function App v10 / Mixed Solution] ← if detected
+   > 4. Project-level guidance (from Intent doc)
    >
    > Is this correct?
 
@@ -137,27 +170,41 @@ Before starting, validate:
    | Tier | Source | Precedence |
    |------|--------|------------|
    | Global | `references/technical-guidance/global.md` | Baseline (all projects) |
-   | .NET | `references/technical-guidance/dotnet.md` | Extends global (.NET projects only) |
-   | Rails | `references/technical-guidance/rails.md` | Extends global (Rails projects only) |
+   | Project-Type | `references/technical-guidance/dotnet.md` or `rails.md` | Extends global |
+   | Application Profile | `references/technical-guidance/application-profiles/*.md` | Extends project-type (.NET only) |
    | Project-Level | Intent doc "Technical Guidance" section | Highest precedence |
 
    **Guidance application:**
    - Load global guidance as the baseline
-   - If .NET project: layer .NET-specific guidance
-   - If Rails project: layer Rails-specific guidance
+   - If .NET project: layer .NET-specific guidance from dotnet.md
+   - If Rails project: layer Rails-specific guidance from rails.md
+   - If Application Profile detected: layer profile-specific guidance (Web API, Function App, or Mixed Solution)
    - Apply project-level overrides from the Intent doc
-   - When guidance conflicts, project-level > project-type > global
+   - When guidance conflicts: project-level > application-profile > project-type > global
+
+   **Application Profile provides Raptor-specific patterns:**
+
+   *Legacy (.NET 6-9):*
+   - Web API: SimpleInjector DI, MediatR CQRS, Manager pattern, Mapster
+   - Function App: FunctionsStartup (in-process), Service Bus triggers, KEDA scaling
+
+   *Modern (.NET 10+):*
+   - Web API v10: Microsoft DI, MediatR CQRS, Manager pattern, AutoMapper, shared ContainerConfiguration
+   - Function App v10: Isolated worker, HostBuilder, Microsoft DI, AutoMapper, shared ContainerConfiguration
+   - Mixed Solution: Both entry points, shared business logic layer, unified patterns
 
    **Conflict detection:**
-   When project-level or project-type guidance contradicts a higher tier:
+   When a lower-precedence tier contradicts a higher tier:
    1. Surface the conflict explicitly:
       > **Guidance Conflict Detected**
       >
-      > - **Global standard:** [standard from global.md]
-      > - **Project guidance:** [conflicting guidance from Intent doc]
+      > - **[Global / Project-Type / Application Profile] standard:** [the standard]
+      > - **[Application Profile / Project-Level] guidance:** [conflicting guidance]
       >
-      > This deviation will require an ADR. Proceed with the project-level guidance?
+      > This deviation will require an ADR. Proceed with the higher-precedence guidance?
    2. If confirmed, flag for ADR creation in step 6
+
+   **Note:** Application Profile guidance already represents Raptor-specific decisions, so conflicts between Application Profile and project-type (dotnet.md) are expected and don't require ADRs. Only document conflicts with Global standards or project-level deviations from Application Profile.
 
    **Design recommendations:**
    Using the merged guidance, extend the domain model for NFRs:
@@ -233,13 +280,14 @@ For existing systems, add these steps before Domain Design:
 ## Definition of Done
 
 - Project type detected (.NET, Rails, or other) and confirmed
-- Technical guidance loaded (global, + .NET/Rails if applicable, + project-level)
+- Application Profile detected (Web API, Function App, Mixed Solution, or none) and confirmed (for .NET)
+- Technical guidance loaded (global → project-type → application-profile → project-level)
 - Confidence assessment completed (≥60% to proceed)
 - Domain model documented and approved
 - Logical design with architectural patterns documented
 - Guidance conflicts surfaced and confirmed
 - ADRs created for key decisions
-- Deviation ADRs created for any guidance conflicts
+- Deviation ADRs created for any guidance conflicts with Global standards
 - Artifacts linked to Unit page in Confluence and Intent doc
 - Brown-field ACL designed (if applicable)
 - Workflow status table updated in Confluence
