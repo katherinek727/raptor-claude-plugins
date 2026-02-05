@@ -155,17 +155,43 @@ For each Unit, propose how Tasks should be grouped into Bolts:
 - Tasks forming a cohesive, well-defined scope of work
 - Tasks aligned with Unit objectives
 - Consider: A Unit may have multiple Bolts running in parallel or sequentially
+- Each Bolt should be sized between 2 hours and 3 days
 
 **Include in Units Overview page:**
 
-| Bolt | Description | Tasks | Est. Duration |
-|------|-------------|-------|---------------|
-| Bolt 1 | [Scope description] | 1, 2, 3 | X hours/days |
-| Bolt 2 | [Scope description] | 4, 5 | X hours/days |
+| Bolt | Phase | Lane | Tasks | Dependencies | Est. Duration |
+|------|-------|------|-------|--------------|---------------|
+| Bolt 1 | 0 | A | 1, 2, 3 | — | X hours/days |
+| Bolt 2 | 1 | A | 4, 5 | Bolt 1 | X hours/days |
 
-Note: These are proposals. Final groupings are refined during `/aidlc-verify`.
+**Initial Bolt Execution Plan:**
+- Propose initial phase assignments (Phase 0 for foundation/setup, then sequential phases for dependent work)
+- Identify bolt-to-bolt dependencies and assign lanes for parallelism within each phase
+- Include the initial Bolt Execution Plan in Units Overview using the Phase/Lane template from @${CLAUDE_PLUGIN_ROOT}/references/planning-shared.md
+
+Note: These are initial proposals — phases, lanes, and critical path are refined during `/aidlc-verify`.
 
 See Bolt Planning Guidance in @${CLAUDE_PLUGIN_ROOT}/references/planning-shared.md
+
+#### Step 6b: Suggest Team Size
+
+After proposing bolt groupings and the initial execution plan, generate a team size recommendation using the **Team Size Recommendation Rubric** from @${CLAUDE_PLUGIN_ROOT}/references/planning-shared.md.
+
+**Steps:**
+
+1. **Count peak lanes**: Find the maximum number of parallel lanes across all phases
+2. **Calculate weighted average lanes**: Σ(lanes × phase_duration) / Σ(phase_duration)
+3. **Assess coupling level**: Evaluate the dependency graph against the coupling criteria (Low / Medium / High)
+4. **Identify specialist requirements**: Count distinct skill sets needed concurrently from bolt content (e.g., backend, frontend, infrastructure)
+5. **Apply the formula**:
+   - Start with weighted average lanes
+   - Apply coupling discount (Low: ×1.0, Medium: ×0.85, High: ×0.70)
+   - Cap Phase 0 at 2 lanes and recalculate
+   - Round up, then apply bounds (floor = specialist count, ceiling = peak lanes)
+6. **Build the recommendation**: Fill in the Team Size Recommendation template (metrics table, rationale, scaling options, phase staffing guide)
+7. **Present to user**: Show the recommendation with scaling options and ask if they want to adjust before creating pages
+
+**Include the completed Team Size Recommendation section in the Units Overview page** (Step 7) using the template from @${CLAUDE_PLUGIN_ROOT}/references/planning-shared.md.
 
 #### Step 7: Create Confluence Pages (Parallel)
 
@@ -319,16 +345,19 @@ If regrouping is needed based on re-assessment:
 #### Step 16: Refine Bolt Groupings
 
 Review and refine the Proposed Bolts on the Units Overview:
-1. Verify each Bolt forms a cohesive scope (hours to days of work)
+1. Verify each Bolt forms a cohesive scope (2 hours to 3 days of work)
 2. Check Tasks are grouped logically (related functionality)
 3. Ensure no circular dependencies between Bolts
-4. Adjust groupings based on re-assessment findings
+4. Verify bolt-to-bolt dependencies are explicitly identified
+5. Verify phase and lane assignments reflect actual dependency chains
+6. Adjust groupings based on re-assessment findings
 
 If adjustments needed:
 - Move Tasks between Bolts
 - Split large Bolts (>3 days of work)
 - Merge small Bolts (<2 hours of work)
-- Update Units Overview with refined groupings
+- Reassign phases/lanes if dependency structure changed
+- Update Units Overview with refined Bolt Execution Plan (Phase/Lane table format)
 
 #### Step 17: Update Units Overview
 

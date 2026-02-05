@@ -166,6 +166,8 @@ Sub-epic (Unit)
   - Risks (use table: Risk | Impact | Likelihood | Mitigation)
   - Dependencies (use bulleted list with references)
   - Testing approach (which test types apply, test environment needs)
+  - ADR links/references (if design documentation exists)
+  - Design document links (domain model, context maps)
   - Link to Intent Confluence doc
 - Label: `aidlc:unit`
 
@@ -176,8 +178,11 @@ See **Template Standardization** section for format details.
 - Summary: "Bolt: <Bolt Description>"
 - Description:
   - Scope summary (what this Bolt delivers)
+  - Phase and Lane assignment (e.g., "Phase 1, Lane A")
   - Tasks included (list of child sub-tasks)
-  - Dependencies (other Bolts or external)
+  - Dependencies (other Bolts — blocks/blocked by with Jira keys)
+  - Whether on the critical path (yes/no)
+  - Team assignment (if specified)
   - Estimated duration
 - Parent: The Unit Sub-epic
 - Label: `aidlc:bolt`
@@ -273,18 +278,94 @@ Use this template for the Units Overview page in Confluence. This page is a chil
 
 Initial groupings of Tasks into Bolts for each Unit. These are proposals that will be refined during `/aidlc-verify`.
 
-### Unit 1: <Name>
+### Bolt Summary
 
-| Bolt | Description | Tasks | Est. Duration |
-|------|-------------|-------|---------------|
-| Bolt 1.1 | <Scope description> | 1, 2, 3 | X hours/days |
-| Bolt 1.2 | <Scope description> | 4, 5 | X hours/days |
+| Bolt | Unit | Phase | Lane | Dependencies | Tasks | Est. Duration |
+|------|------|-------|------|--------------|-------|---------------|
+| Bolt 1.1 | Unit 1 | 0 | A | — | 1, 2, 3 | X hours/days |
+| Bolt 2.1 | Unit 2 | 0 | B | — | 1, 2 | X hours/days |
+| Bolt 1.2 | Unit 1 | 1 | A | Bolt 1.1 | 4, 5 | X hours/days |
 
-### Unit 2: <Name>
+### Bolt Execution Plan
 
-| Bolt | Description | Tasks | Est. Duration |
-|------|-------------|-------|---------------|
-| Bolt 2.1 | <Scope description> | 1, 2 | X hours/days |
+*Initial proposal — phases, lanes, and critical path refined during `/aidlc-verify`.*
+
+#### Phase 0: Foundation
+*Setup, scaffolding, and shared infrastructure that all other Bolts depend on.*
+
+| Lane | Bolt | Unit | Summary | Depends On |
+|------|------|------|---------|------------|
+| A | Bolt 1.1 | Unit 1 | <Scope description> | — |
+| B | Bolt 2.1 | Unit 2 | <Scope description> | — |
+
+**Sub-tasks:** <List of Tasks in this phase>
+
+---
+
+#### Phase 1: Core Domain
+*Primary domain logic and data models.*
+
+| Lane | Bolt | Unit | Summary | Depends On |
+|------|------|------|---------|------------|
+| A | Bolt 1.2 | Unit 1 | <Scope description> | Bolt 1.1 |
+
+**Sub-tasks:** <List of Tasks in this phase>
+
+---
+
+#### Critical Path
+
+`Bolt 1.1 → Bolt 1.2 → ...`
+
+#### Parallelism Opportunities
+
+| Phase | Max Parallel Bolts | Teams Needed |
+|-------|-------------------|--------------|
+| Phase 0 | 2 | 2 |
+| Phase 1 | 1 | 1 |
+
+---
+
+## Team Size Recommendation
+
+| Metric | Value |
+|--------|-------|
+| Total bolts | <count> |
+| Phases | <count> |
+| Peak parallel lanes | <N> (Phase <X>) |
+| Weighted avg. parallel lanes | <N.N> |
+| Cross-unit coupling | Low / Medium / High |
+| Critical path duration | <N> days |
+| Total work estimate | <N> person-days |
+
+### Recommended: <N> engineers
+
+**Rationale:**
+- Peak parallelism is <N> (Phase <X>), but weighted average across all phases is <N.N>
+- <Coupling level> coupling discount (×<factor>) → <N.N> effective parallelism
+- Phase 0 capped at 2 engineers → weighted average recalculates to <N.N>
+- Rounded up: <N> engineers
+- Specialist floor (<list specialisms>): <N> — satisfied
+
+### Scaling Options
+
+| Engineers | Est. Duration | Utilisation | Trade-off |
+|-----------|--------------|-------------|-----------|
+| 1 | <N> days | ~<N>% | No coordination overhead, but serial |
+| 2 | <N> days | ~<N>% | Good for small experienced teams |
+| **<recommended>** | **<N> days** | **~<N>%** | **Recommended — good parallelism, manageable coordination** |
+| <max> | <N> days | ~<N>% | Full parallelism, idle time in most phases |
+
+*Utilisation ≈ total_work / (engineers × duration). Lower = more idle time per engineer.*
+
+### Phase Staffing Guide
+
+| Phase | Lanes | Recommended | Notes |
+|-------|-------|-------------|-------|
+| Phase 0 | <N> | <N> | Foundation — establish patterns with small group |
+| Phase 1 | <N> | <N> | <Notes> |
+
+*See Team Size Recommendation Rubric in planning-shared.md for calculation details.*
 
 ---
 
@@ -345,10 +426,10 @@ Use this template for Unit pages in Confluence. Each Unit page is a child of the
 
 ## Bolt Plan
 
-| Bolt | Scope | Tasks | Estimate |
-|------|-------|-------|----------|
-| Bolt 1 | <Description> | 1, 2, 3 | X hours |
-| Bolt 2 | <Description> | 4, 5 | X hours |
+| Bolt | Phase | Lane | Tasks | Dependencies | Estimate |
+|------|-------|------|-------|--------------|----------|
+| Bolt 1 | 0 | A | 1, 2, 3 | — | X hours |
+| Bolt 2 | 1 | A | 4, 5 | Bolt 1 | X hours |
 
 ## Dependencies
 
@@ -587,6 +668,139 @@ Example Bolt structure for a Unit:
 - Bolt 2: API/integration layer (4-8 hours)
 - Bolt 3: Security hardening + compliance checks (2-4 hours)
 
+### Bolt Execution Plan Structure
+
+The Bolt Execution Plan uses a **Phase/Lane** model to express sequencing and parallelism:
+
+- **Phase**: A sequential stage. All bolts in Phase N should generally complete before Phase N+1 starts (unless a bolt in N+1 only depends on specific bolts in N that are already complete).
+- **Lane**: A parallel execution slot within a phase. Bolts in different lanes of the same phase can run concurrently.
+- **Critical Path**: The longest chain of dependent bolts — determines minimum project duration.
+
+Create a new phase when bolts have dependencies on bolts from the previous phase. Create a new lane when bolts within the same phase are independent of each other.
+
+### Phase Assignment Rules
+
+| Phase | Purpose | Typical Content |
+|-------|---------|-----------------|
+| Phase 0: Foundation | Setup, scaffolding, shared infrastructure | Database schemas, project scaffolding, shared libraries, config |
+| Phase 1: Core Domain | Primary domain logic and data models | Business logic, entity models, core services |
+| Phase 2: Integration | API layers, external service integration | Controllers, API endpoints, message handlers |
+| Phase 3+: Extension | Additional features, polish, deployment | UI components, reporting, monitoring, deployment scripts |
+
+Phases are not rigid categories — assign based on actual dependency chains. A project may have 2 phases or 6+.
+
+### Lane Assignment Rules
+
+- Independent bolts in the same phase get different lanes (A, B, C...)
+- Maximum lanes per phase = number of available teams/developers
+- If two bolts in the same phase share no dependencies, they should be in different lanes
+- If all bolts in a phase are independent, maximize parallelism
+
+### Critical Path Analysis
+
+To identify the critical path:
+1. Trace all dependency chains from start to finish
+2. The longest chain (by estimated duration) is the critical path
+3. Bolts on the critical path should be prioritized — any delay extends the project
+4. Bolts NOT on the critical path have slack (can be delayed without affecting total duration)
+
+### Bolt Sizing
+
+| Size | Duration | Guidance |
+|------|----------|----------|
+| Too small | < 2 hours | Overhead of setup/context switching dominates. Merge with a related Bolt. |
+| Ideal | 2 hours – 3 days | A session's worth of deep work. Single engineer can complete with focus. |
+| Too large | > 3 days | Risk of delayed feedback and hidden complexity. Split into smaller Bolts. |
+
+## Team Size Recommendation Rubric
+
+After proposing Bolt groupings and the initial execution plan, use this rubric to suggest an optimal team size.
+
+### Core Principle
+
+**Start from peak parallelism, discount for real-world friction.**
+
+Max parallel lanes is the theoretical ceiling, but you almost never staff to 100% because:
+- Communication overhead scales quadratically (n×(n-1)/2 channels)
+- Peak parallelism may only exist in one phase — other phases leave engineers idle
+- Parallel bolts in the same codebase create merge conflicts and review bottlenecks
+- Foundation work (Phase 0) benefits from fewer people establishing patterns
+
+### Input Signals
+
+| Signal | Source | How to Measure |
+|--------|--------|----------------|
+| **Peak parallel lanes** | Bolt Execution Plan | Max lanes in any single phase |
+| **Weighted average lanes** | Bolt Execution Plan | Σ(lanes × phase_duration) / Σ(phase_duration) |
+| **Cross-unit coupling** | Dependency graph | Low / Medium / High (see criteria below) |
+| **Specialist diversity** | Bolt technical requirements | Count of distinct skill sets needed concurrently |
+| **Total bolt count** | Bolt Execution Plan | Raw count |
+| **Phase count** | Bolt Execution Plan | Number of sequential phases |
+
+### Calculation
+
+```
+Step 1: Start with weighted average lanes (not peak)
+        — This reflects actual sustained parallelism, not a momentary spike
+
+Step 2: Apply coupling discount
+        — Low coupling:    ×1.0  (independent services/repos)
+        — Medium coupling: ×0.85 (shared codebase, different areas)
+        — High coupling:   ×0.70 (same files, shared state, frequent integration)
+
+Step 3: Apply foundation cap
+        — Phase 0 lanes capped at 2 regardless of actual lanes
+        — Recalculate weighted average with capped Phase 0
+
+Step 4: Round up to nearest integer
+
+Step 5: Apply bounds
+        — Floor: max(1, specialist_count)
+        — Ceiling: peak_lanes
+```
+
+### Coupling Assessment Criteria
+
+| Level | Indicators |
+|-------|-----------|
+| **Low** | Bolts touch different repos or independently deployable services; no shared database tables; different tech stacks |
+| **Medium** | Same monorepo but different modules/packages; shared database with different tables; shared API contracts |
+| **High** | Same files modified by multiple bolts; shared mutable state; database schema changes that affect multiple bolts |
+
+### Common-Sense Caps
+
+| Rule | Rationale |
+|------|-----------|
+| **Phase 0: max 2 engineers** | Establishing patterns and scaffolding benefits from a small aligned group. More people = inconsistent foundations. |
+| **Never exceed peak lanes** | Can't usefully employ more engineers than the max concurrent work. |
+| **Diminishing returns above 5** | Communication channels explode (5 people = 10 channels, 6 = 15). Above 5, recommend splitting into sub-teams with clear interfaces. |
+| **Sequential same-unit bolts: don't double-count** | If Bolt 1.1 → Bolt 1.2 are in the same Unit, one engineer doing both sequentially is often faster than two with handoff. Don't treat each as needing a separate person. |
+
+### Duration Estimation Logic
+
+```
+For each phase:
+  phase_duration = max(bolt_durations_in_phase) when fully staffed
+                 = sum(bolt_durations) / min(engineers, lanes) when understaffed
+
+Total duration = Σ(phase_durations)
+Total work = Σ(all bolt durations)
+Utilisation = total_work / (engineers × total_duration)
+```
+
+### Quick Reference Table (for simple projects)
+
+For teams that want a fast answer without the full calculation:
+
+| Total Bolts | Phases | Peak Lanes | Suggested Engineers |
+|-------------|--------|------------|-------------------|
+| 3-5 | 2-3 | 2 | **1-2** |
+| 6-10 | 3-4 | 3 | **2-3** |
+| 10-15 | 4-5 | 4-5 | **3-4** |
+| 15+ | 5+ | 5+ | **4-5** (consider sub-teams) |
+
+*These assume medium coupling. Adjust down for high coupling, up for low coupling.*
+
 ## Mob Elaboration Guidance
 
 Mob Elaboration is a collaborative ritual for requirements elaboration.
@@ -631,7 +845,10 @@ Confluence Intent Document → Reference (not transferred)
 Confluence Unit Page → Jira Sub-epic
 Confluence Task Page → Jira Sub-task (under Bolt/Story)
 Proposed Bolts (Units Overview) → Jira Stories (grouping sub-tasks)
+Bolt Execution Plan → Jira issue links ("blocks"/"is blocked by") + phase/lane metadata in Story descriptions
 ```
+
+**Multi-project routing:** Stories (Bolts) can be created in different Jira projects (e.g., frontend/backend split). Sub-tasks must be in the same project as their parent Story.
 
 This enables:
 - Impact analysis when requirements change
@@ -845,6 +1062,9 @@ acli auth login  # Interactive login (one-time setup)
 | Add label | `acli jira workitem edit PROJ-123 --label "aidlc:unit"` |
 | Add comment | `acli jira workitem comment add PROJ-123 --body "Comment text"` |
 | Transition | `acli jira workitem transition PROJ-123 --transition "In Progress"` |
+| Link issues | `acli jira workitem link PROJ-456 PROJ-789 --link-type "blocks"` |
+| Set team field | `acli jira workitem edit PROJ-123 --field "Team" --value "Team Name"` |
+| List fields | `acli jira workitem fields PROJ-123` |
 | List projects | `acli jira project list` |
 
 ### Example: Create Sub-epic with Stories
@@ -866,6 +1086,29 @@ acli jira workitem create \
   --summary "Implement login form" \
   --description-file story-login.md \
   --parent "PROJ-123"
+```
+
+### Example: Link Dependent Bolts
+
+```bash
+# Bolt 1.2 (PROJ-456) is blocked by Bolt 1.1 (PROJ-455)
+acli jira workitem link PROJ-456 PROJ-455 --link-type "blocks"
+
+# Bolt 2.2 (PROJ-460) is blocked by Bolt 2.1 (PROJ-458)
+acli jira workitem link PROJ-460 PROJ-458 --link-type "blocks"
+```
+
+### Example: Set Team on Jira Artifacts
+
+```bash
+# Set team field on a Sub-epic
+acli jira workitem edit PROJ-123 --field "Team" --value "Platform Team"
+
+# Set team field on a Story (Bolt)
+acli jira workitem edit PROJ-456 --field "Team" --value "Platform Team"
+
+# Discover the team field name if "Team" doesn't work
+acli jira workitem fields PROJ-123
 ```
 
 ## Task Elaboration Subagent
