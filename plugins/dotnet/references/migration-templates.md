@@ -905,10 +905,9 @@ validate-migration-script-job:
 deploy-migrations-lower:
   extends: .deploy-sql-script
   stage: deploy-lower
-  needs:
-    - job: docker-build-job
-    - job: validate-migration-script-job
-      optional: true
+  # No needs — stage-scheduled, waits for ALL build-artifacts jobs
+  dependencies:
+    - validate-migration-script-job  # Artifacts only (cross-stage)
   parallel:
     matrix:
       - REGION: *regions
@@ -946,8 +945,7 @@ deploy-migrations-lower:
 deploy-migrations-prod:
   extends: deploy-migrations-lower
   stage: deploy-prod
-  needs:
-    - job: manual-approval-prod
+  # No needs — stage-scheduled, waits for ALL prod-gate jobs
   parallel:
     matrix:
       - REGION: *regions
@@ -1027,8 +1025,7 @@ auth0-deploy-lower:
 auth0-deploy-prod:
   extends: auth0-deploy-lower
   stage: deploy-prod
-  needs:
-    - job: manual-approval-prod
+  # No needs — stage-scheduled, waits for ALL prod-gate jobs
   parallel:
     matrix:
       - REGION: *regions
@@ -1047,8 +1044,9 @@ upload-api-lower:
   extends: .deploy-apim
   stage: deploy-lower
   needs:
-    - job: generate-swagger-job
-    - job: deploy-k8s-lower
+    - job: deploy-k8s-lower          # Same stage — intra-stage ordering
+  dependencies:
+    - generate-swagger-job            # Artifacts only (cross-stage)
   parallel:
     matrix:
       - STACK_ENVIRONMENT: *lower-environments
@@ -1060,15 +1058,14 @@ upload-api-lower:
     API_ID: "<existing-api-id-from-azure-apim>"  # USER-PROVIDED: get from Azure Portal > APIM > APIs
   environment:
     name: "azure/$REGION/$STACK_ENVIRONMENT/deploy"
-  allow_failure: true
 
 upload-api-prod:
   extends: .deploy-apim
   stage: deploy-prod
   needs:
-    - job: manual-approval-prod
-    - job: generate-swagger-job
-    - job: deploy-prod-job
+    - job: deploy-prod-job            # Same stage — intra-stage ordering
+  dependencies:
+    - generate-swagger-job            # Artifacts only (cross-stage)
   parallel:
     matrix:
       - REGION: *regions
@@ -1097,8 +1094,9 @@ upload-api-lower:
   extends: .deploy-apim
   stage: deploy-lower
   needs:
-    - job: generate-swagger-job
-    - job: deploy-k8s-lower
+    - job: deploy-k8s-lower          # Same stage — intra-stage ordering
+  dependencies:
+    - generate-swagger-job            # Artifacts only (cross-stage)
   parallel:
     matrix:
       # US Dev — API_IDs are USER-PROVIDED existing values from Azure APIM
@@ -1133,7 +1131,6 @@ upload-api-lower:
     PRODUCT_NAME: "Unlimited"
   environment:
     name: "azure/$REGION/$STACK_ENVIRONMENT/deploy"
-  allow_failure: true
 ```
 
 ### Docker Push - Lower Environments
@@ -1199,9 +1196,8 @@ deploy-prod-job:
   extends: .deploy-kustomize
   stage: deploy-prod
   needs:
-    - job: manual-approval-prod
-    - job: push-docker-images-prod
-    - job: deploy-migrations-prod  # If using migrations
+    - job: push-docker-images-prod    # Same stage — intra-stage ordering
+    - job: deploy-migrations-prod     # Same stage — intra-stage ordering
       optional: true
   parallel:
     matrix:
@@ -1236,21 +1232,17 @@ deploy-prod-job:
 - `WAIT_FOR_DEPLOYMENTS` limits validation to this service only
 - Use `v5` of `kustomize-deploy.yml` for `WAIT_FOR_DEPLOYMENTS` support
 - Secrets are created before deployment via `--dry-run=client -o yaml | kubectl apply -f -`
+- **Pipeline ordering**: Entry-point jobs in each stage (e.g., `push-docker-images-prod`, `deploy-migrations-prod`) have NO `needs` — they are stage-scheduled and wait for ALL previous stage jobs. Use `needs` ONLY for intra-stage ordering. Use `dependencies` for cross-stage artifact downloading. See `gitlab-ci-standards.md` for full rationale.
 
 ### Review App Jobs
 
 ```yaml
 deploy-review-app-job:
   extends: .deploy-review-app
-  needs:
-    - job: docker-build-job
   variables:
     ARM_SUBSCRIPTION_ID: $ARM_SUBSCRIPTION_ID_DEV
   environment:
-    name: review/$CI_MERGE_REQUEST_IID
-    url: https://APP_NAME-mr-${CI_MERGE_REQUEST_IID}.review.raptortech.com/swagger
     on_stop: cleanup-review-app-job
-    auto_stop_in: 1 week
 
 cleanup-review-app-job:
   extends: .cleanup-review-app
@@ -1264,13 +1256,10 @@ cleanup-review-app-job:
 push-docker-images-prod:
   extends: .push-docker-image
   stage: deploy-prod
-  needs:
-    - job: manual-approval-prod
-    - job: calculate-version
-    - job: docker-build-job
+  # No needs — stage-scheduled, waits for ALL prod-gate jobs (including test-ui-staging + manual-approval-prod)
   dependencies:
-    - calculate-version
-    - docker-build-job
+    - calculate-version    # Artifacts only
+    - docker-build-job     # Artifacts only
   parallel:
     matrix:
       - REGION: *regions
@@ -1286,12 +1275,7 @@ push-docker-images-prod:
 ```yaml
 test-ui-staging:
   stage: prod-gate
-  needs:
-    - job: deploy-k8s-lower
-      artifacts: false
-    - job: upload-api-lower
-      artifacts: false
-      optional: true
+  # No needs — stage-scheduled, waits for ALL deploy-lower jobs (deploy-k8s-lower, upload-api-lower, etc.)
   trigger:
     project: 'UI_TESTS_TRIGGER_PROJECT'
     branch: main
@@ -1309,12 +1293,7 @@ test-ui-staging:
 ```yaml
 test-ui-prod:
   stage: post-deploy
-  needs:
-    - job: deploy-prod-job
-      artifacts: false
-    - job: upload-api-prod
-      artifacts: false
-      optional: true
+  # No needs — stage-scheduled, waits for ALL deploy-prod jobs (deploy-prod-job, upload-api-prod, etc.)
   trigger:
     project: 'UI_TESTS_TRIGGER_PROJECT'
     branch: main
