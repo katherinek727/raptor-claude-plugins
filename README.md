@@ -14,6 +14,7 @@ A collection of plugins that extend [Claude Code](https://docs.anthropic.com/en/
 - **Behavioral Diff** - Detect logic inversions and behavioral changes in code diffs
 - **.NET Migration** — Automate trunk-based development migration for .NET API services with Kustomize and GitLab CI/CD
 - **Security Scanning** — vulnerability scanning, secrets detection, SAST analysis checking against OWASP Top 10 and CWE Top 25
+- **GitLab CI Standards** — Pipeline best practices for job ordering, `needs` vs `dependencies`, and stage-based gates
 
 ## Usage Examples
 
@@ -56,6 +57,12 @@ The pair-programming skill auto-triggers and queries multiple AI providers.
 /dotnet:trunk-plan
 /dotnet:trunk-migrate
 ```
+
+**Get GitLab CI pipeline standards:**
+```
+/gitlab-ci:standards
+```
+Or just ask about pipeline editing—the skill auto-triggers on phrases like "add a new job" or "update the pipeline".
 
 ## Quick Start
 
@@ -247,6 +254,23 @@ Security audit tools for vulnerability scanning, secrets detection, and complian
 
 ---
 
+### GitLab CI (`/gitlab-ci:*`)
+
+Pipeline standards and best practices for job ordering, `needs` vs `dependencies`, and stage-based gates.
+
+| Command | Triggers | Description |
+|---------|----------|-------------|
+| `/gitlab-ci:standards` | `gitlab-ci standards`, `pipeline standards`, `needs vs dependencies` | Full documentation on the intra-stage `needs` pattern |
+
+**Auto-triggered skill:** The `pipeline-edit` skill automatically activates when you mention pipeline editing tasks:
+- `update pipeline`, `modify pipeline`, `create pipeline`
+- `update gitlab-ci`, `edit gitlab-ci`
+- `add job`, `add stage`, `new job`, `new stage`
+
+**Key concept:** Use stages for cross-stage ordering and `needs` only for intra-stage ordering. Jobs with `needs` become DAG-scheduled and bypass stage boundaries entirely.
+
+---
+
 ### Epistemic Reasoning (hook-based)
 
 Enforces evidence-based reasoning by requiring `[FACT]`, `[INFERRED]`, and `[ASSUMED]` labels on all claims. Automatically enabled via `SessionStart` hook—no slash commands needed.
@@ -289,6 +313,7 @@ claude plugin marketplace add git@gitlab.com:raptortech1/aidevops/claude-plugins
 /plugin install behavioral-diff
 /plugin install dotnet
 /plugin install security
+/plugin install gitlab-ci
 
 # Reload after changes
 /plugin

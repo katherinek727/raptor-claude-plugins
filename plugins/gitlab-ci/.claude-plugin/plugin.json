@@ -1,0 +1,18 @@
+{
+  "name": "gitlab-ci",
+  "description": "GitLab CI/CD pipeline standards and best practices for job ordering, needs vs dependencies, and stage-based gates",
+  "version": "1.0.0",
+  "author": {
+    "name": "Dave Juba"
+  },
+  "license": "MIT",
+  "keywords": [
+    "gitlab",
+    "ci-cd",
+    "pipeline",
+    "needs",
+    "dependencies",
+    "stages"
+  ],
+  "skills": "./skills/"
+}
