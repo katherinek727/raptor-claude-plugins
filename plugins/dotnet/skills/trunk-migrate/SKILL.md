@@ -175,10 +175,11 @@ The CI/CD config is built conditionally based on decision trees:
 - **true**: Migration validation job, deploy-migrations-lower, deploy-migrations-prod, include ef-migrations.yml and sql-script-deploy.yml templates
 - **false**: Omit migration jobs and templates, remove migration `needs:` from deploy jobs
 
-**CRITICAL CI/CD RULES:**
-- ALL production jobs MUST include `manual-approval-prod` in `needs:`
+**CRITICAL CI/CD RULES** (see @${CLAUDE_PLUGIN_ROOT}/references/gitlab-ci-standards.md):
+- Use `needs` ONLY for intra-stage ordering (jobs within the same stage). NEVER add cross-stage `needs`.
+- Entry-point jobs in each stage (e.g., `push-docker-images-prod`, `deploy-migrations-prod`) must have NO `needs` — they are stage-scheduled and will wait for ALL jobs in the previous stage to complete. This ensures gates like `test-ui-staging` and `manual-approval-prod` are both enforced.
+- Use `dependencies` (not `needs`) when a job needs artifacts from an earlier stage without affecting execution order.
 - `NAMESPACE: platform` must be job-level variable (NOT global) to avoid conflicts with review-app template
-- Docker push-prod `needs:` must reference matrix jobs correctly
 - Use `v5` for all template jobs
 
 ### Step 7: Create EF Migrations Assets (Conditional)
