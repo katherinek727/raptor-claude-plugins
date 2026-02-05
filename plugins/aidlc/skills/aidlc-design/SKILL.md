@@ -26,20 +26,31 @@ This skill follows the AI-DLC principle where AI initiates and directs the conve
 
 ## References
 
-- Use @${CLAUDE_PLUGIN_ROOT}/references/planning-shared.md for DDD guidance, ADR templates, and tool names.
-- Use @${CLAUDE_PLUGIN_ROOT}/references/technical-guidance/global.md for universal architectural standards.
-- Use @${CLAUDE_PLUGIN_ROOT}/references/technical-guidance/dotnet.md for .NET projects (in addition to global)
-- Use @${CLAUDE_PLUGIN_ROOT}/references/technical-guidance/rails.md for Rails projects (in addition to global)
-- Use @${CLAUDE_PLUGIN_ROOT}/references/technical-guidance/application-profiles/README.md for Application Profile detection and selection
-- **Legacy Framework (.NET Framework 4.x):**
-  - Use @${CLAUDE_PLUGIN_ROOT}/references/technical-guidance/application-profiles/dotnet-framework-mvc-profile.md for legacy MVC monoliths
-- **Legacy (.NET 6-9):**
-  - Use @${CLAUDE_PLUGIN_ROOT}/references/technical-guidance/application-profiles/dotnet-webapi-profile.md for existing Web APIs
-  - Use @${CLAUDE_PLUGIN_ROOT}/references/technical-guidance/application-profiles/dotnet-function-app-profile.md for existing Function Apps
-- **Modern (.NET 10+):**
-  - Use @${CLAUDE_PLUGIN_ROOT}/references/technical-guidance/application-profiles/dotnet-webapi-v10-profile.md for new Web APIs
-  - Use @${CLAUDE_PLUGIN_ROOT}/references/technical-guidance/application-profiles/dotnet-function-v10-profile.md for new Function Apps
-  - Use @${CLAUDE_PLUGIN_ROOT}/references/technical-guidance/application-profiles/dotnet-mixed-solution-profile.md for new Mixed Solutions
+### Always Load
+- @${CLAUDE_PLUGIN_ROOT}/references/planning-shared.md - DDD guidance, ADR templates, tool names
+- @${CLAUDE_PLUGIN_ROOT}/references/technical-guidance/global.md - Universal architectural standards
+
+### Load Based on Project Type
+- @${CLAUDE_PLUGIN_ROOT}/references/technical-guidance/dotnet.md - For .NET projects
+- @${CLAUDE_PLUGIN_ROOT}/references/technical-guidance/rails.md - For Rails projects
+
+### Application Profile Detection (Load First)
+- @${CLAUDE_PLUGIN_ROOT}/references/technical-guidance/application-profiles/README.md - Detection logic and profile selection
+
+### Application Profile Details (Load ONLY the Detected Profile)
+
+**IMPORTANT**: Do NOT load all profiles. After detecting the application profile in Step 2, load ONLY the single relevant profile file:
+
+| Detected Profile | File to Load |
+|------------------|--------------|
+| .NET Framework MVC | `${CLAUDE_PLUGIN_ROOT}/references/technical-guidance/application-profiles/dotnet-framework-mvc-profile.md` |
+| Web API (Legacy) | `${CLAUDE_PLUGIN_ROOT}/references/technical-guidance/application-profiles/dotnet-webapi-profile.md` |
+| Function App (Legacy) | `${CLAUDE_PLUGIN_ROOT}/references/technical-guidance/application-profiles/dotnet-function-app-profile.md` |
+| Web API v10 | `${CLAUDE_PLUGIN_ROOT}/references/technical-guidance/application-profiles/dotnet-webapi-v10-profile.md` |
+| Function App v10 | `${CLAUDE_PLUGIN_ROOT}/references/technical-guidance/application-profiles/dotnet-function-v10-profile.md` |
+| Mixed Solution | `${CLAUDE_PLUGIN_ROOT}/references/technical-guidance/application-profiles/dotnet-mixed-solution-profile.md` |
+
+If no profile is detected, skip loading any profile file and use only dotnet.md guidance.
 
 ## Prerequisites
 
@@ -124,6 +135,8 @@ Before starting, validate:
    > Applicable technical guidance:
    > - Global standards (all projects)
    > - Project-level guidance (from Intent doc)
+
+   **After user confirms the detection**, load the specific Application Profile file (see References table above). Do NOT load profiles that don't match the detected type.
 
 3. **Assess confidence**
    Before proceeding to Domain Design, assess whether you have sufficient context.
