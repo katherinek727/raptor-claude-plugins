@@ -27,6 +27,9 @@ This skill follows the AI-DLC principle where AI initiates and directs the conve
 ## References
 
 - Use @${CLAUDE_PLUGIN_ROOT}/references/planning-shared.md for DDD guidance, ADR templates, and tool names.
+- Use @${CLAUDE_PLUGIN_ROOT}/references/technical-guidance/global.md for universal architectural standards.
+- Use @${CLAUDE_PLUGIN_ROOT}/references/technical-guidance/dotnet.md for .NET projects (in addition to global)
+- Use @${CLAUDE_PLUGIN_ROOT}/references/technical-guidance/rails.md for Rails projects (in addition to global)
 
 ## Prerequisites
 
@@ -53,9 +56,35 @@ Before starting, validate:
    - Tasks within the Unit (from Confluence child pages)
    - Relevant NFRs (performance, security, scalability, etc.)
    - Existing codebase context (for brown-field)
-   - Any architectural constraints or preferences
+   - Project-level technical guidance (from Intent doc "Technical Guidance" section)
 
-2. **Assess confidence**
+2. **Detect and confirm project type**
+   Check the repository for project-type markers:
+
+   | Markers | Project Type | Guidance Applied |
+   |---------|--------------|------------------|
+   | *.csproj, *.sln, *.slnx, *.cs, global.json | .NET | Global + .NET |
+   | Gemfile, config/routes.rb, bin/rails, config/application.rb | Rails | Global + Rails |
+   | Any other stack | Other | Global only |
+
+   Present the detection and ask for confirmation:
+   > Based on the repository, this appears to be a **[.NET / Rails]** project.
+   >
+   > Applicable technical guidance:
+   > - Global standards (all projects)
+   > - [.NET standards (ASP.NET Core, EF Core, etc.) / Rails standards (ActiveRecord, Sidekiq, etc.)]
+   > - Project-level guidance (from Intent doc)
+   >
+   > Is this correct?
+
+   If no project type detected:
+   > This project will use **Global standards** only, plus any project-level guidance from the Intent doc.
+   >
+   > Applicable technical guidance:
+   > - Global standards (all projects)
+   > - Project-level guidance (from Intent doc)
+
+3. **Assess confidence**
    Before proceeding to Domain Design, assess whether you have sufficient context.
 
    ### Required Context Checklist
@@ -91,7 +120,7 @@ Before starting, validate:
    - "Are there security requirements beyond standard authentication?"
    - "What data storage approach is preferred (SQL, NoSQL, etc.)?"
 
-3. **Domain Design** (DDD)
+4. **Domain Design** (DDD)
    AI proposes domain model using DDD principles:
    - Identify Bounded Context boundaries
    - Define Aggregates and Aggregate Roots
@@ -102,46 +131,86 @@ Before starting, validate:
 
    Present the model and ask for validation before proceeding.
 
-4. **Logical Design**
-   Extend domain model for NFRs:
+5. **Logical Design**
+   Incorporate technical guidance (in precedence order):
+
+   | Tier | Source | Precedence |
+   |------|--------|------------|
+   | Global | `references/technical-guidance/global.md` | Baseline (all projects) |
+   | .NET | `references/technical-guidance/dotnet.md` | Extends global (.NET projects only) |
+   | Rails | `references/technical-guidance/rails.md` | Extends global (Rails projects only) |
+   | Project-Level | Intent doc "Technical Guidance" section | Highest precedence |
+
+   **Guidance application:**
+   - Load global guidance as the baseline
+   - If .NET project: layer .NET-specific guidance
+   - If Rails project: layer Rails-specific guidance
+   - Apply project-level overrides from the Intent doc
+   - When guidance conflicts, project-level > project-type > global
+
+   **Conflict detection:**
+   When project-level or project-type guidance contradicts a higher tier:
+   1. Surface the conflict explicitly:
+      > **Guidance Conflict Detected**
+      >
+      > - **Global standard:** [standard from global.md]
+      > - **Project guidance:** [conflicting guidance from Intent doc]
+      >
+      > This deviation will require an ADR. Proceed with the project-level guidance?
+   2. If confirmed, flag for ADR creation in step 6
+
+   **Design recommendations:**
+   Using the merged guidance, extend the domain model for NFRs:
    - Recommend architectural patterns (CQRS, Event Sourcing, Saga, etc.)
    - Propose integration patterns (API Gateway, Circuit Breaker, etc.)
-   - Suggest data storage approach
-   - Address security architecture
-   - Consider observability requirements
+   - Suggest data storage approach aligned with guidance
+   - Address security architecture per guidance standards
+   - Consider observability requirements from guidance
 
    Present trade-offs and ask for decisions.
 
-5. **Create ADRs**
+6. **Create ADRs**
    For each significant decision, create an ADR:
    - Context: What prompted this decision?
    - Decision: What was decided?
    - Consequences: Trade-offs and implications
    - Alternatives considered
 
+   **Guidance deviation ADRs:**
+   For each conflict flagged in step 5, create an ADR with:
+   - **Context:** Reference the specific standard being deviated from (tier, section)
+   - **Decision:** The project-level choice and why it takes precedence
+   - **Consequences:** Include risks of deviating from organizational standards
+   - **Alternatives:** Document "follow the standard" as a rejected alternative with rationale
+
+   Example title: "ADR-NNN: Use GraphQL instead of REST (deviation from Global API Standards)"
+
    Use the ADR Template in @${CLAUDE_PLUGIN_ROOT}/references/planning-shared.md.
 
-6. **Confirm understanding**
+7. **Confirm understanding**
    Summarize:
    - Domain model components
    - Architectural patterns selected
+   - Technical guidance applied (with tiers noted)
+   - Any guidance deviations and their ADRs
    - Key ADRs
    Ask for approval before storing artifacts.
 
-7. **Store artifacts**
+8. **Store artifacts**
    - Domain model: Markdown or diagram in Confluence (child of Intent doc)
    - ADRs: Confluence pages or repo `docs/adr/` folder
+   - Guidance deviation ADRs: Include reference to the standard being deviated from
    - Link back to Unit page in Confluence
    - Update Unit page with design doc links
 
-8. **Update workflow status**
+9. **Update workflow status**
    Update the Confluence page status table:
    - Set "Domain Design" row to "✅ Complete" with today's date
    - Add links to design docs in the Artifact column
 
-9. **Report back and chain to verify**
-   Provide links to created artifacts and ask for any refinements.
-   When design is complete, offer to run `/aidlc-verify` to assess readiness for Jira transfer.
+10. **Report back and chain to verify**
+    Provide links to created artifacts and ask for any refinements.
+    When design is complete, offer to run `/aidlc-verify` to assess readiness for Jira transfer.
 
 ## Brown-Field Considerations
 
@@ -163,10 +232,14 @@ For existing systems, add these steps before Domain Design:
 
 ## Definition of Done
 
+- Project type detected (.NET, Rails, or other) and confirmed
+- Technical guidance loaded (global, + .NET/Rails if applicable, + project-level)
 - Confidence assessment completed (≥60% to proceed)
 - Domain model documented and approved
 - Logical design with architectural patterns documented
+- Guidance conflicts surfaced and confirmed
 - ADRs created for key decisions
+- Deviation ADRs created for any guidance conflicts
 - Artifacts linked to Unit page in Confluence and Intent doc
 - Brown-field ACL designed (if applicable)
 - Workflow status table updated in Confluence

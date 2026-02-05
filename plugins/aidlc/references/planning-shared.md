@@ -23,6 +23,10 @@ Use this reference for the AI-DLC Intent → Unit planning flow.
   - Scale (quick win | bounded delivery | strategic initiative)
   - Constraints (timeboxed, budget-limited, MVP-only, etc.)
   - Programme context (standalone | part of <programme name>)
+- Project Type
+  - Auto-detected from codebase markers (see `references/technical-guidance/`)
+  - Supported: .NET, Rails (more stacks planned)
+  - Override if auto-detection is wrong
 - Outcomes (Business + User)
 - Scope
   - In scope
@@ -31,6 +35,13 @@ Use this reference for the AI-DLC Intent → Unit planning flow.
   - Known technical constraints
   - Key systems affected
   - Integration points (high-level)
+- Technical Guidance (project-level overrides and constraints)
+  - Approved technologies (required or prohibited)
+  - Architectural patterns (patterns to use or avoid)
+  - Security requirements (beyond global standards)
+  - Integration standards (APIs, protocols, data formats)
+  - Performance targets (specific to this project)
+  - Deviations from standards (with rationale)
 - Designs & Diagrams (if available)
   - UI mockups / wireframes / prototypes
   - Flow diagrams (system or process)
@@ -404,6 +415,80 @@ Use these prompts to elicit risks during Intent and Unit planning:
 - What operational risks apply (availability, cost, observability)?
 - What dependencies are least certain?
 - Can this change be rolled back quickly if needed?
+
+## Technical Guidance Hierarchy
+
+The `/aidlc-design` skill incorporates technical guidance from up to three tiers:
+
+### Tier 1: Global Guidance (Baseline)
+
+**Source:** `references/technical-guidance/global.md`
+**Owner:** Architecture Guild
+**Applies to:** All projects
+
+Universal standards:
+- Security (authentication, secrets, OWASP)
+- Observability (logging, metrics, tracing)
+- API design (REST conventions, error formats)
+- Data governance (classification, PII handling)
+- Testing (pyramid, coverage targets)
+- Resilience (timeouts, retries, circuit breakers)
+
+### Tier 2: Stack-Specific Guidance
+
+**Source:** `references/technical-guidance/<stack>.md`
+**Owner:** Respective technology chapter
+**Applies to:** Projects matching the stack's detection markers
+
+Each guidance file defines `detection-markers` in its frontmatter. The `aidlc-design` skill
+scans the repository for these markers to determine which stack guidance to load.
+
+| Stack | File | Detection Markers |
+|-------|------|-------------------|
+| .NET | `dotnet.md` | *.csproj, *.sln, *.slnx, *.cs, global.json |
+| Rails | `rails.md` | Gemfile, config/routes.rb, bin/rails, config/application.rb |
+
+Stack-specific guidance extends (never replaces) global guidance. Examples of what
+stack files cover: package management, framework conventions, testing tools, project
+structure, and preferred libraries.
+
+### Tier 3: Project-Level Guidance (Intent-Specific)
+
+**Source:** Confluence Intent doc "Technical Guidance" section
+**Owner:** Project tech lead
+**Applies to:** This project only
+
+Project-specific constraints and overrides:
+- Approved/prohibited technologies
+- Required architectural patterns
+- Integration standards
+- Performance targets
+- Explicit deviations from standards
+
+### Precedence Rules
+
+| Conflict Scenario | Resolution |
+|-------------------|------------|
+| Project-level vs Stack-specific | Project-level wins |
+| Project-level vs Global | Project-level wins |
+| Stack-specific vs Global | Stack-specific wins |
+
+**All deviations require an ADR documenting:**
+- The standard being deviated from
+- The project-level decision
+- Rationale for the deviation
+- Risks of deviating
+
+### Project Type Detection
+
+The `aidlc-design` skill detects the project type by scanning the repository for
+markers defined in each `references/technical-guidance/<stack>.md` file's
+`detection-markers` frontmatter.
+
+If multiple stacks are detected (e.g., a Rails app with a Vue frontend), load all
+matching guidance files. If no stack matches, use Global guidance only.
+
+The detection is presented to the user for confirmation during the design workflow.
 
 ## NFR Checklist (prompt as needed)
 
