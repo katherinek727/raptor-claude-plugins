@@ -110,7 +110,7 @@
     {
       "name": "gitlab-ci",
       "source": "./plugins/gitlab-ci",
-      "description": "GitLab CI/CD pipeline standards and best practices for job ordering, needs vs dependencies, and stage-based gates",
+      "description": "GitLab CI/CD pipeline standards, best practices, and guidelines for Raptor projects",
       "version": "1.0.0",
       "author": {
         "name": "Dave Juba"

@@ -60,7 +60,8 @@ The pair-programming skill auto-triggers and queries multiple AI providers.
 
 **Get GitLab CI pipeline standards:**
 ```
-/gitlab-ci:standards
+/gitlab-ci:standards-review
+/gitlab-ci:standards-review job-ordering
 ```
 Or just ask about pipeline editing—the skill auto-triggers on phrases like "add a new job" or "update the pipeline".
 
@@ -256,18 +257,20 @@ Security audit tools for vulnerability scanning, secrets detection, and complian
 
 ### GitLab CI (`/gitlab-ci:*`)
 
-Pipeline standards and best practices for job ordering, `needs` vs `dependencies`, and stage-based gates.
+Pipeline standards, best practices, and guidelines for Raptor projects.
 
 | Command | Triggers | Description |
 |---------|----------|-------------|
-| `/gitlab-ci:standards` | `gitlab-ci standards`, `pipeline standards`, `needs vs dependencies` | Full documentation on the intra-stage `needs` pattern |
+| `/gitlab-ci:standards-review` | `gitlab-ci standards`, `pipeline standards`, `needs vs dependencies`, `standards review` | Comprehensive standards documentation with examples and checklists |
+| `/gitlab-ci:standards-review [topic]` | — | Review a specific topic (e.g., `job-ordering`) |
 
 **Auto-triggered skill:** The `pipeline-edit` skill automatically activates when you mention pipeline editing tasks:
 - `update pipeline`, `modify pipeline`, `create pipeline`
 - `update gitlab-ci`, `edit gitlab-ci`
 - `add job`, `add stage`, `new job`, `new stage`
 
-**Key concept:** Use stages for cross-stage ordering and `needs` only for intra-stage ordering. Jobs with `needs` become DAG-scheduled and bypass stage boundaries entirely.
+**Current standards topics:**
+- `job-ordering` — Use stages for cross-stage ordering and `needs` only for intra-stage ordering
 
 ---
 

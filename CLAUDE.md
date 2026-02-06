@@ -103,9 +103,12 @@ Uses dual-analyzer architecture (control-flow-analyzer + business-logic-analyzer
 
 | Command | Triggers | Description |
 |---------|----------|-------------|
-| `/gitlab-ci:standards` | `gitlab-ci standards`, `pipeline standards`, `needs vs dependencies`, `pipeline ordering` | Full documentation on job ordering, needs vs dependencies, and stage gates |
+| `/gitlab-ci:standards-review` | `gitlab-ci standards`, `pipeline standards`, `needs vs dependencies`, `standards review` | Comprehensive standards documentation with examples and checklists |
+| `/gitlab-ci:standards-review [topic]` | — | Review a specific topic (e.g., `job-ordering`) |
 
-**Auto-triggered skill:** `pipeline-edit` activates on phrases like `update pipeline`, `add job`, `new stage`, etc. Provides lightweight guidance on the intra-stage `needs` pattern.
+**Auto-triggered skill:** `pipeline-edit` activates on phrases like `update pipeline`, `add job`, `new stage`, etc. Provides lightweight guidance from core rules.
+
+**Current standards topics:** `job-ordering`
 
 #### Epistemic Reasoning (hook-based)
 
