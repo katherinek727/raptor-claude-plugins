@@ -103,13 +103,12 @@ Uses dual-analyzer architecture (control-flow-analyzer + business-logic-analyzer
 
 | Command | Triggers | Description |
 |---------|----------|-------------|
+| `/gitlab-ci:standards-list` | `list standards`, `available standards` | List available topics |
 | `/gitlab-ci:standards-view` | `view standards`, `show standards` | Display standards summary |
 | `/gitlab-ci:standards-load` | `load standards`, `standards context` | Load full standards into context |
 | `/gitlab-ci:standards-audit` | `audit pipeline`, `standards audit` | Audit repo for violations |
 
 **Auto-triggered skill:** `pipeline-edit` activates on phrases like `update pipeline`, `add job`, `new stage`, etc. Provides lightweight guidance from core rules.
-
-**Current standards topics:** `job-ordering`
 
 #### Epistemic Reasoning (hook-based)
 
