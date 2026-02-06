@@ -60,8 +60,9 @@ The pair-programming skill auto-triggers and queries multiple AI providers.
 
 **Get GitLab CI pipeline standards:**
 ```
-/gitlab-ci:standards-review
-/gitlab-ci:standards-review job-ordering
+/gitlab-ci:standards-view
+/gitlab-ci:standards-load job-ordering
+/gitlab-ci:standards-audit
 ```
 Or just ask about pipeline editing—the skill auto-triggers on phrases like "add a new job" or "update the pipeline".
 
@@ -261,8 +262,9 @@ Pipeline standards, best practices, and guidelines for Raptor projects.
 
 | Command | Triggers | Description |
 |---------|----------|-------------|
-| `/gitlab-ci:standards-review` | `gitlab-ci standards`, `pipeline standards`, `needs vs dependencies`, `standards review` | Comprehensive standards documentation with examples and checklists |
-| `/gitlab-ci:standards-review [topic]` | — | Review a specific topic (e.g., `job-ordering`) |
+| `/gitlab-ci:standards-view` | `view standards`, `show standards`, `what are the standards` | Display standards summary to the user |
+| `/gitlab-ci:standards-load` | `load standards`, `standards context` | Load full standards into Claude's context |
+| `/gitlab-ci:standards-audit` | `audit pipeline`, `pipeline compliance`, `standards audit` | Audit repo for standards violations |
 
 **Auto-triggered skill:** The `pipeline-edit` skill automatically activates when you mention pipeline editing tasks:
 - `update pipeline`, `modify pipeline`, `create pipeline`

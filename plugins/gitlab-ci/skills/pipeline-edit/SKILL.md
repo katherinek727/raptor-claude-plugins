@@ -17,4 +17,4 @@ When editing `.gitlab-ci.yml` files, follow the core rules below.
 - **Yes** → Use `needs`
 - **No** → Do NOT use `needs`. Use `dependencies` if you need artifacts.
 
-For comprehensive documentation with detailed examples and checklists, run `/gitlab-ci:standards-review`.
+For comprehensive documentation with detailed examples and checklists, run `/gitlab-ci:standards-load`.

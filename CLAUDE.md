@@ -103,8 +103,9 @@ Uses dual-analyzer architecture (control-flow-analyzer + business-logic-analyzer
 
 | Command | Triggers | Description |
 |---------|----------|-------------|
-| `/gitlab-ci:standards-review` | `gitlab-ci standards`, `pipeline standards`, `needs vs dependencies`, `standards review` | Comprehensive standards documentation with examples and checklists |
-| `/gitlab-ci:standards-review [topic]` | — | Review a specific topic (e.g., `job-ordering`) |
+| `/gitlab-ci:standards-view` | `view standards`, `show standards` | Display standards summary |
+| `/gitlab-ci:standards-load` | `load standards`, `standards context` | Load full standards into context |
+| `/gitlab-ci:standards-audit` | `audit pipeline`, `standards audit` | Audit repo for violations |
 
 **Auto-triggered skill:** `pipeline-edit` activates on phrases like `update pipeline`, `add job`, `new stage`, etc. Provides lightweight guidance from core rules.
 
