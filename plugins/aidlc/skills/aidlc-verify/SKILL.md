@@ -26,6 +26,7 @@ This skill follows the AI-DLC principle where AI initiates and directs the conve
 ## References
 
 - Use @${CLAUDE_PLUGIN_ROOT}/references/planning-shared.md for templates, Jira tool names, and operational guidance.
+- Use @${CLAUDE_PLUGIN_ROOT}/references/review-criteria.md for scoring rubrics, quality checklists, and confidence thresholds.
 
 ## Prerequisites
 
@@ -52,34 +53,23 @@ Before starting, validate:
 
 ### Scoring Categories
 
-| Category | Weight | Criteria |
-|----------|--------|----------|
-| **Intent Clarity** | 20% | Problem/scope/outcomes clearly defined, no vague language |
+| Category | Weight | Summary |
+|----------|--------|---------|
+| **Intent Clarity** | 20% | Problem/scope/outcomes clearly defined |
 | **Task Completeness** | 25% | All Tasks have testable acceptance criteria |
-| **Design Readiness** | 25% | Domain model documented, patterns chosen, ADRs for key decisions |
-| **NFR Coverage** | 15% | Measurable targets (not "fast", "secure"), baselines documented |
-| **Dependency Mapping** | 15% | Integration points identified, APIs/services listed, sequencing clear |
+| **Design Readiness** | 25% | Domain model documented, patterns chosen |
+| **NFR Coverage** | 15% | Measurable targets with baselines |
+| **Dependency Mapping** | 15% | Integration points identified, sequencing clear |
+
+Full rubric definitions, sub-agent scoring dimensions, and gap categories: review-criteria.md **Part 3.3**
 
 ### Confidence Thresholds
 
-| Level | Score | Action |
-|-------|-------|--------|
-| **High** | 80-100% | Proceed to Jira transfer |
-| **Medium** | 60-79% | List gaps, ask targeted questions, allow override |
-| **Low** | <60% | STOP - must gather more context before continuing |
+Thresholds are defined in review-criteria.md **Part 1.2**. In summary:
 
-### Gap Categories
-
-When identifying gaps, categorize them:
-
-| Gap Type | Example | Remediation |
-|----------|---------|-------------|
-| **Vague scope** | "and more features" | Define explicit boundaries |
-| **Missing AC** | Task without acceptance criteria | Add testable conditions |
-| **Unmeasurable NFR** | "should be fast" | Add specific target (e.g., <200ms) |
-| **Unknown integration** | "connects to backend" | Identify specific APIs/services |
-| **Missing design** | No domain model | Run `/aidlc-design` |
-| **Poor Bolt grouping** | Tasks span unrelated areas | Regroup into cohesive Bolts |
+- **High (80-100%)**: Proceed to Jira transfer
+- **Medium (60-79%)**: List gaps, ask targeted questions, allow override
+- **Low (<60%)**: STOP — must gather more context before continuing
 
 ## Workflow
 
@@ -91,7 +81,12 @@ When identifying gaps, categorize them:
    - Jira project key (for transfer)
    - Any design documentation links (optional)
 
-2. **Fetch all documentation**
+2. **Collect Jira configuration**
+   Ask only for what is needed for transfer:
+   - **Project routing**: Confirm the primary Jira project key. Ask if multi-project routing is needed (e.g., frontend project and backend project). Sub-tasks inherit their parent Story's project.
+   - **Team assignment**: Ask which team(s) will work on this. Single team = apply to all artifacts. Multiple teams = map teams to Units or individual Bolts.
+
+3. **Fetch all documentation**
    - Read Intent document
    - Read Units Overview page (including Proposed Bolts section)
    - Read all Unit pages and their Task child pages
@@ -100,6 +95,8 @@ When identifying gaps, categorize them:
 ### Phase 2: Spawn Verification Sub-agents
 
 Spawn parallel sub-agents (one per Unit) to assess documentation quality.
+
+**When constructing the sub-agent prompt:** Read review-criteria.md and inject the Verification Readiness Rubric (Part 3.3) and Shared Quality Checklists (Part 2) into the Scoring Instructions section below.
 
 **Sub-agent Prompt Template:**
 
@@ -123,37 +120,16 @@ Review the following Unit documentation for AI-execution readiness.
 
 ## Scoring Instructions
 
-Rate each criterion 0-100:
+Rate each dimension 0-100:
 
-1. **Scope Clarity** (0-100)
-   - Is the Unit scope bounded? (no "and more", "etc.", vague outcomes)
-   - Are deliverables specific and measurable?
-   - Deduct points for open-ended language
+1. **Scope Clarity** — Is the Unit scope bounded with specific, measurable deliverables?
+2. **Task Quality** — Do all Tasks have testable acceptance criteria in proper format?
+3. **Technical Readiness** — Are integration points, data models, and error handling documented?
+4. **NFR Specificity** — Are performance, security, and availability targets measurable?
+5. **Dependency Clarity** — Are blockers, prerequisites, and sequencing documented?
+6. **Bolt Grouping Quality** — Are Tasks grouped into cohesive Bolts with clear scope? Are bolt-to-bolt dependencies explicitly identified? Is each Bolt appropriately sized (2h-3d)?
 
-2. **Task Quality** (0-100)
-   - Do all Tasks have acceptance criteria?
-   - Are acceptance criteria testable (not vague)?
-   - Are Tasks in proper "As a... I want... So that..." format?
-
-3. **Technical Readiness** (0-100)
-   - Are integration points identified (APIs, services, databases)?
-   - Are data models or schemas referenced?
-   - Are error handling expectations documented?
-
-4. **NFR Specificity** (0-100)
-   - Are performance targets measurable (e.g., <200ms, not "fast")?
-   - Are security requirements specific?
-   - Are availability/reliability targets defined?
-
-5. **Dependency Clarity** (0-100)
-   - Are blockers and prerequisites documented?
-   - Is sequencing clear (what comes first)?
-   - Are external dependencies identified?
-
-6. **Bolt Grouping Quality** (0-100)
-   - Are Tasks grouped into cohesive Bolts?
-   - Does each Bolt have a clear scope (hours to days)?
-   - Are there no circular dependencies between Bolts?
+[Inject: Verification Readiness Rubric details (Part 3.3) and Shared Quality Checklists (Part 2) from review-criteria.md]
 
 ## Return Format
 
@@ -184,6 +160,14 @@ Return your assessment as JSON:
       "suggestion": "<recommended adjustment>"
     }
   ],
+  "bolt_dependencies": [
+    {
+      "bolt": "<Bolt name>",
+      "depends_on": ["<Bolt name>"],
+      "dependency_type": "data|interface|infrastructure",
+      "rationale": "<why this dependency exists>"
+    }
+  ],
   "strengths": [
     "<well-documented aspect>"
   ],
@@ -200,6 +184,18 @@ After all sub-agents return:
 3. **Merge gap lists** across all Units
 4. **Identify cross-cutting gaps** that affect multiple Units
 5. **Rank gaps by impact** (blocking issues first)
+6. **Generate Bolt Execution Plan**:
+   1. Collect all bolt groupings across all Units (from sub-agent results and Units Overview)
+   2. Identify bolt-to-bolt dependencies (data, interface, infrastructure) using sub-agent `bolt_dependencies` data
+   3. Assign **Phases** (sequential stages): Phase 0 = foundation/setup, then increasing phases for dependent work
+   4. Assign **Lanes** within each phase (parallel slots): independent bolts in same phase get different lanes
+   5. Identify **Critical Path** (longest dependency chain by estimated duration)
+   6. Calculate **Parallelism Opportunities** (max parallel bolts per phase, teams needed)
+   7. Generate the **Visual Summary** (ASCII phase/lane diagram)
+   8. Flag circular dependencies as blocking gaps
+   9. Assess bolt sizing (flag < 2 hours or > 3 days)
+
+   Output: Full Bolt Execution Plan using the template from @${CLAUDE_PLUGIN_ROOT}/references/planning-shared.md
 
 ### Phase 4: Present Assessment
 
@@ -226,6 +222,38 @@ Present the confidence assessment to the user:
 2. [Unit 1] NFR "performance" lacks specific target
    - Suggestion: Define response time target (e.g., <200ms p95)
 
+### Bolt Execution Plan
+
+#### Phase 0: Foundation
+| Lane | Bolt | Unit | Summary | Depends On |
+|------|------|------|---------|------------|
+| A | Bolt 1.1 | Unit 1 | ... | — |
+| B | Bolt 2.1 | Unit 2 | ... | — |
+
+#### Phase 1: Core Domain
+| Lane | Bolt | Unit | Summary | Depends On |
+|------|------|------|---------|------------|
+| A | Bolt 1.2 | Unit 1 | ... | Bolt 1.1 |
+
+#### Critical Path
+`Bolt 1.1 → Bolt 1.2 → ...` (X days)
+
+#### Parallelism Opportunities
+| Phase | Max Parallel Bolts | Teams Needed |
+|-------|-------------------|--------------|
+| Phase 0 | 2 | 2 |
+| Phase 1 | 1 | 1 |
+
+#### Visual Summary
+Phase 0:  [Bolt 1.1]  [Bolt 2.1]
+              ↓
+Phase 1:  [Bolt 1.2]
+              ...
+
+#### Recommendations
+1. Start with Phase 0 — foundation bolts unblock everything
+2. Critical path bottleneck: [specific bolt]
+
 ### Bolt Refinements Needed
 
 1. [Unit 1] Bolt "Auth Flow" contains unrelated Tasks
@@ -249,15 +277,26 @@ Based on confidence level:
 ```
 Confidence is HIGH (XX%). Ready to proceed with Jira transfer.
 
+Bolt Execution Plan: X phases, critical path = X days
+Project routing: PROJ (+ FRONT if multi-project)
+Team assignment: [Team Name(s)]
+Bolt dependencies to link: X
+
 Do you want to:
 1. Proceed with Jira transfer
 2. Address gaps first anyway
-3. Cancel
+3. Adjust project/team routing
+4. Cancel
 ```
 
 **If Medium (60-79%):**
 ```
 Confidence is MEDIUM (XX%). Some gaps identified.
+
+Bolt Execution Plan: X phases, critical path = X days
+Project routing: PROJ (+ FRONT if multi-project)
+Team assignment: [Team Name(s)]
+Bolt dependencies to link: X
 
 Gaps to address:
 - [List top 3 gaps]
@@ -265,7 +304,8 @@ Gaps to address:
 Do you want to:
 1. Address gaps first (recommended)
 2. Proceed anyway (override)
-3. Cancel
+3. Adjust project/team routing
+4. Cancel
 ```
 
 **If Low (<60%):**
@@ -301,7 +341,10 @@ Sub-epic (Unit)
 
 Confirm the user is ready:
 - Remind them of the Jira hierarchy: Units → Sub-epics, Bolts → Stories, Tasks → Sub-tasks
-- Confirm the Jira project key
+- Confirm the Bolt Execution Plan (phases, lanes, critical path)
+- Confirm project keys and multi-project routing (if applicable)
+- Confirm team assignments
+- Show the number of dependency links that will be created
 - Confirm the refined Bolt groupings are final
 
 #### Step 2: Create Jira Artifacts
@@ -311,68 +354,135 @@ Confirm the user is ready:
 ```bash
 # First check acli is installed
 which acli || echo "acli not installed - see: https://developer.atlassian.com/cloud/acli/"
+```
 
-# 1. Create Sub-epic for the Unit
+**Step 2a: Create Sub-epics (Units)**
+
+For each Unit:
+- Summary: Unit page title
+- Description: Unit page content including:
+  - Scope summary and acceptance criteria
+  - NFRs, risks, dependencies
+  - ADR links/references (if design documentation exists)
+  - Design document links (domain model, context maps)
+  - Link to Intent Confluence doc
+- Label: `aidlc:unit`
+- If design exists, add label: `aidlc:designed`
+- Team field: Set if team assignment was configured
+
+```bash
 acli jira workitem create --project "PROJ" --type "Sub-epic" \
   --summary "Unit: [Name]" \
   --description-file unit-description.md \
-  --label "aidlc:unit"
+  --label "aidlc:unit" \
+  --json
+# Set team if configured
+acli jira workitem edit PROJ-123 --field "Team" --value "Team Name"
+```
 
-# 2. Create Story for each Bolt (under Sub-epic)
+**Step 2b: Create Stories (Bolts)**
+
+For each Bolt, create in the correct project (respecting multi-project routing):
+- Summary: Bolt name/description from Units Overview
+- Description: Include:
+  - Scope summary (what this Bolt delivers)
+  - Phase and Lane assignment (e.g., "Phase 1, Lane A")
+  - Tasks included (list of child sub-tasks)
+  - Dependencies (other Bolts — blocks/blocked by)
+  - Whether on the critical path (yes/no)
+  - Team assignment (if specified)
+  - Estimated duration
+- Parent: The Unit's Sub-epic
+- Label: `aidlc:bolt`
+
+```bash
 acli jira workitem create --project "PROJ" --type "Story" \
   --summary "Bolt: [Description]" \
   --description-file bolt-description.md \
   --parent "PROJ-123" \
-  --label "aidlc:bolt"
+  --label "aidlc:bolt" \
+  --json
+```
 
-# 3. Create Sub-task for each Task (under its Bolt/Story)
+**Step 2c: Create Sub-tasks (Tasks)**
+
+For each Task, ensure **complete information transfer**:
+- Summary: Task page title
+- Description: Full Task content including:
+  - User story (As a... I want... So that...)
+  - **ALL** acceptance criteria (every checkbox — do not summarize or omit any)
+  - Context section
+  - Dependencies with references
+  - Risks
+  - **Test notes** (all test scenarios from the Task page)
+- Parent: The Bolt's Story (inherits project from parent)
+
+```bash
 acli jira workitem create --project "PROJ" --type "Sub-task" \
   --summary "[Task Title]" \
   --description-file task-description.md \
   --parent "PROJ-456"
 ```
 
-For each Unit:
-
-1. **Create Sub-epic** (or Epic if Sub-epic unavailable)
-   - Summary: Unit page title
-   - Description: Unit page content + link to Intent Confluence doc
-   - Label: `aidlc:unit`
-   - If design exists, add label: `aidlc:designed`
-
-2. **Create Stories for each Bolt** under the Sub-epic
-   - Summary: Bolt name/description from Units Overview
-   - Description: Bolt scope, included Tasks list, duration estimate
-   - Parent: The Unit's Sub-epic
-   - Label: `aidlc:bolt`
-
-3. **Create Sub-tasks for each Task** under their Bolt/Story
-   - Summary: Task page title
-   - Description: Task content (user story, acceptance criteria, context, dependencies, risks, test notes)
-   - Parent: The Bolt's Story
-
 Use templates in @${CLAUDE_PLUGIN_ROOT}/references/planning-shared.md
 
-#### Step 3: Update Workflow Status
+#### Step 3: Link Bolt Dependencies
+
+After all Bolts are created, use the Bolt Execution Plan to create dependency links between Stories:
+
+1. Map bolt names to their Jira Story keys (from Step 2b output)
+2. Iterate through all "Depends On" entries in the execution plan
+3. For each dependency, create a link:
+
+```bash
+# For each dependency in the execution plan:
+# Bolt 1.2 (PROJ-456) is blocked by Bolt 1.1 (PROJ-455):
+acli jira workitem link PROJ-456 PROJ-455 --link-type "blocks"
+```
+
+4. Verify links were created successfully
+
+**Fallback**: If `acli` is not available or linking fails, document all dependencies in each Story's description with the format:
+```
+**Blocked by:** PROJ-455 (Bolt 1.1)
+**Blocks:** PROJ-460 (Bolt 2.2)
+```
+
+#### Step 4: Update Bolt Execution Plan in Confluence
+
+Backfill the Bolt Execution Plan on the Units Overview page with created Jira Story keys:
+
+| Lane | Bolt | Unit | Summary | Depends On | Jira Story |
+|------|------|------|---------|------------|------------|
+| A | Bolt 1.1 | Unit 1 | ... | — | PROJ-455 |
+| B | Bolt 2.1 | Unit 2 | ... | — | PROJ-458 |
+
+This makes the Confluence plan a live reference with links to Jira.
+
+#### Step 5: Update Workflow Status
 
 Update the Confluence Intent page status table:
 - Set "Verification" row to "✅ Complete" with today's date
 - Add links to created Sub-epics in the Artifact column
 
-#### Step 4: Delete Confluence Task Pages
+#### Step 6: Delete Confluence Task Pages
 
 After successful Jira creation, delete the Confluence pages to avoid confusion:
 - Delete all Task pages
 - Delete all Unit pages
 - Delete the Units Overview page
 
-**Important**: Keep the Intent document and Design documents - only delete the decomposition pages.
+**Important**: Keep the Intent document and Design documents — only delete the decomposition pages.
 
-#### Step 5: Report Back
+#### Step 7: Report Back
 
 Provide:
 - Created Jira keys (Sub-epics, Stories/Bolts, Sub-tasks/Tasks)
 - Links to the Jira artifacts
+- Bolt Execution Plan summary (phases, critical path duration)
+- Dependency links created (count + list of linked pairs)
+- Team/project routing applied (which teams, which projects)
+- Execution order recommendation (start with Phase 0, then Phase 1, etc.)
 - Confirmation that Confluence pages have been cleaned up
 - Final confidence score for reference
 
@@ -388,13 +498,23 @@ Provide:
 - Confidence score calculated with weighted average
 - Gaps identified and categorized
 - Bolt groupings reviewed and refined
+- Bolt Execution Plan generated with phases, lanes, critical path
+- Parallelism opportunities documented (teams per phase)
+- Bolt sizing validated (2h-3d range)
+- Circular dependencies flagged
 - Assessment report presented to user
 
 ### Jira Transfer Complete (if approved)
 - Units created as Sub-epics with `aidlc:unit` label
 - Bolts created as Stories under their respective Sub-epics with `aidlc:bolt` label
 - Tasks created as Sub-tasks under their respective Bolts/Stories
+- All acceptance criteria and test notes transferred completely to Sub-tasks
+- Bolt-to-bolt dependency links created ("blocks"/"is blocked by")
+- Team field set on all artifacts (if configured)
+- Multi-project routing applied (if configured)
+- ADR and design doc links included in Sub-epic descriptions
 - Design label added if design exists (`aidlc:designed`)
+- Bolt Execution Plan updated with Jira Story keys in Confluence
 - Confluence decomposition pages deleted (Overview, Units, Tasks)
 - Intent page status table updated
 
@@ -411,3 +531,9 @@ Provide:
 - **User wants to skip verification**: Allow with explicit confirmation, but warn that AI execution quality may suffer.
 - **Bolt groupings unclear**: Review proposed Bolts in Units Overview; may need to regroup Tasks before transfer.
 - **Tasks span multiple Bolts**: Each Task should belong to exactly one Bolt; resolve before Jira transfer.
+- **`acli` not installed for linking**: Document dependencies in Story descriptions instead; instruct user to manually create links later.
+- **Team field not found in Jira**: Use `acli jira workitem fields PROJ-123` to discover the correct field name for team assignment.
+- **Cross-project Sub-tasks**: Jira constraint — Sub-tasks must be in the same project as their parent Story. Route at the Story (Bolt) level, not Sub-task level.
+- **Circular bolt dependencies detected**: Flag as blocking gap. Must restructure into a DAG (directed acyclic graph) before transfer.
+- **Too many phases in execution plan**: Consolidate phases where bolts have no actual inter-phase dependencies.
+- **Single lane per phase (no parallelism)**: Flag for team to consider splitting bolts or adjusting dependencies to enable parallel work.
