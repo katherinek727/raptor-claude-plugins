@@ -111,7 +111,7 @@
       "name": "gitlab-ci",
       "source": "./plugins/gitlab-ci",
       "description": "GitLab CI/CD pipeline standards, best practices, and guidelines for Raptor projects",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "author": {
         "name": "Dave Juba"
       }
