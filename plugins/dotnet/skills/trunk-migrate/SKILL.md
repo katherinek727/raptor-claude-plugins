@@ -20,6 +20,22 @@ You are the migration execution skill. You perform the actual migration of a .NE
 
 **IMPORTANT**: This skill modifies the repository. Ensure the user has reviewed the plan via `/dotnet:trunk-plan` first.
 
+## Prerequisites
+
+**Required plugin:** This skill depends on the `gitlab-ci` plugin for pipeline standards.
+
+Before proceeding, check if the gitlab-ci plugin is installed by attempting to verify the `/gitlab-ci:standards-load` command is available. If not installed, tell the user:
+
+> The `gitlab-ci` plugin is required for this migration. Please install it first:
+> ```
+> /plugin install gitlab-ci
+> ```
+> Then run `/dotnet:trunk-migrate` again.
+
+Do not proceed with the migration until the gitlab-ci plugin is confirmed available.
+
+## References
+
 Reference templates at: @${CLAUDE_PLUGIN_ROOT}/references/migration-templates.md
 Reference config schema at: @${CLAUDE_PLUGIN_ROOT}/references/config-schema.md
 
@@ -175,7 +191,7 @@ The CI/CD config is built conditionally based on decision trees:
 - **true**: Migration validation job, deploy-migrations-lower, deploy-migrations-prod, include ef-migrations.yml and sql-script-deploy.yml templates
 - **false**: Omit migration jobs and templates, remove migration `needs:` from deploy jobs
 
-**CRITICAL CI/CD RULES** (see @${CLAUDE_PLUGIN_ROOT}/references/gitlab-ci-standards.md):
+**CRITICAL CI/CD RULES** (for full documentation, run `/gitlab-ci:standards-load`):
 - Use `needs` ONLY for intra-stage ordering (jobs within the same stage). NEVER add cross-stage `needs`.
 - Entry-point jobs in each stage (e.g., `push-docker-images-prod`, `deploy-migrations-prod`) must have NO `needs` — they are stage-scheduled and will wait for ALL jobs in the previous stage to complete. This ensures gates like `test-ui-staging` and `manual-approval-prod` are both enforced.
 - Use `dependencies` (not `needs`) when a job needs artifacts from an earlier stage without affecting execution order.

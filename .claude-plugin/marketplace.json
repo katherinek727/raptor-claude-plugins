@@ -92,8 +92,8 @@
     {
       "name": "dotnet",
       "source": "./plugins/dotnet",
-      "description": ".NET development tools including trunk-based migration for Raptor platform services",
-      "version": "1.2.0",
+      "description": ".NET development tools including trunk-based migration for Raptor platform services (requires: gitlab-ci plugin)",
+      "version": "2.0.0",
       "author": {
         "name": "Wenham Dorsett"
       }
@@ -105,6 +105,15 @@
       "version": "1.0.0",
       "author": {
         "name": "Sunil Kumar"
+      }
+    },
+    {
+      "name": "gitlab-ci",
+      "source": "./plugins/gitlab-ci",
+      "description": "GitLab CI/CD pipeline standards, best practices, and guidelines for Raptor projects",
+      "version": "1.0.0",
+      "author": {
+        "name": "Dave Juba"
       }
     }
   ]

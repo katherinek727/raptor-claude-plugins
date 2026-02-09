@@ -14,6 +14,7 @@ A collection of plugins that extend [Claude Code](https://docs.anthropic.com/en/
 - **Behavioral Diff** - Detect logic inversions and behavioral changes in code diffs
 - **.NET Migration** — Automate trunk-based development migration for .NET API services with Kustomize and GitLab CI/CD
 - **Security Scanning** — vulnerability scanning, secrets detection, SAST analysis checking against OWASP Top 10 and CWE Top 25
+- **GitLab CI Standards** — Pipeline best practices for job ordering, `needs` vs `dependencies`, and stage-based gates
 
 ## Usage Examples
 
@@ -56,6 +57,14 @@ The pair-programming skill auto-triggers and queries multiple AI providers.
 /dotnet:trunk-plan
 /dotnet:trunk-migrate
 ```
+
+**Get GitLab CI pipeline standards:**
+```
+/gitlab-ci:standards-view
+/gitlab-ci:standards-load job-ordering
+/gitlab-ci:standards-audit
+```
+Or just ask about pipeline editing—the skill auto-triggers on phrases like "add a new job" or "update the pipeline".
 
 ## Quick Start
 
@@ -230,7 +239,7 @@ Trunk-based development migration tools for .NET API services. Automates the mig
 
 **Workflow:** Discover → Plan → Migrate → Validate → (MR merge) → Post-Migrate
 
-**Requires:** .NET 8 project with GitLab CI/CD, `kustomize` CLI, `glab` CLI
+**Requires:** .NET 8 project with GitLab CI/CD, `kustomize` CLI, `gitlab-ci` plugin (for pipeline standards)
 
 ---
 
@@ -244,6 +253,27 @@ Security audit tools for vulnerability scanning, secrets detection, and complian
 | `/security:secrets` | Detect hardcoded secrets, API keys, and credentials |
 
 **Requires:** Git repository with code to scan
+
+---
+
+### GitLab CI (`/gitlab-ci:*`)
+
+Pipeline standards, best practices, and guidelines for Raptor projects.
+
+| Command | Triggers | Description |
+|---------|----------|-------------|
+| `/gitlab-ci:standards-list` | `list standards`, `available standards`, `what standards` | List available standards topics |
+| `/gitlab-ci:standards-view` | `view standards`, `show standards` | Display standards summary to the user |
+| `/gitlab-ci:standards-load` | `load standards`, `standards context` | Load full standards into Claude's context |
+| `/gitlab-ci:standards-audit` | `audit pipeline`, `pipeline compliance` | Audit repo for standards violations |
+
+**Auto-triggered skill:** The `pipeline-edit` skill automatically activates when you mention pipeline editing tasks:
+- `update pipeline`, `modify pipeline`, `create pipeline`
+- `update gitlab-ci`, `edit gitlab-ci`
+- `add job`, `add stage`, `new job`, `new stage`
+
+**Current standards topics:**
+- `job-ordering` — Use stages for cross-stage ordering and `needs` only for intra-stage ordering
 
 ---
 
@@ -289,6 +319,7 @@ claude plugin marketplace add git@gitlab.com:raptortech1/aidevops/claude-plugins
 /plugin install behavioral-diff
 /plugin install dotnet
 /plugin install security
+/plugin install gitlab-ci
 
 # Reload after changes
 /plugin
