@@ -1,7 +1,7 @@
 ---
 name: standards-view
 description: "Display GitLab CI pipeline standards summary to the user. Triggers: view standards, show standards, display standards, what are the standards"
-argument-hint: "[topic]"
+argument-hint: "[topic ...] (optional)"
 ---
 
 # GitLab CI Standards - View
@@ -12,19 +12,31 @@ Display a human-readable summary of GitLab CI standards to the user.
 
 - `/gitlab-ci:standards-view` — Show summary of all standards
 - `/gitlab-ci:standards-view job-ordering` — Show job ordering standards
+- `/gitlab-ci:standards-view topic1 topic2` — Show multiple specific topics
 
 ## Available Topics
 
 - `job-ordering` — Pipeline job ordering with `needs` vs `dependencies`
 
+## Argument Handling
+
+**Valid topics:** `job-ordering`
+
+- If arguments are provided in `$ARGUMENTS`, validate each one against the valid topics list above
+- For any invalid topic, respond with:
+  > Invalid topic: `[topic]`. Valid topics: `job-ordering`. Run `/gitlab-ci:standards-list` to see all available topics.
+- If all provided topics are valid, display only those topics
+- If no arguments are provided, display all topics
+
 ## Related Commands
 
+- `/gitlab-ci:standards-list` — List available standards topics
 - `/gitlab-ci:standards-load` — Load full standards into context
 - `/gitlab-ci:standards-audit` — Analyze repo for standards violations
 
 ## Instructions
 
-When this skill is invoked, output a concise summary of the standards for the user to read.
+When this skill is invoked, output a concise summary of the requested standards for the user to read.
 
 ### Job Ordering Summary
 

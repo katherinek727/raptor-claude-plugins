@@ -1,7 +1,7 @@
 ---
 name: standards-audit
 description: "Audit a repository's GitLab CI pipeline against standards. Reports violations with line numbers and recommendations. Triggers: audit pipeline, check pipeline standards, pipeline compliance, standards audit"
-argument-hint: "[topic]"
+argument-hint: "[topic ...] (optional)"
 ---
 
 # GitLab CI Standards Audit
@@ -12,13 +12,25 @@ Analyze a repository's `.gitlab-ci.yml` for compliance with GitLab CI standards.
 
 - `/gitlab-ci:standards-audit` — Audit against all standards
 - `/gitlab-ci:standards-audit job-ordering` — Audit job ordering only
+- `/gitlab-ci:standards-audit topic1 topic2` — Audit multiple specific topics
 
 ## Available Topics
 
 - `job-ordering` — Pipeline job ordering with `needs` vs `dependencies`
 
+## Argument Handling
+
+**Valid topics:** `job-ordering`
+
+- If arguments are provided in `$ARGUMENTS`, validate each one against the valid topics list above
+- For any invalid topic, respond with:
+  > Invalid topic: `[topic]`. Valid topics: `job-ordering`. Run `/gitlab-ci:standards-list` to see all available topics.
+- If all provided topics are valid, audit only those topics
+- If no arguments are provided, audit all topics
+
 ## Related Commands
 
+- `/gitlab-ci:standards-list` — List available standards topics
 - `/gitlab-ci:standards-view` — Display standards summary to the user
 - `/gitlab-ci:standards-load` — Load full standards into context
 
@@ -29,9 +41,10 @@ Analyze a repository's `.gitlab-ci.yml` for compliance with GitLab CI standards.
 ## Audit Process
 
 1. **Find the pipeline file**: Search for `.gitlab-ci.yml` in the repository root
-2. **Load relevant standards**: Based on `$ARGUMENTS` or all standards if not specified
-3. **Analyze the pipeline**: Check each job against the standards
-4. **Report findings**:
+2. **Validate arguments**: Check that requested topics are valid (see Argument Handling above)
+3. **Load relevant standards**: Based on validated topics or all standards if none specified
+4. **Analyze the pipeline**: Check each job against the standards
+5. **Report findings**:
 
 ### Report Format
 
