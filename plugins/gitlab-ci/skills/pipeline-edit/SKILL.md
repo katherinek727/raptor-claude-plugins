@@ -1,6 +1,7 @@
 ---
 name: pipeline-edit
 description: "Lightweight GitLab CI pipeline editing guidelines. Triggers: update pipeline, modify pipeline, create pipeline, update gitlab-ci, modify gitlab-ci, edit gitlab-ci, add job, add stage, new job, new stage, pipeline job, pipeline stage"
+user-invocable: false
 ---
 
 # GitLab CI Pipeline Editing Guidelines
