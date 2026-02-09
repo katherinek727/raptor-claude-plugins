@@ -10,43 +10,41 @@ Support tools for CPOMS/StaffSafe: diagnoses Sentry issues, fetches script docum
 
 ## Prerequisites
 
-This plugin requires the following MCP servers to be configured:
+This plugin requires the following tools to be configured:
 
-| MCP Server | Purpose |
-|------------|---------|
-| `sentry` | Fetches Sentry issue details, stacktrace, and tags |
-| `atlassian` | Fetches Confluence script documentation and gotchas |
+| Dependency | Purpose | Installation |
+|------------|---------|-------------|
+| `sentry` MCP server | Fetches Sentry issue details, stacktrace, and tags | Configure in Claude Code MCP settings |
+| `atlassian` MCP server | Fetches Confluence script documentation and gotchas | Configure in Claude Code MCP settings |
+| `glab` CLI | Fetches scripts from CPOMS/StaffSafe GitLab repositories | See below |
 
-## Installation
+### Installing glab (GitLab CLI)
 
-### 1. Clone the plugins repo
-
+**macOS:**
 ```bash
-git clone git@gitlab.com:raptortech1/aidevops/claude-plugins.git ~/.claude/plugins
+brew install glab
 ```
 
-Or copy just this plugin:
+**Windows:**
+```powershell
+winget install --id GitLab.Glab
+```
+Or via Scoop: `scoop install glab` / Chocolatey: `choco install glab`
+
+**Linux:**
+See https://gitlab.com/gitlab-org/cli#installation
+
+### Authenticating glab
 
 ```bash
-cp -r plugins/support-tools ~/.claude/plugins/
+glab auth login
 ```
 
-### 2. Install Ruby dependencies
+Select `gitlab.com`, choose your preferred authentication method (browser or token), and follow the prompts. Verify access:
 
 ```bash
-cd ~/.claude/plugins/support-tools/mcp-servers/gitlab-scripts
-bundle install
+glab api "projects/raptortech1%2Fraptor%2Fcpoms%2Fcpoms/repository/tree?path=app/services/scripts&per_page=1"
 ```
-
-### 3. Set GitLab token
-
-Add to your `~/.zshrc` or `~/.bashrc`:
-
-```bash
-export GITLAB_TOKEN="glpat-your-token-here"
-```
-
-Get a token from GitLab → Settings → Access Tokens with `read_repository` scope.
 
 ## What's Included
 
@@ -54,31 +52,17 @@ Get a token from GitLab → Settings → Access Tokens with `read_repository` sc
 support-tools/
 ├── .claude-plugin/
 │   └── plugin.json              # Plugin manifest
-├── .mcp.json                    # Bundled MCP server config
-├── mcp-servers/
-│   └── gitlab-scripts/
-│       ├── server.rb            # GitLab scripts MCP server
-│       ├── Gemfile
-│       └── Gemfile.lock
 ├── skills/
 │   └── diagnose/
 │       └── SKILL.md             # The diagnose skill
 └── README.md
 ```
 
-## Bundled MCP Server
-
-This plugin includes the `gitlab-scripts` MCP server which:
-
-- Lists scripts from CPOMS (`raptortech1/raptor/cpoms/cpoms`)
-- Lists scripts from StaffSafe (`raptortech1/raptor/cpoms/cpoms-scr`)
-- Fetches full script source code and extracts options
-
 ## What the skill does
 
 1. **Fetches Sentry issue** - Gets error details, stacktrace, and tenant (subdomain tag)
 2. **Fetches script documentation** - Pulls Confluence page with gotchas and tips
-3. **Lists available scripts** - Gets current scripts from CPOMS or StaffSafe
+3. **Lists available scripts** - Gets current scripts from CPOMS or StaffSafe via `glab`
 4. **Recommends workflow** - Suggests logging scripts first, then destructive scripts
 
 ## Key Points
