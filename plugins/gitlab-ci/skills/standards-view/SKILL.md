@@ -1,7 +1,8 @@
 ---
 name: standards-view
-description: "Display GitLab CI pipeline standards summary to the user. Triggers: view standards, show standards, display standards, what are the standards"
+description: "Display GitLab CI pipeline standards summary to the user."
 argument-hint: "[topic ...] (optional)"
+disable-model-invocation: true
 ---
 
 # GitLab CI Standards - View

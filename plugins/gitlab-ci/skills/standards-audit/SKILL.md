@@ -1,7 +1,8 @@
 ---
 name: standards-audit
-description: "Audit a repository's GitLab CI pipeline against standards. Reports violations with line numbers and recommendations. Triggers: audit pipeline, check pipeline standards, pipeline compliance, standards audit"
+description: "Audit a repository's GitLab CI pipeline against standards. Reports violations with line numbers and recommendations."
 argument-hint: "[topic ...] (optional)"
+disable-model-invocation: true
 ---
 
 # GitLab CI Standards Audit

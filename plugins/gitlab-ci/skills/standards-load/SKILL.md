@@ -1,7 +1,8 @@
 ---
 name: standards-load
-description: "Load GitLab CI pipeline standards into context for Claude to apply during work. Triggers: load standards, load pipeline standards, standards context"
+description: "Load GitLab CI pipeline standards into context for Claude to apply during work."
 argument-hint: "[topic ...] (optional)"
+disable-model-invocation: true
 ---
 
 # GitLab CI Standards - Load Context

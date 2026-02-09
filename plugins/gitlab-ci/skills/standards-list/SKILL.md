@@ -1,6 +1,7 @@
 ---
 name: standards-list
-description: "List available GitLab CI standards topics. Triggers: list standards, available standards, what standards, standards topics"
+description: "List available GitLab CI standards topics."
+disable-model-invocation: true
 ---
 
 # GitLab CI Standards - List Topics
