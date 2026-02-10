@@ -304,4 +304,3 @@ spec:
 | Using in-process model | Use isolated worker model |
 | Business logic in Function classes | Use separate BusinessLogic project |
 | Different DI than Web API v10 | Use shared ContainerConfiguration |
-| Creating clients per invocation | Use DI with singleton lifetime |
