@@ -34,12 +34,12 @@ Raptor-specific patterns for **new** ASP.NET Core Web API applications on .NET 1
 ```
 {service-name}/
 ├── src/
-│   ├── Raptor.{Service}.Api/              # ASP.NET Core Web API
-│   ├── Raptor.{Service}.BusinessLogic/    # Business logic (MediatR handlers)
-│   ├── Raptor.{Service}.Data/             # Data access layer
-│   ├── Raptor.{Service}.Shared/           # DI configuration
-│   ├── Raptor.{Service}.Contracts/        # DTOs, input/output models
-│   └── Raptor.{Service}.Client/           # API client library (NuGet)
+│   ├── Api/              # ASP.NET Core Web API
+│   ├── BusinessLogic/    # Business logic (MediatR handlers)
+│   ├── Data/             # Data access layer
+│   ├── Shared/           # DI configuration
+│   ├── Contracts/        # DTOs, input/output models
+│   └── Client/           # API client library (NuGet)
 ├── test/
 │   ├── UnitTests/
 │   ├── IntegrationTests/

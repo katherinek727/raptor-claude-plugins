@@ -45,14 +45,14 @@ For **new applications** created from the `dotnet` template repository:
 
 | Profile | Detection Markers | Key Patterns |
 |---------|-------------------|--------------|
-| [Web API v10](dotnet-webapi-v10-profile.md) | .NET 10+, `services.AddScoped<>()`, no Functions | Microsoft DI, AutoMapper, shared ContainerConfiguration |
+| [Web API v10](dotnet-webapi-v10-profile.md) | .NET 10+, no Functions | Microsoft DI, AutoMapper, shared ContainerConfiguration |
 | [Function App v10](dotnet-function-v10-profile.md) | .NET 10+, `[Function]`, `HostBuilder`, no Controllers | Isolated worker, Microsoft DI, shared ContainerConfiguration |
 | [Mixed Solution](dotnet-mixed-solution-profile.md) | .NET 10+, both Controllers + Functions | Both entry points, shared business logic |
 
 ## Detection Logic
 
 ### Step 1: Confirm .NET Project
-Check for `.csproj`, `.sln`, `*.cs` files (from dotnet.md detection).
+Check for `.csproj`, `.sln`, `.slnx`, `*.cs` files (from dotnet.md detection).
 
 ### Step 2: Determine .NET Version
 
@@ -142,7 +142,7 @@ ELSE:
 - `TargetFramework` is net10.0 or higher
 - `Controllers/` directory exists
 - `ContainerConfiguration` extends `IServiceCollection` (Microsoft DI)
-- `services.AddScoped<>()` or `services.AddSingleton<>()` syntax
+- `services.AddSingleton<>()` syntax
 - No `host.json` or `[Function]` attributes
 
 **Function App v10 - .NET 10+:**
@@ -164,12 +164,8 @@ ELSE:
 | Aspect | Framework (.NET 4.x) | Legacy (.NET 6-9) | Modern (.NET 10+) |
 |--------|----------------------|-------------------|-------------------|
 | Runtime | .NET Framework | .NET Core / .NET 5-9 | .NET 10+ |
-| DI Container | SimpleInjector | SimpleInjector (Web API) / MS DI (Functions) | Microsoft DI (all) |
-| DI Config File | `ContainerConfig.cs` | `ContainerConfiguration.cs` returns `Container` | `ContainerConfiguration.cs` extends `IServiceCollection` |
 | Web Framework | ASP.NET MVC 5 + OWIN | ASP.NET Core | ASP.NET Core |
-| Data Access | EF6 + Dapper | EF Core | EF Core |
-| Object Mapping | Manual translators | Mapster | AutoMapper |
-| Configuration | web.config + Azure App Config | appsettings.json | appsettings.json |
+| Configuration | web.config | appsettings.json | appsettings.json |
 | Project Structure | Areas-based monolith | In entry point project | Separate BusinessLogic project |
 | Startup | `Global.asax.cs` | `Startup.cs` / `FunctionsStartup` | `Program.cs` / `HostBuilder` |
 | Functions Model | N/A | In-process (`[FunctionName]`) | Isolated worker (`[Function]`) |

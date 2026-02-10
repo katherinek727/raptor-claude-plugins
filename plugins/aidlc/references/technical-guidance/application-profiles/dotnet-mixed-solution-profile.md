@@ -35,13 +35,13 @@ Raptor-specific patterns for **new .NET 10 applications** combining Web API and 
 ```
 {service-name}/
 ├── src/
-│   ├── Raptor.{Service}.Api/              # ASP.NET Core Web API
-│   ├── Raptor.{Service}.Functions/        # Azure Functions (isolated worker)
-│   ├── Raptor.{Service}.BusinessLogic/    # Shared business logic (MediatR)
-│   ├── Raptor.{Service}.Data/             # Data access layer
-│   ├── Raptor.{Service}.Shared/           # DI configuration
-│   ├── Raptor.{Service}.Contracts/        # DTOs, input/output models
-│   └── Raptor.{Service}.Client/           # API client library (NuGet)
+│   ├── Api/              # ASP.NET Core Web API
+│   ├── Functions/        # Azure Functions (isolated worker)
+│   ├── BusinessLogic/    # Shared business logic (MediatR)
+│   ├── Data/             # Data access layer
+│   ├── Shared/           # DI configuration
+│   ├── Contracts/        # DTOs, input/output models
+│   └── Client/           # API client library (NuGet)
 ├── test/
 │   ├── UnitTests/
 │   ├── IntegrationTests/

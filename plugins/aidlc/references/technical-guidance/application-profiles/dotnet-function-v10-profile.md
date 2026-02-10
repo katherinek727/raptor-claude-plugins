@@ -35,11 +35,11 @@ Raptor-specific patterns for **new** Azure Function applications on .NET 10+ usi
 ```
 {service-name}/
 ├── src/
-│   ├── Raptor.{Service}.Functions/        # Azure Functions (isolated worker)
-│   ├── Raptor.{Service}.BusinessLogic/    # Business logic (MediatR handlers)
-│   ├── Raptor.{Service}.Data/             # Data access layer
-│   ├── Raptor.{Service}.Shared/           # DI configuration
-│   └── Raptor.{Service}.Contracts/        # DTOs, input/output models
+│   ├── Functions/        # Azure Functions (isolated worker)
+│   ├── BusinessLogic/    # Business logic (MediatR handlers)
+│   ├── Data/             # Data access layer
+│   ├── Shared/           # DI configuration
+│   └── Contracts/        # DTOs, input/output models
 ├── test/
 │   ├── UnitTests/
 │   ├── IntegrationTests/

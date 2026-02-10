@@ -91,13 +91,7 @@ public static class ContainerConfiguration
 
 ### Lifestyle Conventions
 
-| Component | Lifestyle | Rationale |
-|-----------|-----------|-----------|
-| Repositories | Scoped | Per-request data access |
-| Managers | Scoped | Per-request orchestration |
-| Handlers | Transient | Stateless request processing |
-| Database Clients | Singleton | Thread-safe, connection pooling |
-| HTTP Clients | Singleton | Socket management |
+Prefer `Scoped` as the default lifetime. Use `Singleton` only when there's a specific reason (e.g. thread-safe, stateless clients with connection pooling). Evaluate lifetime on a case-by-case basis rather than applying blanket rules.
 
 ---
 
