@@ -329,18 +329,22 @@ Cannot proceed to Jira transfer until confidence reaches 60%.
 This phase creates Jira artifacts from the verified Confluence documentation using the AI-DLC hierarchy:
 
 ```
-Sub-epic (Unit)
-├── Story (Bolt) ← Groups related Tasks
-│   ├── Sub-task (Task)
-│   ├── Sub-task (Task)
-└── Story (Bolt)
-    └── Sub-task (Task)
+Epic (Intent)
+├── Sub-epic (Unit)
+│   ├── Story (Bolt) ← Groups related Tasks
+│   │   ├── Sub-task (Task)
+│   │   ├── Sub-task (Task)
+│   └── Story (Bolt)
+│       └── Sub-task (Task)
+└── Sub-epic (Unit)
+    └── Story (Bolt)
+        └── Sub-task (Task)
 ```
 
 #### Step 1: Confirm Jira Transfer
 
 Confirm the user is ready:
-- Remind them of the Jira hierarchy: Units → Sub-epics, Bolts → Stories, Tasks → Sub-tasks
+- Remind them of the Jira hierarchy: Intent → Epic, Units → Sub-epics, Bolts → Stories, Tasks → Sub-tasks
 - Confirm the Bolt Execution Plan (phases, lanes, critical path)
 - Confirm project keys and multi-project routing (if applicable)
 - Confirm team assignments
@@ -356,7 +360,35 @@ Confirm the user is ready:
 which acli || echo "acli not installed - see: https://developer.atlassian.com/cloud/acli/"
 ```
 
-**Step 2a: Create Sub-epics (Units)**
+**Step 2a: Create Epic (Intent)**
+
+Create the parent Epic that will group all Units:
+
+```bash
+# Create Epic for the Intent
+acli jira workitem create --project "PROJ" --type "Epic" \
+  --summary "<Intent Name>" \
+  --description-file intent-epic.md \
+  --label "aidlc:intent" \
+  --json
+```
+
+The Epic description should include:
+- Intent Summary (from Confluence)
+- Problem/Opportunity (condensed)
+- Target Users
+- Outcomes (business + user)
+- Scope Summary
+- NFRs table
+- Top risks
+- Measurement criteria
+- **Link to full Intent Confluence doc**
+
+Use the Jira Epic (Intent) Template from @${CLAUDE_PLUGIN_ROOT}/references/planning-shared.md
+
+Save the Epic key (e.g., PROJ-100) for linking Sub-epics.
+
+**Step 2b: Create Sub-epics (Units)**
 
 For each Unit:
 - Summary: Unit page title
@@ -366,6 +398,7 @@ For each Unit:
   - ADR links/references (if design documentation exists)
   - Design document links (domain model, context maps)
   - Link to Intent Confluence doc
+- Parent: The Intent's Epic (created in Step 2a)
 - Label: `aidlc:unit`
 - If design exists, add label: `aidlc:designed`
 - Team field: Set if team assignment was configured
@@ -374,13 +407,14 @@ For each Unit:
 acli jira workitem create --project "PROJ" --type "Sub-epic" \
   --summary "Unit: [Name]" \
   --description-file unit-description.md \
+  --parent "PROJ-100" \
   --label "aidlc:unit" \
   --json
 # Set team if configured
 acli jira workitem edit PROJ-123 --field "Team" --value "Team Name"
 ```
 
-**Step 2b: Create Stories (Bolts)**
+**Step 2c: Create Stories (Bolts)**
 
 For each Bolt, create in the correct project (respecting multi-project routing):
 - Summary: Bolt name/description from Units Overview
@@ -404,7 +438,7 @@ acli jira workitem create --project "PROJ" --type "Story" \
   --json
 ```
 
-**Step 2c: Create Sub-tasks (Tasks)**
+**Step 2d: Create Sub-tasks (Tasks)**
 
 For each Task, ensure **complete information transfer**:
 - Summary: Task page title
@@ -430,7 +464,7 @@ Use templates in @${CLAUDE_PLUGIN_ROOT}/references/planning-shared.md
 
 After all Bolts are created, use the Bolt Execution Plan to create dependency links between Stories:
 
-1. Map bolt names to their Jira Story keys (from Step 2b output)
+1. Map bolt names to their Jira Story keys (from Step 2c output)
 2. Iterate through all "Depends On" entries in the execution plan
 3. For each dependency, create a link:
 
@@ -477,7 +511,8 @@ After successful Jira creation, delete the Confluence pages to avoid confusion:
 #### Step 7: Report Back
 
 Provide:
-- Created Jira keys (Sub-epics, Stories/Bolts, Sub-tasks/Tasks)
+- Created Epic key and link (Intent)
+- Created Jira keys (Sub-epics linked to Epic, Stories/Bolts, Sub-tasks/Tasks)
 - Links to the Jira artifacts
 - Bolt Execution Plan summary (phases, critical path duration)
 - Dependency links created (count + list of linked pairs)
@@ -505,7 +540,8 @@ Provide:
 - Assessment report presented to user
 
 ### Jira Transfer Complete (if approved)
-- Units created as Sub-epics with `aidlc:unit` label
+- Intent created as Epic with `aidlc:intent` label
+- Units created as Sub-epics linked to the Intent Epic with `aidlc:unit` label
 - Bolts created as Stories under their respective Sub-epics with `aidlc:bolt` label
 - Tasks created as Sub-tasks under their respective Bolts/Stories
 - All acceptance criteria and test notes transferred completely to Sub-tasks

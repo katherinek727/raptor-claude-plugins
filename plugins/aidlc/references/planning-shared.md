@@ -148,12 +148,77 @@ Select an option to continue.
 When transferring from Confluence to Jira, use this hierarchy:
 
 ```
-Sub-epic (Unit)
-├── Story (Bolt) ← Groups related Tasks
-│   ├── Sub-task (Task)
-│   ├── Sub-task (Task)
-└── Story (Bolt)
-    └── Sub-task (Task)
+Epic (Intent)
+├── Sub-epic (Unit)
+│   ├── Story (Bolt) ← Groups related Tasks
+│   │   ├── Sub-task (Task)
+│   │   ├── Sub-task (Task)
+│   └── Story (Bolt)
+│       └── Sub-task (Task)
+└── Sub-epic (Unit)
+    └── Story (Bolt)
+        └── Sub-task (Task)
+```
+
+## Jira Epic (Intent) Template
+
+- Summary: "<Intent Name>"
+- Description:
+  - Intent Summary (brief overview)
+  - Problem / Opportunity (condensed)
+  - Target Users
+  - Outcomes (business + user outcomes)
+  - Scope Summary (in scope / out of scope)
+  - NFRs (table format)
+  - Key Risks (top 3-5, table format)
+  - Measurement Criteria (OKR/KPI)
+  - Link to full Intent Confluence doc
+- Label: `aidlc:intent`
+
+**Template for Epic description:**
+
+```markdown
+## Intent Summary
+
+<1-2 paragraph summary>
+
+## Problem / Opportunity
+
+<Brief description of the problem being solved>
+
+## Target Users
+
+<User personas>
+
+## Outcomes
+
+**Business:** <business outcomes>
+**User:** <user outcomes>
+
+## Scope
+
+**In scope:** <bullet list>
+**Out of scope:** <bullet list>
+
+## NFRs
+
+| Category | Requirement | Target |
+|----------|-------------|--------|
+| Performance | ... | ... |
+
+## Key Risks
+
+| Risk | Impact | Mitigation |
+|------|--------|------------|
+| ... | ... | ... |
+
+## Measurement Criteria
+
+<OKRs/KPIs>
+
+---
+
+📄 **Full Intent Document:** [Confluence Link]
 ```
 
 ## Jira Unit (Sub-epic) Template
@@ -841,8 +906,8 @@ Each artifact should reference:
 
 **Confluence to Jira Mapping:**
 ```
-Confluence Intent Document → Reference (not transferred)
-Confluence Unit Page → Jira Sub-epic
+Confluence Intent Document → Jira Epic (summary + link back to Confluence)
+Confluence Unit Page → Jira Sub-epic (child of Epic)
 Confluence Task Page → Jira Sub-task (under Bolt/Story)
 Proposed Bolts (Units Overview) → Jira Stories (grouping sub-tasks)
 Bolt Execution Plan → Jira issue links ("blocks"/"is blocked by") + phase/lane metadata in Story descriptions
