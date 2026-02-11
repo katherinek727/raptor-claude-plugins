@@ -115,6 +115,16 @@
       "author": {
         "name": "Dave Juba"
       }
+    },
+    {
+      "name": "support-tools",
+      "source": "./plugins/support-tools",
+      "description": "Tools to assist support and oncall engineers with issue diagnostics and resolution workflows",
+      "version": "1.0.0",
+      "author": {
+        "name": "Connor Parris",
+        "email": "connor.parris@cpoms.co.uk"
+      }
     }
   ]
 }
