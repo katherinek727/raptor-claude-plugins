@@ -1,10 +1,15 @@
 {
   "name": "support-tools",
-  "version": "1.1.0",
-  "description": "Support tools for CPOMS/StaffSafe: diagnostics, script recommendations, and incident workflows",
+  "version": "1.0.0",
+  "description": "Tools to assist support and oncall engineers with issue diagnostics and resolution workflows",
   "author": {
-    "name": "Connor Parris"
+    "name": "Connor Parris",
+    "email": "connor.parris@cpoms.co.uk"
   },
   "repository": "https://gitlab.com/raptortech1/aidevops/claude-plugins",
-  "keywords": ["sentry", "cpoms", "staffsafe", "diagnostics", "scripts"]
+  "keywords": ["sentry", "cpoms", "staffsafe", "diagnostics", "scripts"],
+  "skills": "./skills/",
+  "commands": [
+    "./skills/sentry-diagnose/"
+  ]
 }

@@ -1,6 +1,6 @@
 ---
-name: diagnose
-description: Diagnose a Sentry issue, analyze root cause using CPOMS codebase, and recommend scripts with cascading diagnostic workflows
+name: sentry-diagnose
+description: Diagnose a Sentry issue, analyze root cause using the project's codebase, and recommend scripts with cascading diagnostic workflows. (Triggers - diagnose, sentry, recommend script, debug, issue, error, exception)
 allowed-tools: [Bash, Read, Grep, Glob, Task, AskUserQuestion, mcp__sentry__get_issue_details, mcp__sentry__get_issue_tag_values, mcp__sentry__search_issue_events, mcp__atlassian__getConfluencePage]
 argument-hint: "<sentry-issue-url>"
 ---
@@ -14,7 +14,7 @@ Given the Sentry issue URL: `$ARGUMENTS`
 This skill performs intelligent diagnosis of Sentry errors by:
 1. Fetching and analyzing the Sentry issue
 2. Determining the **target project** (CPOMS or StaffSafe) from the Sentry issue's project field
-3. Fetching script documentation for gotchas and tips
+3. Fetching available scripts from the target project's GitLab repository
 4. Exploring the codebase to understand root cause
 5. Recommending a **diagnostic workflow** (logging scripts first, then destructive scripts) — or clearly stating when no script applies
 
@@ -46,9 +46,9 @@ There are two types of scripts:
 
 **Important**: Logging scripts often reveal IDs or state needed to run destructive scripts correctly. Always recommend the diagnostic workflow.
 
-## Script Permissions
+## Script Documentation
 
-Scripts documented on the Confluence page are **permitted for 2nd line** use. However, additional scripts exist in the codebase that may be relevant. If a matching script is found in GitLab but is **not** on the Confluence permitted list, recommend the user liaise with the **3rd line team** who are permitted to run all scripts.
+Scripts are maintained in the GitLab repository. The Confluence page provides additional context gathered from experience, including gotchas, tips, and known edge cases. Use GitLab as the primary source for available scripts, and consult Confluence for practical guidance on using them.
 
 ## Script Execution
 
@@ -60,36 +60,96 @@ Scripts are executed from within **Manage** (not the terminal). When recommendin
 
 ---
 
+## Prerequisites
+
+**Note:** This skill checks for `glab` and `jq` when invoked. MCP servers (Sentry/Atlassian) will be validated when their tools are first called - if missing, you'll receive installation instructions.
+
+This skill requires the following tools to be configured before use:
+
+### 1. MCP Servers
+
+Configure these MCP servers for Claude Code:
+
+| Server | Purpose | Installation |
+|--------|---------|--------------|
+| **sentry** | Fetches Sentry issue details, stacktrace, tags, and event data | `claude mcp add --transport http sentry https://mcp.sentry.dev/mcp` |
+| **atlassian** | Fetches Confluence script documentation and gotchas | `claude mcp add --transport http atlassian https://mcp.atlassian.com/v1/mcp` |
+
+After installation, the MCP servers will prompt for authentication when first used. Follow the prompts to add your authentication credentials (auth tokens, OAuth, or API tokens).
+
+### 2. glab CLI (GitLab CLI)
+
+Required to fetch scripts and codebase files from GitLab repositories.
+
+**Installation:**
+
+- **macOS:** `brew install glab`
+- **Windows:** `winget install --id GitLab.Glab` (or `scoop install glab` / `choco install glab`)
+- **Linux:** See https://gitlab.com/gitlab-org/cli#installation
+
+**Authentication:**
+
+After installing, authenticate with GitLab:
+
+```bash
+glab auth login
+```
+
+Select `gitlab.com`, choose your preferred authentication method (browser or token), and follow the prompts.
+
+**Verify access:**
+
+```bash
+glab api "projects/raptortech1%2Fraptor%2Fcpoms%2Fcpoms/repository/tree?path=app/services/scripts&per_page=1"
+```
+
+If this returns a JSON array, glab is configured correctly. If it returns a 403/404 error, ensure your GitLab account has access to the CPOMS repositories.
+
+### 3. jq (JSON processor)
+
+Required for parsing glab API responses.
+
+**Installation:**
+
+- **macOS:** `brew install jq`
+- **Linux:** `apt install jq` (Debian/Ubuntu) or `yum install jq` (RHEL/CentOS)
+- **Windows:** `choco install jq`
+
+---
+
 ## Phase 0: Check Dependencies
 
-Before starting diagnosis, verify that `glab` (GitLab CLI) and `jq` (JSON processor) are available. Run:
+Before starting diagnosis, verify that all required dependencies are available.
+
+### Step 1: Check CLI Tools
+
+Verify that `glab` (GitLab CLI) and `jq` (JSON processor) are available:
 
 ```bash
 glab --version && jq --version
 ```
 
-If `jq` is **not installed**: `brew install jq` (macOS), `apt install jq` (Linux), or `choco install jq` (Windows).
+**If either tool is missing:**
 
-If `glab` is **not installed**, guide the user through setup:
+1. Refer the user to the **Prerequisites** section above for installation instructions
+2. Use `AskUserQuestion` to prompt them to install missing dependencies
+3. Wait for confirmation before proceeding
 
-1. **Install glab**:
-   - macOS: `brew install glab`
-   - Windows: `winget install --id GitLab.Glab` (or `scoop install glab` / `choco install glab`)
-   - Linux: See https://gitlab.com/gitlab-org/cli#installation
+**Do not proceed until both glab and jq are installed and glab is authenticated.**
 
-2. **Authenticate**:
-   ```bash
-   glab auth login
-   ```
-   Select `gitlab.com`, choose your preferred authentication method (browser or token), and follow the prompts.
+### Step 2: MCP Server Errors
 
-3. **Verify access** by running:
-   ```bash
-   glab api "projects/raptortech1%2Fraptor%2Fcpoms%2Fcpoms/repository/tree?path=app/services/scripts&per_page=1"
-   ```
-   If this returns a JSON array, glab is configured correctly. If it returns a 403/404 error, the user needs to ensure their GitLab account has access to the CPOMS repositories.
+**Note:** MCP servers (Sentry and Atlassian) are checked implicitly when you first call their tools. If a tool call fails with an error about a missing server, guide the user to install it:
 
-**Do not proceed until glab is installed and authenticated.** Use `AskUserQuestion` to prompt the user to install it if missing.
+```bash
+# For Sentry
+claude mcp add --transport http sentry https://mcp.sentry.dev/mcp
+
+# For Atlassian
+claude mcp add --transport http atlassian https://mcp.atlassian.com/v1/mcp
+```
+
+After installation, retry the failed tool call. The server will prompt for authentication on first use.
 
 ---
 
@@ -116,18 +176,18 @@ Include the scale in the output summary (e.g., "This issue affects 1,730 schools
 
 ### 1.3 Fetch Script Context from Confluence
 
-Use `mcp__atlassian__getConfluencePage` to fetch the script reference documentation:
+Use `mcp__atlassian__getConfluencePage` to fetch additional script context:
 - **cloudId**: `raptortech1.atlassian.net`
 - **pageId**: `258444595`
 - **contentFormat**: `markdown`
 
-This page documents **permitted 2nd line scripts** with:
+This page provides team knowledge gathered from experience:
 - Use cases and descriptions
 - Script-specific gotchas and tips
-- Required arguments
+- Known edge cases and warnings
 - Cascading relationships (e.g., "run X first, then Y")
 
-**Extract and use this information when making recommendations.** If a script is documented here, it is permitted for 2nd line use. If not, the user must liaise with 3rd line.
+**Use this as supplementary context** when making recommendations. This information enhances your understanding but the GitLab repository is the authoritative source for available scripts.
 
 ### 1.4 List All Available Scripts
 
@@ -138,8 +198,6 @@ Fetch scripts from the **target project's** GitLab repository (determined in Pha
 ```bash
 glab api 'projects/<GITLAB_PROJECT>/repository/tree?path=app/services/scripts&ref=main&per_page=100' | jq -r '.[] | select(.name | endswith(".rb")) | select(.name != "base.rb") | .name'
 ```
-
-Add `&page=2` for the second page if the first returns exactly 100 results.
 
 The script names are descriptive — use them to match against the error pattern (e.g., `dedupe_medical_conditions.rb` for duplicate medical condition errors).
 
@@ -175,12 +233,12 @@ Example exploration prompts:
 
 ### 3.1 Match Scripts to Error
 
-Based on the error analysis, the Confluence documentation, **and the full GitLab script list**:
+Based on the error analysis and the full GitLab script list:
 
 1. **Identify the error pattern** from the Sentry issue
-2. **Search the Confluence page** for scripts with matching use cases — these are preferred (2nd line permitted)
-3. **Search the full GitLab script list** by name for keywords related to the error (e.g., model name, error type, operation). If a script exists in GitLab but is **not** on the Confluence page, recommend the user liaise with 3rd line.
-4. **Check for cascading relationships** — some scripts should be run before others
+2. **Search the GitLab script list** by name for keywords related to the error (e.g., model name, error type, operation like `dedupe_`, `destroy_`, `fix_`)
+3. **Consult the Confluence page** for additional context on matched scripts — gotchas, tips, and known edge cases
+4. **Check for cascading relationships** — some scripts should be run before others (Confluence may document these)
 5. **Note any logging scripts** that should be run first to gather information
 6. **If no script matches** — proceed directly to Phase 4 using the "No Script Applies" template
 
@@ -341,13 +399,13 @@ Use this when the issue **cannot be resolved or diagnosed with any available scr
 
 ## Important Notes
 
-1. **Always recommend dry-run first** for destructive scripts (unless the Confluence page indicates the script doesn't support it)
+1. **Always recommend dry-run first** for destructive scripts (unless the script doesn't support it)
 2. **Never search for customer by name** in Manage - use LA/DfE or exact CPOMS URL
 3. **If no matching script exists**, use Template B — be explicit that no script applies and explain why
 4. **If multiple scripts could apply**, list all options with explanations
 5. **Include the tenant name** from Sentry tags so the engineer can target the right school
 6. **For cascading workflows**, clearly indicate the dependency between scripts
-7. **Always check the Confluence page** for gotchas — this information changes over time
+7. **Consult the Confluence page** for gotchas and practical tips when recommending scripts
 8. **Scripts are workarounds** — always consider whether the root cause needs investigation
-9. **Unpermitted scripts** — if a script exists in GitLab but is not on the Confluence permitted list, recommend the user liaise with 3rd line
+9. **Script permissions** — note in recommendations whether scripts are documented on Confluence (commonly used) or not (may require additional approval)
 10. **Scale matters** — always report how many tenants are affected, and flag when root cause investigation is needed
