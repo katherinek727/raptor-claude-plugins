@@ -26,6 +26,28 @@ This skill follows the AI-DLC principle where AI initiates and directs the conve
 - "/aidlc-progress https://confluence.example.com/wiki/spaces/PROJ/pages/12345"
 - "/aidlc-progress PROJ-123"
 
+## Completion Checklist
+
+> **IMPORTANT**: Create tasks for each step at the start using `TodoWrite`. Mark tasks complete as you go using `TodoWrite`. Each task description should reference the corresponding Workflow step.
+
+| # | Task | Depends On | Workflow Reference | Exit Criteria |
+|---|------|------------|-------------------|---------------|
+| 1 | Gather Initiative reference | — | Phase 1 | Confluence URL or Jira Epic key collected |
+| 2 | Detect current workflow phase | 1 | Phase 2 | Phase detected and reported to user |
+| 3 | Spawn assessment sub-agents | 2 | Phase 3 | Doc/Jira/Code assessors launched (parallel) |
+| 4 | Consolidate results | 3 | Phase 4 | Confidence/Risk/Progress metrics calculated |
+| 5 | Present dashboard | 4 | Phase 5 | Report displayed with recommendations |
+
+## Task Tracking
+
+When this skill is invoked:
+1. **Create tasks** for all 5 phases using `TodoWrite`
+2. **Mark task as in_progress** when starting each phase
+3. **Mark task complete** when phase exit criteria met
+4. **Verify all tasks complete** before finishing
+
+This ensures visibility into progress and prevents incomplete execution.
+
 ## References
 
 - Use @${CLAUDE_PLUGIN_ROOT}/references/planning-shared.md for Jira/Confluence tool guidance and templates.
