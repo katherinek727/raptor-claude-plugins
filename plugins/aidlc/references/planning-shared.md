@@ -866,6 +866,18 @@ For teams that want a fast answer without the full calculation:
 
 *These assume medium coupling. Adjust down for high coupling, up for low coupling.*
 
+## Dependency Analysis & Decoupling
+
+See @${CLAUDE_PLUGIN_ROOT}/references/dependency-analysis.md for:
+- Blocking vs non-blocking dependency classification
+- Environment-specific dependencies (cloud vs local dev)
+- Dependency analysis questions
+- Two-pass decoupling (Unit-level interactive, Task-level easy wins batch)
+
+## Task Sizing Guidance
+
+See @${CLAUDE_PLUGIN_ROOT}/references/story-sizing.md for internal Fibonacci-based sizing to right-size Tasks (combine trivial 1s, split 13+).
+
 ## Mob Elaboration Guidance
 
 Mob Elaboration is a collaborative ritual for requirements elaboration.
@@ -1188,94 +1200,16 @@ When identifying theme clusters from an Intent:
 - Each cluster should have low coupling to other clusters
 - Example themes: Authentication, API Layer, Data Migration, UI Components, Reporting
 
-### Subagent Prompt Template
+### Task Elaboration Agent
 
-Use this template when spawning Task elaboration subagents via the Task tool:
+Use `subagent_type: "task-elaborator"` when spawning Task elaboration subagents.
 
-```markdown
-You are elaborating Tasks for the "<THEME_NAME>" theme cluster.
+**Pass to agent:**
+- Theme cluster name and description
+- Condensed Intent context (summary, users, NFRs, constraints)
+- List of Task titles/scopes to elaborate
 
-## Intent Context
-
-**Intent Summary:** <brief summary of the overall intent>
-
-**Target Users:** <user personas affected>
-
-**NFRs:** <relevant non-functional requirements>
-
-**Constraints:** <any constraints or limitations>
-
-## Tasks to Elaborate
-
-Elaborate the following Tasks for this theme:
-<list of Task titles/scopes>
-
-## Instructions
-
-For each Task:
-1. Write the full Task content using the Task Markdown Template format
-2. Identify risks specific to this Task
-3. Identify dependencies:
-   - Within this theme cluster
-   - Cross-cluster dependencies (reference other themes by name)
-
-## Task Markdown Template
-
-Use this format for each Task:
-
-# Task: <Task Title>
-
-**Unit**: _pending_ <!-- Assigned after grouping -->
-**Bolt**: _pending_ <!-- Assigned after Bolt grouping -->
-**Jira Key**: _pending_ <!-- Updated after Jira creation -->
-**Status**: Draft
-
-## Summary
-<Brief description of what this Task delivers>
-
-## Task
-As a <user type>,
-I want <goal/action>,
-So that <benefit/value>.
-
-## Acceptance Criteria
-- [ ] <Criterion 1>
-- [ ] <Criterion 2>
-
-## Context
-<Additional context, background, or technical notes>
-
-## Dependencies
-- <Dependency 1>
-
-## Risks
-- <Risk 1>
-
-## Test Notes
-<Guidance for testing this Task>
-
-## Return Format
-
-Return your results as JSON in this exact structure:
-
-{
-  "theme": "<THEME_NAME>",
-  "tasks": [
-    {
-      "title": "<Task title>",
-      "content": "<full markdown content for the Task>",
-      "risks": ["<risk 1>", "<risk 2>"],
-      "dependencies": {
-        "within_theme": ["<Task title in same theme>"],
-        "cross_theme": ["<Theme Name>: <Task or capability>"]
-      }
-    }
-  ],
-  "cross_cutting_concerns": [
-    "<concern that spans multiple themes or the entire intent>"
-  ]
-}
-```
+The agent returns structured JSON with Tasks, dependencies (classified as blocking/non-blocking), risks, and cross-cutting concerns. See the `task-elaborator` agent definition for full output format.
 
 ### Subagent Return Format
 
@@ -1307,76 +1241,20 @@ After collecting results from all subagents, the parent agent:
 6. **Propose Bolt groupings**: Group Tasks into Bolts based on cohesive scope
 7. **Assign Unit slugs**: Add unit prefix to each Task filename
 
-## Confluence Page Creation Subagent
+## Confluence Page Creation Agent
 
 The `/aidlc-elaborate` skill uses parallel subagents to create Confluence pages efficiently. After the Units Overview page is created, one subagent is spawned per Unit to create that Unit's page and all its Task pages in parallel.
 
-### Subagent Prompt Template
+Use `subagent_type: "confluence-creator"` when spawning page creation subagents.
 
-Use this template when spawning Confluence page creation subagents via the Task tool:
+**Pass to each sub-agent:**
 
-```markdown
-You are creating a Unit page and its Task pages in Confluence.
+- Parent page ID (Units Overview page)
+- Unit definition (name, description, bolt plan, dependencies, risks)
+- Task definitions (title, user story, acceptance criteria, dependencies, risks, test notes)
+- Space key
 
-## Context
-
-**Cloud ID:** <cloudId>
-**Parent Page ID:** <unitsOverviewPageId> (Units Overview page)
-
-## Unit Data
-
-**Unit Name:** <unitName>
-**Unit Description:** <description>
-**Status:** Draft
-
-### Bolt Plan
-
-| Bolt | Scope | Tasks | Estimate |
-|------|-------|-------|----------|
-<bolt plan rows>
-
-### Dependencies
-
-- **Depends on:** <other units or external>
-- **Blocks:** <units that depend on this>
-
-### Risks
-
-| Risk | Impact | Likelihood | Mitigation |
-|------|--------|------------|------------|
-<risk rows>
-
-## Tasks to Create
-
-<JSON array of Tasks with full content>
-
-## Instructions
-
-1. Create the Unit page as child of Units Overview using the Unit Page Template
-2. For each Task, create a Task page as child of the Unit page using the Task Page Template
-3. Return the Unit page ID and all Task page IDs
-
-## Templates
-
-Use the templates from planning-shared.md:
-- Unit Page Template (for the Unit)
-- Task Page Template (for each Task)
-
-## Return Format
-
-Return your results as JSON in this exact structure:
-
-{
-  "unit": {
-    "name": "<unit name>",
-    "pageId": "<unit page ID>",
-    "pageUrl": "<unit page URL>"
-  },
-  "tasks": [
-    { "title": "<Task title>", "pageId": "<Task page ID>", "pageUrl": "<Task page URL>" }
-  ]
-}
-```
+The agent returns JSON with Unit page and Task page IDs/URLs. See the `confluence-creator` agent definition for full output format.
 
 ### Subagent Return Format
 

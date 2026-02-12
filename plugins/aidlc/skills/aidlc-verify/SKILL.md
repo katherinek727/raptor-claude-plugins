@@ -7,6 +7,47 @@ description: Verify documentation completeness and assess AI-execution confidenc
 
 Verify that all documentation (Intent, Units, Tasks, Design) is complete and provides sufficient context for AI tooling to execute successfully. Refine Bolt groupings and transfer to Jira only when confidence threshold is met.
 
+## Completion Checklist
+
+> **IMPORTANT**: Create tasks for each step at the start using `TodoWrite`. Mark tasks complete as you go using `TodoWrite`. Each task description should reference the corresponding Workflow step.
+
+### Verification Phase
+
+| # | Task | Depends On | Workflow Reference | Exit Criteria |
+|---|------|------------|-------------------|---------------|
+| 1 | Validate prerequisites | — | Prerequisites section | Units exist, decomposition complete |
+| 2 | Fetch all documentation | 1 | Phase 1 > Step 2 | Intent, Units, Tasks, Design docs fetched |
+| 3 | Spawn verification subagents | 2 | Phase 2 | One subagent per Unit launched |
+| 4 | Consolidate results | 3 | Phase 3 | All scores calculated, gaps merged and ranked |
+| 5 | Present assessment report | 4 | Phase 4 | Confidence score and gaps shown to user |
+| 6 | Get decision from user | 5 | Phase 5 | User chooses: proceed / address gaps / cancel |
+
+### Jira Transfer Phase (if approved)
+
+| # | Task | Depends On | Workflow Reference | Exit Criteria |
+|---|------|------------|-------------------|---------------|
+| 7 | Confirm Jira transfer | 6 | Phase 6 > Step 1 | User confirms project key and structure |
+| 8 | Create Sub-epics | 7 | Phase 6 > Step 2 | Sub-epic created for each Unit with `aidlc:unit` label |
+| 9 | Create Stories | 8 | Phase 6 > Step 2 | Stories created under their Sub-epics |
+| 10 | Update workflow status | 8, 9 | Phase 6 > Step 3 | Status shows "Verification: ✅ Complete" |
+| 11 | Delete Confluence pages | 10 | Phase 6 > Step 4 | Overview, Unit, Task pages deleted |
+| 12 | Report final results | 11 | Phase 6 > Step 5 | Jira keys and links reported to user |
+
+## Task Tracking
+
+When this skill is invoked:
+
+1. **Create tasks** for the Verification Phase checklist items using `TodoWrite`
+   - Include a reference to the workflow step in the task description (content field)
+   - Set activeForm appropriately (e.g., "Validating prerequisites" for content "Validate prerequisites")
+   - Example: `"Validate prerequisites (See Prerequisites section)"`
+2. **Mark task as in_progress** when starting each step using `TodoWrite` (update status)
+3. **Mark task complete** when the exit criteria are met using `TodoWrite` (update status)
+4. **If user approves transfer**, create tasks for the Jira Transfer Phase
+5. **Verify all tasks complete** before finishing the skill
+
+This ensures visibility into progress and prevents incomplete execution.
+
 ## AI-Drives-Conversation Pattern
 
 This skill follows the AI-DLC principle where AI initiates and directs the conversation:
@@ -96,84 +137,16 @@ Thresholds are defined in review-criteria.md **Part 1.2**. In summary:
 
 Spawn parallel sub-agents (one per Unit) to assess documentation quality.
 
-**When constructing the sub-agent prompt:** Read review-criteria.md and inject the Verification Readiness Rubric (Part 3.3) and Shared Quality Checklists (Part 2) into the Scoring Instructions section below.
+Use `subagent_type: "doc-verifier"` (aidlc plugin agent) for each Unit.
 
-**Sub-agent Prompt Template:**
+**Pass to each sub-agent:**
 
-```markdown
-Review the following Unit documentation for AI-execution readiness.
+- Unit page content
+- Task pages content for this Unit
+- Design documents (if available): Domain model, ADRs
+- Intent context: Relevant sections from Level 1 Intent
 
-## Unit: <Unit Name>
-<Unit page content>
-
-## Tasks
-<Task pages content for this Unit>
-
-## Proposed Bolts
-<Bolt groupings from Units Overview for this Unit>
-
-## Design Documents (if available)
-<Domain model, ADRs relevant to this Unit>
-
-## Intent Context
-<Relevant sections from Intent>
-
-## Scoring Instructions
-
-Rate each dimension 0-100:
-
-1. **Scope Clarity** — Is the Unit scope bounded with specific, measurable deliverables?
-2. **Task Quality** — Do all Tasks have testable acceptance criteria in proper format?
-3. **Technical Readiness** — Are integration points, data models, and error handling documented?
-4. **NFR Specificity** — Are performance, security, and availability targets measurable?
-5. **Dependency Clarity** — Are blockers, prerequisites, and sequencing documented?
-6. **Bolt Grouping Quality** — Are Tasks grouped into cohesive Bolts with clear scope? Are bolt-to-bolt dependencies explicitly identified? Is each Bolt appropriately sized (2h-3d)?
-
-[Inject: Verification Readiness Rubric details (Part 3.3) and Shared Quality Checklists (Part 2) from review-criteria.md]
-
-## Return Format
-
-Return your assessment as JSON:
-
-{
-  "unit": "<unit name>",
-  "scores": {
-    "scope_clarity": <0-100>,
-    "task_quality": <0-100>,
-    "technical_readiness": <0-100>,
-    "nfr_specificity": <0-100>,
-    "dependency_clarity": <0-100>,
-    "bolt_grouping": <0-100>
-  },
-  "gaps": [
-    {
-      "category": "<scope_clarity|task_quality|technical_readiness|nfr_specificity|dependency_clarity|bolt_grouping>",
-      "issue": "<specific gap description>",
-      "location": "<Task title or section>",
-      "suggestion": "<how to fix>"
-    }
-  ],
-  "bolt_refinements": [
-    {
-      "current_bolt": "<Bolt name>",
-      "issue": "<problem with current grouping>",
-      "suggestion": "<recommended adjustment>"
-    }
-  ],
-  "bolt_dependencies": [
-    {
-      "bolt": "<Bolt name>",
-      "depends_on": ["<Bolt name>"],
-      "dependency_type": "data|interface|infrastructure",
-      "rationale": "<why this dependency exists>"
-    }
-  ],
-  "strengths": [
-    "<well-documented aspect>"
-  ],
-  "overall_confidence": <0-100>
-}
-```
+The `doc-verifier` agent will score each criterion and return JSON with scores, gaps, strengths, and overall confidence.
 
 ### Phase 3: Consolidate Results
 

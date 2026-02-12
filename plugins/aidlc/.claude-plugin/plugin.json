@@ -8,6 +8,11 @@
   "license": "MIT",
   "keywords": ["aidlc", "planning", "confluence", "jira", "initiative", "roadmap", "delivery"],
   "skills": "./skills/",
+  "agents": [
+    "./agents/task-elaborator.md",
+    "./agents/confluence-creator.md",
+    "./agents/doc-verifier.md"
+  ],
   "commands": [
     "./skills/aidlc-help/",
     "./skills/aidlc-intent/",
