@@ -112,15 +112,18 @@ After (right-sized):
 - "Integrate payment webhooks" (5)
 ```
 
-## Don't Tell the User
+## Using Story Points in Jira
 
-This sizing is internal quality control:
-
+During `/aidlc-elaborate`: Sizing is internal quality control only
+- ✅ Use internally to right-size Tasks (combine 1-2s, split 13+)
 - ❌ Don't show Fibonacci numbers to user
-- ❌ Don't ask user to estimate
-- ❌ Don't include sizes in Confluence/Jira
-- ✅ Use internally to right-size stories
-- ✅ Present clean, well-sized stories to user
+- ❌ Don't include sizes in Confluence pages
+
+During `/aidlc-verify`: Sizing is applied to Jira sub-tasks
+- ✅ Score each Task using Fibonacci scale
+- ✅ Write scores to Jira Story Points field (if configured)
+- ✅ Flag large tasks (13+) in verification report
+- ❌ Don't show individual scores during scoring step (report aggregate only)
 
 ## Golden Rule
 

@@ -26,12 +26,14 @@ Verify that all documentation (Intent, Units, Tasks, Design) is complete and pro
 
 | # | Task | Depends On | Workflow Reference | Exit Criteria |
 |---|------|------------|-------------------|---------------|
-| 7 | Confirm Jira transfer | 6 | Phase 6 > Step 1 | User confirms project key and structure |
-| 8 | Create Sub-epics | 7 | Phase 6 > Step 2 | Sub-epic created for each Unit with `aidlc:unit` label |
-| 9 | Create Stories | 8 | Phase 6 > Step 2 | Stories created under their Sub-epics |
-| 10 | Update workflow status | 8, 9 | Phase 6 > Step 3 | Status shows "Verification: ✅ Complete" |
-| 11 | Delete Confluence pages | 10 | Phase 6 > Step 4 | Overview, Unit, Task pages deleted |
-| 12 | Report final results | 11 | Phase 6 > Step 5 | Jira keys and links reported to user |
+| 7 | Confirm Jira transfer | 6 | Phase 6 > Step 1 | User confirms; Story Points field detected |
+| 8 | Spawn task-creator agents | 7 | Phase 6 > Step 2b | N agents launched in parallel |
+| 9 | Consolidate agent results | 8 | Phase 6 > Step 2c | Bolt map built, Story Points aggregated |
+| 10 | Link Bolt dependencies | 9 | Phase 6 > Step 3 | Cross-Unit links created |
+| 11 | Update Confluence | 10 | Phase 6 > Step 4 | Bolt Execution Plan backfilled |
+| 12 | Update workflow status | 11 | Phase 6 > Step 5 | Status shows "Verification: ✅" |
+| 13 | Delete Confluence pages | 12 | Phase 6 > Step 6 | Overview, Units, Tasks deleted |
+| 14 | Report final results | 13 | Phase 6 > Step 7 | Aggregate results reported |
 
 ## Task Tracking
 
@@ -324,6 +326,49 @@ Confirm the user is ready:
 - Show the number of dependency links that will be created
 - Confirm the refined Bolt groupings are final
 
+#### Step 1a: Detect Story Points Field
+
+Attempt to find the Story Points field for sub-tasks in the target Jira project:
+
+**Primary approach (acli):**
+```bash
+# Get any existing issue to discover fields
+acli jira workitem search --project "PROJ" --limit 1 --json
+# Extract issue key from results
+acli jira workitem fields PROJ-123 --json
+```
+
+Parse JSON output for fields matching:
+- Name patterns: `/story[\s_-]*point/i`, `/estimate/i`
+- Field type: numeric
+- Common field IDs: `customfield_10016`, `customfield_10026`, `customfield_10000`
+
+**Fallback approach (Atlassian MCP):**
+```javascript
+// If acli unavailable
+getJiraProjectIssueTypesMetadata({
+  cloudId: "<cloud-id>",
+  projectIdOrKey: "PROJ"
+})
+// Find Sub-task issue type ID
+
+getJiraIssueTypeMetaWithFields({
+  cloudId: "<cloud-id>",
+  projectIdOrKey: "PROJ",
+  issueTypeId: "<sub-task-type-id>"
+})
+// Filter for schema.type === "number" and name matching patterns
+```
+
+**Outcomes:**
+- ✅ Field found: Store field name/ID for sub-task creation
+  - Inform user: "✓ Story Points field detected: [field-name]"
+- ⚠️ Field not found: Continue without Story Points
+  - Inform user: "⚠️ Story Points field not configured in project"
+  - Note in final report under recommendations
+
+**Store for session:** Field name or ID (e.g., `"Story Points"` or `"customfield_10016"`)
+
 #### Step 2: Create Jira Artifacts
 
 **Preferred: Use `acli` CLI** (lower token usage than Atlassian MCP):
@@ -361,110 +406,254 @@ Use the Jira Epic (Intent) Template from @${CLAUDE_PLUGIN_ROOT}/references/plann
 
 Save the Epic key (e.g., PROJ-100) for linking Sub-epics.
 
-**Step 2b: Create Sub-epics (Units)**
+**Step 2b: Spawn Task-Creator Agents (PARALLEL)**
 
-For each Unit:
-- Summary: Unit page title
-- Description: Unit page content including:
-  - Scope summary and acceptance criteria
-  - NFRs, risks, dependencies
-  - ADR links/references (if design documentation exists)
-  - Design document links (domain model, context maps)
-  - Link to Intent Confluence doc
-- Parent: The Intent's Epic (created in Step 2a)
-- Label: `aidlc:unit`
-- If design exists, add label: `aidlc:designed`
-- Team field: Set if team assignment was configured
+For each Unit, spawn a task-creator agent to create all Jira artifacts (Sub-epic → Stories → Sub-tasks) for that Unit in parallel.
 
-```bash
-acli jira workitem create --project "PROJ" --type "Sub-epic" \
-  --summary "Unit: [Name]" \
-  --description-file unit-description.md \
-  --parent "PROJ-100" \
-  --label "aidlc:unit" \
-  --json
-# Set team if configured
-acli jira workitem edit PROJ-123 --field "Team" --value "Team Name"
+**Prepare input for each agent:**
+
+1. **Fetch Unit content:**
+   - Read the Unit's Confluence page
+   - Store full markdown content
+
+2. **Fetch all Task pages for this Unit:**
+   - Query Confluence for all Task pages under this Unit
+   - Store each Task's title and full markdown content
+
+3. **Extract Bolt metadata from Bolt Execution Plan:**
+   - Filter Bolts for current Unit: `WHERE unit == current_unit_name`
+   - For each Bolt, collect:
+     - `bolt_name` (e.g., "Bolt 1.1: Login Flow")
+     - `project_key` (from multi-project routing if configured, else primary project)
+     - `phase` (execution phase number)
+     - `lane` (parallel lane identifier)
+     - `team` (optional team assignment)
+     - `depends_on` (array of Bolt names this Bolt depends on)
+     - `estimated_duration` (e.g., "2 days")
+     - `on_critical_path` (boolean)
+     - `tasks` (array of Task titles in this Bolt)
+
+4. **Pass Story Points field config:**
+   - Field name and ID from Step 1a (or `null` if not detected)
+
+5. **Pass Epic Jira key:**
+   - Epic key created in Step 2a
+
+6. **Pass Atlassian credentials:**
+   - `cloud_id` and optional `region_url`
+
+**Spawn all agents in parallel:**
+
+```
+Use Task tool with subagent_type="task-creator" (AIDLC plugin agent) for each Unit.
+
+Spawn ALL agents in a single Task tool call with multiple agents (parallel execution).
 ```
 
-**Step 2c: Create Stories (Bolts)**
+**Agent input schema:**
 
-For each Bolt, create in the correct project (respecting multi-project routing):
-- Summary: Bolt name/description from Units Overview
-- Description: Include:
-  - Scope summary (what this Bolt delivers)
-  - Phase and Lane assignment (e.g., "Phase 1, Lane A")
-  - Tasks included (list of child sub-tasks)
-  - Dependencies (other Bolts — blocks/blocked by)
-  - Whether on the critical path (yes/no)
-  - Team assignment (if specified)
-  - Estimated duration
-- Parent: The Unit's Sub-epic
-- Label: `aidlc:bolt`
-
-```bash
-acli jira workitem create --project "PROJ" --type "Story" \
-  --summary "Bolt: [Description]" \
-  --description-file bolt-description.md \
-  --parent "PROJ-123" \
-  --label "aidlc:bolt" \
-  --json
+```json
+{
+  "unit": {
+    "name": "User Authentication",
+    "confluence_content": "<full Unit page markdown>",
+    "epic_jira_key": "PROJ-100",
+    "primary_project_key": "PROJ"
+  },
+  "bolts": [
+    {
+      "bolt_name": "Bolt 1.1: Login Flow",
+      "project_key": "PROJ",
+      "phase": 0,
+      "lane": "A",
+      "team": "Backend Team",
+      "depends_on": [],
+      "estimated_duration": "2 days",
+      "on_critical_path": true,
+      "tasks": ["Implement password validation", "Add login API"]
+    }
+  ],
+  "tasks": [
+    {
+      "task_title": "Implement password validation",
+      "confluence_content": "<full Task page markdown>"
+    }
+  ],
+  "story_points_field": {
+    "field_name": "Story Points",
+    "field_id": "customfield_10016"
+  },
+  "cloud_id": "<atlassian-cloud-id>",
+  "region_url": "https://us.sentry.io"
+}
 ```
 
-**Step 2d: Create Sub-tasks (Tasks)**
+**Wait for all agents to complete** before proceeding to Step 2c.
 
-For each Task, ensure **complete information transfer**:
-- Summary: Task page title
-- Description: Full Task content including:
-  - User story (As a... I want... So that...)
-  - **ALL** acceptance criteria (every checkbox — do not summarize or omit any)
-  - Context section
-  - Dependencies with references
-  - Risks
-  - **Test notes** (all test scenarios from the Task page)
-- Parent: The Bolt's Story (inherits project from parent)
+**Step 2c: Consolidate Agent Results**
 
-```bash
-acli jira workitem create --project "PROJ" --type "Sub-task" \
-  --summary "[Task Title]" \
-  --description-file task-description.md \
-  --parent "PROJ-456"
-```
+After all task-creator agents return, consolidate their results:
 
-Use templates in @${CLAUDE_PLUGIN_ROOT}/references/planning-shared.md
+1. **Parse JSON results** from each agent
+
+   Each agent returns:
+   ```json
+   {
+     "unit_name": "User Authentication",
+     "unit_jira_key": "PROJ-123",
+     "unit_url": "https://jira.../PROJ-123",
+     "bolts": [
+       {
+         "bolt_name": "Bolt 1.1: Login Flow",
+         "story_jira_key": "PROJ-124",
+         "story_url": "https://jira.../PROJ-124",
+         "project_key": "PROJ",
+         "phase": 0,
+         "lane": "A",
+         "team": "Backend Team",
+         "depends_on": ["Bolt 1.2"],
+         "on_critical_path": true,
+         "tasks": [
+           {
+             "task_name": "Implement password validation",
+             "subtask_jira_key": "PROJ-125",
+             "subtask_url": "https://jira.../PROJ-125",
+             "story_points": 5,
+             "story_points_applied": true
+           }
+         ]
+       }
+     ],
+     "story_points_summary": {
+       "total_points": 42,
+       "task_count": 8,
+       "average_points": 5.25,
+       "distribution": {"3": 2, "5": 4, "8": 1, "13": 1},
+       "large_tasks": [
+         {"key": "PROJ-130", "points": 13, "title": "Complex auth flow"}
+       ]
+     },
+     "errors": []
+   }
+   ```
+
+2. **Build bolt_name → story_key map** for dependency linking:
+
+   Iterate through all agents' results and collect:
+   ```json
+   {
+     "Bolt 1.1": {
+       "story_key": "PROJ-124",
+       "depends_on": []
+     },
+     "Bolt 1.2": {
+       "story_key": "PROJ-128",
+       "depends_on": ["Bolt 1.1"]
+     },
+     "Bolt 2.1": {
+       "story_key": "PROJ-135",
+       "depends_on": ["Bolt 1.1", "Bolt 1.2"]
+     }
+   }
+   ```
+
+3. **Aggregate Story Points** across all Units:
+
+   - `total_points`: Sum of all Units' `story_points_summary.total_points`
+   - `task_count`: Sum of all Units' `story_points_summary.task_count`
+   - `average_points`: `total_points / task_count`
+   - `distribution`: Merge all Units' distributions
+   - `large_tasks`: Concatenate all Units' `large_tasks` arrays
+
+4. **Collect errors** from all agents:
+
+   Group by error type:
+   - Unit-level failures (agent aborted)
+   - Story creation failures
+   - Sub-task creation failures
+   - Story Points write failures
+
+5. **Report partial success** if any agents failed:
+
+   Example:
+   ```
+   ✅ Successfully created artifacts for Units: 1, 2, 4, 5
+   ❌ Failed for Unit: 3 (error: API timeout)
+
+   Retry Unit 3? (y/n)
+   ```
+
+**Validation:**
+- Verify all Units have `unit_jira_key` (or are in errors)
+- Verify bolt_name → story_key map is complete
+- Check for duplicate Bolt names (should not happen)
+
+**Store for Step 3:** bolt_name → story_key map
+**Store for Step 4:** Aggregated Bolt metadata with Jira keys
+**Store for Step 7:** Aggregate Story Points summary and errors
 
 #### Step 3: Link Bolt Dependencies
 
-After all Bolts are created, use the Bolt Execution Plan to create dependency links between Stories:
+Use the bolt_name → story_key map from Step 2c to create dependency links between Stories:
 
-1. Map bolt names to their Jira Story keys (from Step 2c output)
-2. Iterate through all "Depends On" entries in the execution plan
-3. For each dependency, create a link:
+1. **Iterate through bolt_name → story_key map**
 
-```bash
-# For each dependency in the execution plan:
-# Bolt 1.2 (PROJ-456) is blocked by Bolt 1.1 (PROJ-455):
-acli jira workitem link PROJ-456 PROJ-455 --link-type "blocks"
+   For each Bolt with non-empty `depends_on` array:
+
+2. **Lookup Jira keys:**
+   - Current Bolt: `bolt_name → story_key` (e.g., "Bolt 1.2" → "PROJ-456")
+   - Each dependency: `depends_on[i] → story_key` (e.g., "Bolt 1.1" → "PROJ-455")
+
+3. **Create link for each dependency:**
+
+   ```bash
+   # Bolt 1.2 (PROJ-456) is blocked by Bolt 1.1 (PROJ-455):
+   acli jira workitem link PROJ-456 PROJ-455 --link-type "blocks"
+   ```
+
+   **Link type:** "blocks" (the dependency blocks the current Bolt)
+
+4. **Verify links were created:**
+
+   Optional verification:
+   ```bash
+   acli jira workitem view PROJ-456 --fields "issuelinks" --json
+   ```
+
+5. **Handle cross-project dependencies:**
+
+   Links work across projects (no special handling needed)
+
+**Fallback:** If `acli` is not available or linking fails, dependencies are already documented in each Story's description by the task-creator agents:
+```
+**Blocked by:** Bolt 1.1 (Jira key will be linked by parent agent)
 ```
 
-4. Verify links were created successfully
-
-**Fallback**: If `acli` is not available or linking fails, document all dependencies in each Story's description with the format:
+Update these descriptions with actual Jira keys:
 ```
 **Blocked by:** PROJ-455 (Bolt 1.1)
-**Blocks:** PROJ-460 (Bolt 2.2)
 ```
 
 #### Step 4: Update Bolt Execution Plan in Confluence
 
-Backfill the Bolt Execution Plan on the Units Overview page with created Jira Story keys:
+Backfill the Bolt Execution Plan on the Units Overview page with created Jira Story keys from Step 2c:
 
-| Lane | Bolt | Unit | Summary | Depends On | Jira Story |
-|------|------|------|---------|------------|------------|
-| A | Bolt 1.1 | Unit 1 | ... | — | PROJ-455 |
-| B | Bolt 2.1 | Unit 2 | ... | — | PROJ-458 |
+1. **Read the Units Overview page** (contains Bolt Execution Plan table)
 
-This makes the Confluence plan a live reference with links to Jira.
+2. **Parse existing plan table** to locate each Bolt row
+
+3. **Lookup Jira Story keys** from consolidated results (bolt_name → story_key map)
+
+4. **Update table** with Jira keys:
+
+   | Lane | Bolt | Unit | Summary | Depends On | Jira Story |
+   |------|------|------|---------|------------|------------|
+   | A | Bolt 1.1 | Unit 1 | ... | — | [PROJ-455](https://jira.../PROJ-455) |
+   | B | Bolt 2.1 | Unit 2 | ... | Bolt 1.1 | [PROJ-458](https://jira.../PROJ-458) |
+
+5. **Update Confluence page** using `updateConfluencePage` tool
+
+**Result:** Bolt Execution Plan becomes a live reference with clickable links to Jira Stories.
 
 #### Step 5: Update Workflow Status
 
@@ -483,16 +672,78 @@ After successful Jira creation, delete the Confluence pages to avoid confusion:
 
 #### Step 7: Report Back
 
-Provide:
-- Created Epic key and link (Intent)
-- Created Jira keys (Sub-epics linked to Epic, Stories/Bolts, Sub-tasks/Tasks)
-- Links to the Jira artifacts
-- Bolt Execution Plan summary (phases, critical path duration)
-- Dependency links created (count + list of linked pairs)
-- Team/project routing applied (which teams, which projects)
-- Execution order recommendation (start with Phase 0, then Phase 1, etc.)
-- Confirmation that Confluence pages have been cleaned up
-- Final confidence score for reference
+Provide aggregate results from all task-creator agents:
+
+**Created Jira Artifacts:**
+- **Epic (Intent):** [PROJ-100](https://jira.../PROJ-100) "<Intent Name>"
+- **Sub-epics (Units):** X Units created
+  - Unit 1: [PROJ-123](https://jira.../PROJ-123)
+  - Unit 2: [PROJ-135](https://jira.../PROJ-135)
+  - ...
+- **Stories (Bolts):** X Bolts created across Y projects
+  - Example: [PROJ-124](https://jira.../PROJ-124) "Bolt 1.1: Login Flow"
+- **Sub-tasks (Tasks):** X Tasks created
+
+**Aggregate Story Points Summary (if field detected):**
+- **Total points:** XX points across YY sub-tasks (all Units)
+- **Average per sub-task:** X.X points
+- **Distribution:** X tasks @ 3pts, X @ 5pts, X @ 8pts, X @ 13pts
+- **⚠️ Large tasks (13+ points):** [PROJ-789 (13pts), PROJ-790 (21pts)]
+  - Recommendation: Consider splitting these tasks in future iterations or during implementation
+
+**If Story Points field not detected:**
+- ⚠️ Story Points field not configured in project PROJ
+- Recommendation: Configure Story Points field in Jira project settings → Issue Types → Sub-task → Fields
+
+**Errors (if any):**
+
+- **Unit-level errors (agent failures):**
+  - Unit 3 (User Authentication): API timeout during Sub-epic creation
+  - Action: Retry agent for Unit 3, or create manually
+
+- **Story/Sub-task creation failures:**
+  - X Stories failed to create (see errors array)
+  - Y Sub-tasks failed to create (see errors array)
+
+- **Story Points write failures:**
+  - Z Sub-tasks created without Story Points (field not writable)
+  - Recommendation: Check Jira field permissions
+
+**Bolt Execution Plan:**
+- **Phases:** X phases identified
+- **Critical path:** Bolts X.X → Y.Y → Z.Z (estimated XX days)
+- **Parallelism:** Up to Y teams can work in parallel during Phase Z
+- **Updated in Confluence:** Bolt Execution Plan table backfilled with Jira Story keys
+
+**Dependency Links:**
+- **Created:** X dependency links between Bolts
+- **Examples:**
+  - PROJ-456 (Bolt 1.2) blocked by PROJ-455 (Bolt 1.1)
+  - PROJ-460 (Bolt 2.2) blocked by PROJ-458 (Bolt 2.1)
+
+**Team/Project Routing:**
+- **Projects:** Artifacts created in X projects (PROJ, FRONT, API, etc.)
+- **Teams:** Y teams assigned to Bolts (Backend Team, Frontend Team, etc.)
+
+**Execution Order Recommendation:**
+- Start with Phase 0 Bolts (no dependencies)
+- Lanes A, B, C can execute in parallel
+- Phase 1 begins after all Phase 0 Bolts complete
+- Follow critical path to minimize overall duration
+
+**Confluence Cleanup:**
+- ✅ Units Overview page deleted
+- ✅ All Unit pages deleted (X pages)
+- ✅ All Task pages deleted (Y pages)
+- ✅ Intent page status table updated to "Verification: ✅ Complete"
+
+**Final Confidence Score:** X.XX / 5.00 (for reference)
+
+**Next Steps:**
+1. Review Jira Epic and Sub-epics to verify completeness
+2. Assign Bolts to teams based on Lane assignments
+3. Begin implementation starting with Phase 0
+4. Use `/aidlc-bolt` to guide TDD implementation of each Bolt
 
 ## Workflow Chain
 
@@ -514,16 +765,24 @@ Provide:
 
 ### Jira Transfer Complete (if approved)
 - Intent created as Epic with `aidlc:intent` label
+- One task-creator agent spawned per Unit (parallel execution)
 - Units created as Sub-epics linked to the Intent Epic with `aidlc:unit` label
 - Bolts created as Stories under their respective Sub-epics with `aidlc:bolt` label
 - Tasks created as Sub-tasks under their respective Bolts/Stories
+- Story Points field detected (or gracefully handled if missing)
+- Tasks scored using Fibonacci scale (1, 2, 3, 5, 8, 13, 21+)
+- Story Points applied to sub-tasks (if field configured)
+- Large tasks (13+) flagged in aggregate report
+- Story Points aggregated across all Units in final report
 - All acceptance criteria and test notes transferred completely to Sub-tasks
-- Bolt-to-bolt dependency links created ("blocks"/"is blocked by")
-- Team field set on all artifacts (if configured)
+- Bolt-to-bolt dependency links created across Units ("blocks"/"is blocked by")
+- Team assignments applied (if configured)
 - Multi-project routing applied (if configured)
 - ADR and design doc links included in Sub-epic descriptions
 - Design label added if design exists (`aidlc:designed`)
 - Bolt Execution Plan updated with Jira Story keys in Confluence
+- Agent errors collected and reported
+- Partial success handled (some Units succeed, some fail)
 - Confluence decomposition pages deleted (Overview, Units, Tasks)
 - Intent page status table updated
 
@@ -546,3 +805,10 @@ Provide:
 - **Circular bolt dependencies detected**: Flag as blocking gap. Must restructure into a DAG (directed acyclic graph) before transfer.
 - **Too many phases in execution plan**: Consolidate phases where bolts have no actual inter-phase dependencies.
 - **Single lane per phase (no parallelism)**: Flag for team to consider splitting bolts or adjusting dependencies to enable parallel work.
+- **Story Points field not found**: Cause: Jira project doesn't have Story Points field configured. Resolution: Workflow continues without Story Points. Recommend team enable Story Points field in project settings. Check: Use Jira admin interface → Project Settings → Issue Types → Sub-task → Fields
+- **Story Points field is read-only**: Cause: Jira permissions or field configuration. Resolution: Sub-tasks created without Story Points. Recommend manual addition or permission update.
+- **Story Points value rejected**: Cause: Jira field validation rules (e.g., only allows 0.5, 1, 2, 3, 5, 8, 13). Resolution: Use default value 5 or skip Story Points for that task. Check: Verify field configuration allows Fibonacci values (1, 2, 3, 5, 8, 13, 21)
+- **Unit-creator agent fails entirely**: Cause: Critical error (Sub-epic creation failed). Resolution: Retry agent for that Unit only. Other Units' artifacts are preserved. Check agent error output for specific failure reason (API timeout, permissions, invalid parent Epic key).
+- **Partial Unit success**: Cause: Some Bolts/Tasks created, others failed during agent execution. Resolution: Partial Jira artifacts exist for this Unit. Manual creation needed for failed items. Check `errors` array in agent output to identify failed Stories/Sub-tasks. Query Jira: `labels = aidlc:unit AND parent = PROJ-100` to see what was created.
+- **Agent timeout**: Cause: Large Unit with 50+ Tasks, network latency, or Jira API rate limiting. Resolution: Retry agent with same Epic parent key. Duplicate detection: Check for existing Sub-epic with `aidlc:unit` label and matching Epic parent before creating. If Sub-epic exists, skip Sub-epic creation and resume at Story creation.
+- **Bolt dependency linking fails**: Cause: `acli` not installed, network issue, or invalid Story keys in bolt map. Resolution: Dependencies already documented in Story descriptions by agents ("Blocked by: Bolt 1.1"). Manually create links later using Jira Query: `labels = aidlc:bolt` to find all Bolt Stories, then use UI or `acli jira workitem link` to create links.
