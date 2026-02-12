@@ -15,6 +15,35 @@ Produce the Intent documentation in Confluence as the single source of truth for
 > - Unit breakdown happens later in `/aidlc-elaborate` (Mob Elaboration)
 > - You may include "Proposed Units (hypotheses only)" as rough scope indicators
 
+## Completion Checklist
+
+> **IMPORTANT**: Create tasks for each step at the start using `TodoWrite`. Mark tasks complete as you go using `TodoWrite`. Each task description should reference the corresponding Workflow step.
+
+| # | Task | Depends On | Workflow Reference | Exit Criteria |
+|---|------|------------|-------------------|---------------|
+| 1 | Gather context | — | Workflow > Step 1 | All required fields collected (name, users, pathway, scope, NFRs, risks) |
+| 2 | Gather repo context | 1 | Workflow > Step 2 | Repo README and key files read, or N/A confirmed |
+| 3 | Confirm understanding | 1, 2 | Workflow > Step 3 | User confirms 5-8 bullet summary is correct |
+| 4 | Draft Level 1 doc | 3 | Workflow > Step 4 | Draft follows template, all sections populated |
+| 5 | Review and iterate | 4 | Workflow > Step 5 | User says "approved" or "looks good" |
+| 6 | Create Confluence page | 5 | Workflow > Step 6 | Page created, URL returned |
+| 7 | Get explicit approval | 6 | Workflow > Step 7 | User explicitly approves the Intent |
+| 8 | Update workflow status | 7 | Workflow > Step 8 | Status table shows "Level 1 Intent: ✅ Approved" |
+
+## Task Tracking
+
+When this skill is invoked:
+
+1. **Create tasks** for the current phase's checklist items using `TodoWrite`
+   - Include a reference to the workflow step in the task description (content field)
+   - Set activeForm appropriately (e.g., "Gathering context" for content "Gather context (See Workflow > Step 1)")
+   - Example: `"Gather context (See Workflow > Step 1)"`
+2. **Mark task as in_progress** when starting each step using `TodoWrite` (update status)
+3. **Mark task complete** when the exit criteria are met using `TodoWrite` (update status)
+4. **Verify all tasks complete** before finishing the skill
+
+This ensures visibility into progress and prevents incomplete execution.
+
 ## AI-Drives-Conversation Pattern
 
 This skill follows the AI-DLC principle where AI initiates and directs the conversation:

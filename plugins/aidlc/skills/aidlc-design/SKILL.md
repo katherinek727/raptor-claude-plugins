@@ -7,6 +7,36 @@ description: Guide the Construction Phase with Domain Design, Logical Design, an
 
 Bridge from planning to implementation by creating Domain Designs, Logical Designs, and ADRs for approved Units.
 
+## Completion Checklist
+
+> **IMPORTANT**: Create tasks for each step at the start using `TodoWrite`. Mark tasks complete as you go using `TodoWrite`. Each task description should reference the corresponding Workflow step.
+
+| # | Task | Depends On | Workflow Reference | Exit Criteria |
+|---|------|------------|-------------------|---------------|
+| 1 | Validate prerequisites | — | Prerequisites section | Units exist, "Unit Decomposition: ✅ Complete" |
+| 2 | Gather Unit context | 1 | Workflow > Step 1 | Unit, Tasks, NFRs, constraints collected |
+| 3 | Assess confidence | 2 | Workflow > Step 2 | Score ≥60%, or questions asked if below |
+| 4 | Create Domain Design | 3 | Workflow > Step 3 | Aggregates, entities, value objects, events defined |
+| 5 | Create Logical Design | 4 | Workflow > Step 4 | Patterns selected, NFR solutions documented |
+| 6 | Create ADRs | 4, 5 | Workflow > Step 5 | ADR created for each significant decision |
+| 7 | Get approval on designs | 4, 5, 6 | Workflow > Step 6 | User approves domain model and patterns |
+| 8 | Store artifacts | 7 | Workflow > Step 7 | Design docs created in Confluence, linked to Unit |
+| 9 | Update workflow status | 8 | Workflow > Step 8 | Status shows "Domain Design: ✅ Complete" |
+
+## Task Tracking
+
+When this skill is invoked:
+
+1. **Create tasks** for each checklist item using `TodoWrite`
+   - Include a reference to the workflow step in the task description (content field)
+   - Set activeForm appropriately (e.g., "Validating prerequisites" for content "Validate prerequisites")
+   - Example: `"Validate prerequisites (See Prerequisites section)"`
+2. **Mark task as in_progress** when starting each step using `TodoWrite` (update status)
+3. **Mark task complete** when the exit criteria are met using `TodoWrite` (update status)
+4. **Verify all tasks complete** before finishing the skill
+
+This ensures visibility into progress and prevents incomplete execution.
+
 ## AI-Drives-Conversation Pattern
 
 This skill follows the AI-DLC principle where AI initiates and directs the conversation:

@@ -25,6 +25,42 @@ This skill follows the AI-DLC principle where AI initiates and directs the conve
 - "Review the MR for PROJ-123"
 - "Validate the Jira story against the docs"
 
+## Completion Checklist
+
+> **IMPORTANT**: Create tasks for each step at the start using `TodoWrite`. Mark tasks complete as you go using `TodoWrite`. Each task description should reference the corresponding Workflow step.
+
+### Path A: Documentation Review
+
+| # | Task | Depends On | Workflow Reference | Exit Criteria |
+|---|------|------------|-------------------|---------------|
+| A1 | Determine review scope | — | Step A1 | Units confirmed with user |
+| A2 | Fetch documentation | A1 | Step A2 | Unit and Task pages retrieved |
+| A3 | Spawn documentation review sub-agents | A2 | Step A3 | One doc-verifier per Unit launched |
+| A4 | Consolidate review results | A3 | Step A4 | Scores calculated, gaps merged |
+| A5 | Present review report | A4 | Step A5 | Report displayed to user |
+| A6 | Handle feedback loop | A5 | Step A6 | User confirms next action |
+
+### Path B: Implementation Review
+
+| # | Task | Depends On | Workflow Reference | Exit Criteria |
+|---|------|------------|-------------------|---------------|
+| B1 | Determine review scope | — | Step B1 | Bolts confirmed with user |
+| B2 | Fetch MR diffs and context | B1 | Step B2 | MR diffs retrieved |
+| B3 | Spawn implementation review sub-agents | B2 | Step B3 | One sub-agent per Bolt launched |
+| B4 | Consolidate review results | B3 | Step B4 | Scores calculated, risks merged |
+| B5 | Present review report | B4 | Step B5 | Report displayed to user |
+| B6 | Handle feedback loop | B5 | Step B6 | User confirms next action |
+
+## Task Tracking
+
+When this skill is invoked:
+1. **Detect path** (A or B) and create tasks for that path's checklist using `TodoWrite`
+2. **Mark task as in_progress** when starting each step
+3. **Mark task complete** when exit criteria met
+4. **Verify all tasks complete** before finishing
+
+This ensures visibility into progress and prevents incomplete execution.
+
 ## References
 
 - Use @${CLAUDE_PLUGIN_ROOT}/references/planning-shared.md for Jira/Confluence tool guidance and templates.

@@ -30,6 +30,59 @@ Break down an approved Intent into Tasks and Units using the AI-DLC Mob Elaborat
 > **DO NOT** create Jira issues in this skill.
 > **DO NOT** skip phases without explicit user approval.
 
+## Completion Checklist
+
+> **IMPORTANT**: Create tasks for each step at the start using `TodoWrite`. Mark tasks complete as you go using `TodoWrite`. Each task description should reference the corresponding Workflow step.
+
+### Phase 1: Task Decomposition
+
+| # | Task | Depends On | Workflow Reference | Exit Criteria |
+|---|------|------------|-------------------|---------------|
+| 1 | Validate prerequisites | — | Prerequisites section | Confluence doc exists and shows "Level 1 Intent: ✅ Approved" |
+| 2 | Gather context | 1 | Phase 1 > Step 1 | Confluence link and Jira project key collected |
+| 3 | Identify theme clusters | 2 | Phase 1 > Step 2 | 3-5 clusters identified, user confirms |
+| 4 | Spawn task elaboration subagents | 3 | Phase 1 > Step 3 | All subagents launched (one per theme) |
+| 5 | Consolidate subagent results | 4 | Phase 1 > Step 4 | JSON parsed, deps classified with environment field, Tasks right-sized |
+| 6 | Group tasks into Units | 5 | Phase 1 > Step 5 | Tasks assigned to Units based on blocking dependencies, user confirms |
+| 7 | Decouple dependencies | 6 | Phase 1 > Step 6 | Infra deps reviewed (dev vs deploy), Unit chains addressed, easy wins applied |
+| 8 | Plan Bolts per Unit | 6, 7 | Phase 1 > Step 7 | Bolt sequence respects blocking deps, parallel opportunities identified |
+| 9 | Create Confluence pages | 7, 8 | Phase 1 > Step 8 | Overview, Unit, and Task pages created (incl. contract/integration tasks) |
+| 10 | Request team review | 9 | Phase 1 > Step 9 | User notified to begin team review |
+
+### Phase 3: Comment Resolution (after human review)
+
+| # | Task | Depends On | Workflow Reference | Exit Criteria |
+|---|------|------------|-------------------|---------------|
+| 11 | Fetch all comments | 10 | Phase 3 > Step 10 | Inline + footer comments fetched for all pages |
+| 12 | Address feedback | 11 | Phase 3 > Step 11 | Each comment analyzed, action determined |
+| 13 | Update content | 12 | Phase 3 > Step 12 | Pages updated to address valid feedback |
+| 14 | Reply to comments | 13 | Phase 3 > Step 13 | Replies posted explaining how feedback was addressed |
+| 15 | Mark comments resolved | 14 | Phase 3 > Step 14 | User informed which comments need manual resolution |
+
+### Phase 4: Unit Re-assessment
+
+| # | Task | Depends On | Workflow Reference | Exit Criteria |
+|---|------|------------|-------------------|---------------|
+| 16 | Apply re-assessment criteria | 15 | Phase 4 > Step 15 | Each Unit evaluated against 5 criteria, findings presented |
+| 17 | Regroup tasks if needed | 16 | Phase 4 > Step 16 | Task pages moved between Units, or user confirms no changes |
+| 18 | Update Units Overview | 17 | Phase 4 > Step 17 | Summary table and dependency graph updated |
+| 19 | Update workflow status | 18 | Phase 4 > Step 18 | Status shows "Unit Decomposition: ✅ Complete" |
+
+## Task Tracking
+
+When this skill is invoked:
+
+1. **Create tasks** for the current phase's checklist items using `TodoWrite`
+   - Include a reference to the workflow step in the task description (content field)
+   - Set activeForm appropriately (e.g., "Validating prerequisites" for content "Validate prerequisites")
+   - Example: `"Validate prerequisites (See Prerequisites section)"`
+2. **Mark task as in_progress** when starting each step using `TodoWrite` (update status)
+3. **Mark task complete** when the exit criteria are met using `TodoWrite` (update status)
+4. **At phase boundaries**, create tasks for the next phase
+5. **Verify all phase tasks complete** before stopping at a gate
+
+This ensures visibility into progress and prevents incomplete execution.
+
 ## Example Invocations
 
 - "Break down the authentication intent into Tasks and Units"
@@ -119,23 +172,29 @@ I'll spawn 3 subagents to elaborate these in parallel.
 #### Step 3: Spawn Task Elaboration Subagents
 
 For each theme cluster, spawn a subagent using the Task tool:
-- Use `subagent_type: "general-purpose"`
+- Use `subagent_type: "task-elaborator"` (aidlc plugin agent)
 - Pass the condensed Intent context (not full documents)
-- Use the Task Elaboration Subagent Prompt Template from @${CLAUDE_PLUGIN_ROOT}/references/planning-shared.md
 - **Spawn all subagents in a single message** (parallel execution)
 
 Each subagent will:
 - Elaborate all Tasks for its assigned theme
-- Return structured JSON with Task content, risks, and dependencies
-- Identify cross-cutting concerns that span themes
+- Apply internal Task sizing (combine trivial, split large)
+- Classify dependencies as blocking vs non-blocking
+- Return structured JSON with Tasks, risks, dependencies, cross-cutting concerns
 
 #### Step 4: Consolidate Subagent Results
 
 After all subagents return:
 1. Parse the JSON results from each subagent
 2. Merge cross-cutting concerns into a unified risk list
-3. Build a dependency graph across all Tasks
-4. Surface any conflicts or gaps between themes
+3. Build a dependency graph across all Tasks using @${CLAUDE_PLUGIN_ROOT}/references/dependency-analysis.md
+4. **Classify each dependency as blocking or non-blocking** (critical for parallelization)
+5. **Validate environment field on all dependencies**:
+   - Each dependency should have `environment: "dev" | "deploy" | "both"`
+   - Flag any infrastructure dependency marked as `"dev"` or `"both"` — challenge whether local alternative exists
+   - Default: Cloud infrastructure should be `"deploy"` only
+6. Surface any conflicts or gaps between themes
+7. **Right-size Tasks** using internal Fibonacci sizing (see dependency-analysis.md)
 
 #### Step 5: Group Tasks into Units
 
@@ -207,15 +266,15 @@ Create the page hierarchy under the Intent document using parallel sub-agents fo
 **Phase B: Create Unit + Tasks (parallel, one agent per Unit)**
 
 2. **Spawn one sub-agent per Unit** using the Task tool:
-   - Use `subagent_type: "general-purpose"`
+   - Use `subagent_type: "confluence-creator"` (aidlc plugin agent)
    - Pass the Units Overview page ID as the parent
-   - Use the Confluence Page Creation Subagent Prompt Template from @${CLAUDE_PLUGIN_ROOT}/references/planning-shared.md
+   - Pass Unit definition and all Task definitions
    - **Spawn all sub-agents in a single message** (parallel execution)
 
    Each sub-agent creates:
    - The Unit page (child of Units Overview)
    - All Task pages for that Unit (children of Unit page)
-   - Uses Unit Page Template and Task Page Template from @${CLAUDE_PLUGIN_ROOT}/references/planning-shared.md
+   - Returns page IDs and URLs for consolidation
 
 3. **Consolidate sub-agent results**:
    - Collect all Unit page IDs and Task page IDs
