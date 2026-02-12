@@ -55,6 +55,8 @@ plugins/<plugin-name>/
 | `/aidlc-design` | `domain design`, `logical design`, `create ADR`, `architecture decision`, `aidlc design` | Domain/Logical Design and Architecture Decision Records |
 | `/aidlc-verify` | `verify docs`, `check readiness`, `transfer to jira`, `aidlc verify`, `confidence check` | Verify docs, refine Bolts, transfer to Jira (Unit→Sub-epic, Bolt→Story, Task→Sub-task) |
 | `/aidlc-bolt` | `bolt`, `implement bolt`, `start bolt`, `bolt implementation`, `new bolt` | Guide implementation of a bolt with TDD emphasis |
+| `/aidlc-review` | `review AI-DLC docs`, `peer review MR`, `validate Jira story`, `aidlc review` | Peer-review documentation or MRs with confidence scoring |
+| `/aidlc-progress` | `check progress`, `initiative status`, `how are we doing`, `project health`, `aidlc progress` | Generate confidence, risk, and progress dashboard for an Initiative |
 | `/aidlc-help` | `aidlc help`, `what is aidlc`, `explain aidlc`, `planning help`, `how to plan` | Explain AI-DLC methodology and available skills |
 
 #### Issues (`/issues:*`)
