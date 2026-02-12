@@ -1144,6 +1144,100 @@ acli auth login  # Interactive login (one-time setup)
 | List fields | `acli jira workitem fields PROJ-123` |
 | List projects | `acli jira project list` |
 
+### Status Transitions with Fallback
+
+**Pattern: `transition_jira_status(issue_key, target_status, issue_type)`**
+
+Utility pattern for transitioning Jira statuses with automatic fallback from acli to MCP tools:
+
+**Implementation Strategy:**
+
+```bash
+# 1. Try acli first (preferred - lower token usage)
+if which acli &> /dev/null; then
+  acli jira workitem transition PROJ-123 --transition "In Progress"
+else
+  # 2. Fall back to MCP tools
+  # - Call getTransitionsForJiraIssue(PROJ-123)
+  # - Find transition ID matching target status name
+  # - Call transitionJiraIssue(PROJ-123, {id: "21"})
+fi
+```
+
+**Error Handling:**
+
+| Condition | Action |
+|-----------|--------|
+| Status already set | Log info, treat as success |
+| Invalid transition | Log warning, ask user to verify manually |
+| Network/auth failure | Log error, continue workflow (non-blocking) |
+| acli not installed | Silent fallback to MCP tools |
+
+**Return Format:**
+
+```json
+{
+  "success": true,
+  "method": "acli",
+  "message": "Transitioned BOLT-123 to In Progress",
+  "previous_status": "To Do",
+  "new_status": "In Progress"
+}
+```
+
+**Display Indicators:**
+- ✓ Success
+- ⚠ Warning (already in target state)
+- ✗ Failed (manual intervention needed)
+
+**Example Usage (acli):**
+
+```bash
+# Check current status first
+acli jira workitem view PROJ-123 --fields status --json | jq '.status.name'
+
+# Transition to In Progress
+acli jira workitem transition PROJ-123 --transition "In Progress"
+
+# Verify transition
+acli jira workitem view PROJ-123 --fields status --json | jq '.status.name'
+```
+
+**Example Usage (MCP Fallback):**
+
+```javascript
+// 1. Get available transitions
+const transitions = await getTransitionsForJiraIssue({
+  cloudId: "your-cloud-id",
+  issueIdOrKey: "PROJ-123"
+});
+
+// 2. Find the transition ID for "In Progress"
+const inProgressTransition = transitions.find(t => t.name === "In Progress");
+
+// 3. Execute transition
+await transitionJiraIssue({
+  cloudId: "your-cloud-id",
+  issueIdOrKey: "PROJ-123",
+  transition: { id: inProgressTransition.id }
+});
+```
+
+**Parent-Child Synchronization Rules:**
+
+| Scenario | Action |
+|----------|--------|
+| All Sub-tasks "To Do" | Story must be "To Do" or "In Progress" |
+| Any Sub-task "In Progress" | Story must be "In Progress" |
+| All Sub-tasks "Done" | Story should transition to "In Review" |
+| Story "In Review" | All Sub-tasks must be "Done" (verify at transition) |
+
+**Smart Sync Behavior (resuming work):**
+- Check each item's current status before transitioning
+- Only transition items in "To Do"
+- Log items already "In Progress" or "Done" (no change needed)
+- Warn if Story is "To Do" but Sub-tasks are "In Progress" (inconsistency)
+
 ### Example: Create Sub-epic with Stories
 
 ```bash

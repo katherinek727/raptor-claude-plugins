@@ -35,6 +35,47 @@ This skill follows the AI-DLC principle where AI initiates and directs the conve
 
 ## Workflow
 
+### Jira Status Management Utility
+
+Throughout the Bolt workflow, use this utility pattern to transition Jira statuses with automatic fallback:
+
+**Function: `transition_jira_status(issue_key, target_status, issue_type)`**
+
+**Strategy:**
+1. Check if `acli` is available: `which acli`
+2. If available, use acli:
+   ```bash
+   acli jira workitem transition PROJ-123 --transition "In Progress"
+   ```
+3. If acli fails or unavailable, fall back to MCP tools:
+   ```
+   - Call getTransitionsForJiraIssue(PROJ-123)
+   - Find transition ID matching target_status name
+   - Call transitionJiraIssue(PROJ-123, {id: "21"})
+   ```
+
+**Error Handling:**
+- Status already set → Log info, treat as success
+- Invalid transition → Log warning, ask user to verify manually
+- Network/auth failure → Log error, continue workflow (non-blocking)
+- acli not installed → Silent fallback to MCP tools
+
+**Return Format:**
+```json
+{
+  "success": true,
+  "method": "acli",
+  "message": "Transitioned BOLT-123 to In Progress",
+  "previous_status": "To Do",
+  "new_status": "In Progress"
+}
+```
+
+Display results with indicators:
+- ✓ Success
+- ⚠ Warning (already in target state)
+- ✗ Failed (manual intervention needed)
+
 ### Phase 1: Context Gathering
 
 #### Step 1: Gather Jira Context
@@ -54,6 +95,49 @@ Ask for the work context:
   ```
 - Extract acceptance criteria, description, and dependencies from the response
 - Note the Tasks (Sub-tasks) that are part of this Bolt
+
+**Smart Status Sync:**
+
+After fetching Jira context, analyze current statuses and offer to transition to "In Progress":
+
+1. **Parse current statuses** from JSON response:
+   - Story status (e.g., "To Do", "In Progress", "In Review", "Done")
+   - Each Sub-task status
+
+2. **Identify items to transition:**
+   - Story: "To Do" → "In Progress" (skip if already "In Progress", "In Review", or "Done")
+   - Sub-tasks: "To Do" → "In Progress" (only items still in "To Do")
+
+3. **Display summary to user:**
+   ```
+   Ready to start Bolt PROJ-123 with 3 Sub-tasks.
+
+   Status transitions needed:
+   - Story PROJ-123: "To Do" → "In Progress"
+   - Sub-task TASK-456: "To Do" → "In Progress"
+   - Sub-task TASK-457: "To Do" → "In Progress"
+   - Sub-task TASK-458: Already "In Progress" (resuming)
+
+   Proceed with status updates? (y/n)
+   ```
+
+4. **If user confirms:**
+   - Execute transitions using `transition_jira_status()` for each item
+   - Display results with ✓/⚠/✗ indicators
+   - Log any items that are already in the correct state
+
+5. **If user declines:**
+   - Log: "Skipping status updates. Please update manually if needed."
+   - Continue workflow
+
+6. **Status Inconsistency Detection:**
+   - If Story is "In Review" but Sub-tasks are not all "Done", warn:
+     ```
+     ⚠ Warning: Status mismatch detected
+     Story PROJ-123 is "In Review" but TASK-456 is "In Progress"
+
+     This may indicate incomplete work. Continue anyway? (y/n)
+     ```
 
 If no Jira key provided, ask:
 ```
@@ -416,8 +500,14 @@ Begin with the first test case:
 2. Verify no file conflicts between agents
 3. Merge any overlapping changes (rare if dependencies analyzed correctly)
 4. Run full test suite to verify integration
-5. Update plan file with combined progress
-6. Report completion status for all Tasks:
+5. **Transition Sub-task statuses to "Done":**
+   - For each completed agent's Sub-task:
+     ```
+     transition_jira_status(TASK-456, "Done", "Sub-task")
+     ```
+   - Display results: "✓ Sub-task TASK-456: 'In Progress' → 'Done'"
+6. Update plan file with combined progress
+7. Report completion status for all Tasks:
 
 ```
 ## Implementation Progress
@@ -426,11 +516,13 @@ Begin with the first test case:
 - Cycles completed: 3
 - Files modified: [list]
 - Tests passing: Yes
+- Jira status: ✓ Done
 
 ### Task B: [Title] ✅ Complete
 - Cycles completed: 2
 - Files modified: [list]
 - Tests passing: Yes
+- Jira status: ✓ Done
 
 ### Integration Verification
 - Full test suite: ✅ Passing
@@ -446,6 +538,15 @@ For each cycle (when running sequentially):
 4. Update plan file progress
 5. Commit with meaningful message
 
+**When Task complete (all TDD cycles for a Sub-task done):**
+1. Verify all tests for this Task pass
+2. Transition Sub-task to "Done":
+   ```
+   transition_jira_status(TASK-456, "Done", "Sub-task")
+   ```
+3. Display result: "✓ Sub-task TASK-456: 'In Progress' → 'Done'"
+4. Continue to next Task or proceed to Bolt completion check
+
 Commit message format:
 ```
 [JIRA-KEY] [type]: [description]
@@ -455,6 +556,76 @@ Commit message format:
 
 Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>
 ```
+
+#### Step 13: Bolt Completion Check
+
+After all Tasks (Sub-tasks) complete, verify Bolt readiness for review:
+
+1. **Verify Prerequisites:**
+   - Query Jira: Are all Sub-tasks marked "Done"?
+     ```bash
+     acli jira workitem children PROJ-123 --json | jq '.[] | {key, status}'
+     ```
+   - Run full test suite: Do all tests pass?
+     ```bash
+     [test command for project, e.g., pytest, npm test, dotnet test]
+     ```
+
+2. **If both prerequisites met:**
+   - Display completion summary:
+     ```
+     🎉 Bolt PROJ-123 complete!
+
+     ✓ All 3 Sub-tasks marked Done
+     ✓ Full test suite passing (45 tests, 0 failures)
+
+     Ready to transition Story to "In Review"? (y/n)
+     ```
+
+3. **If user confirms:**
+   - Transition Story to "In Review":
+     ```
+     transition_jira_status(PROJ-123, "In Review", "Story")
+     ```
+   - Display result: "✓ Story PROJ-123: 'In Progress' → 'In Review'"
+   - Suggest next step:
+     ```
+     Next steps:
+     1. Create Pull/Merge Request: /issues:create-mr
+     2. After PR merged, manually transition to "Done" in Jira
+     ```
+
+4. **If prerequisites NOT met:**
+   - List incomplete items:
+     ```
+     ⚠ Cannot transition to "In Review" yet:
+
+     Incomplete Sub-tasks:
+     - TASK-458: Still "In Progress"
+
+     Test failures:
+     - test_authentication_flow: AssertionError
+     - test_user_validation: ConnectionError
+
+     Please complete remaining work before transitioning to "In Review".
+     ```
+
+5. **Parent-Child Synchronization Validation:**
+   - Before transitioning Story to "In Review", verify:
+     - All Sub-tasks are "Done" (not just complete in local code)
+     - No Sub-tasks are "To Do" or "In Progress"
+   - If mismatch detected:
+     ```
+     ⚠ Warning: Status mismatch detected
+     Story PROJ-123 will be "In Review" but TASK-456 is "In Progress"
+
+     Options:
+     1. Wait - fix TASK-456 first (recommended)
+     2. Force transition - manual cleanup later
+     3. Cancel
+
+     Choice (1/2/3):
+     ```
 
 ---
 
@@ -466,12 +637,18 @@ Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>
 ## Definition of Done
 
 - Jira context gathered and understood
+- **Story and Sub-tasks transitioned to "In Progress" (with user confirmation)**
 - TDD-focused plan created with test cases first
 - Plan approved by user
 - Plan saved to local file with progress tracking
 - Feature branch created from specified base
 - Implementation proceeds with TDD rhythm
+- **Each Sub-task transitioned to "Done" upon completion**
 - Plan file updated as progress is made
+- **All Sub-tasks marked "Done" in Jira**
+- **Full test suite passing**
+- **Story transitioned to "In Review" (with user confirmation)**
+- Ready for Pull/Merge Request creation
 
 ## Troubleshooting
 
